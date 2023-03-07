@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" integrity="sha256-/4UQcSmErDzPCMAiuOiWPVVsNN2s3ZY/NsmXNcj0IFc=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-bounce.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.15.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="文件上传漏洞 文件上传漏洞原理大部分的网站和应用系统都有上传功能，而程序员在开发文件上传功能时，没有对上传的文件做合理严谨的过滤，导致用户可以利用此功能。上传一个与网站脚本语言相对应的恶意代码动态脚本，例如(jsp、asp、php、aspx文件后缀)到服务器上，通过访问这些恶意脚本中代码，进一步影响服务器安全。 文件上传检测方法客户端校验一般是在网页中写一段JS脚本，用JS去检测，校验上传文件名的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="文件上传漏洞">
+<meta property="og:url" content="http://example.com/2022/11/29/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E/index.html">
+<meta property="og:site_name" content="kilig&#39;s Blog">
+<meta property="og:description" content="文件上传漏洞 文件上传漏洞原理大部分的网站和应用系统都有上传功能，而程序员在开发文件上传功能时，没有对上传的文件做合理严谨的过滤，导致用户可以利用此功能。上传一个与网站脚本语言相对应的恶意代码动态脚本，例如(jsp、asp、php、aspx文件后缀)到服务器上，通过访问这些恶意脚本中代码，进一步影响服务器安全。 文件上传检测方法客户端校验一般是在网页中写一段JS脚本，用JS去检测，校验上传文件名的">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-11-29T03:34:17.000Z">
+<meta property="article:modified_time" content="2023-03-07T13:30:14.451Z">
+<meta property="article:author" content="kiligwh">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2022/11/29/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2022/11/29/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E/","path":"2022/11/29/文件上传漏洞/","title":"文件上传漏洞"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>文件上传漏洞 | kilig's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">kilig's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">If it is a rose,it will blossom</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E"><span class="nav-number">1.</span> <span class="nav-text">文件上传漏洞</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E%E5%8E%9F%E7%90%86"><span class="nav-number">2.</span> <span class="nav-text">文件上传漏洞原理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%A3%80%E6%B5%8B%E6%96%B9%E6%B3%95"><span class="nav-number">3.</span> <span class="nav-text">文件上传检测方法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%A0%A1%E9%AA%8C"><span class="nav-number">3.1.</span> <span class="nav-text">客户端校验</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E7%AB%AF%E6%A3%80%E6%B5%8B"><span class="nav-number">3.2.</span> <span class="nav-text">服务端检测</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E7%A8%8B%E6%B5%81%E7%A8%8B"><span class="nav-number">4.</span> <span class="nav-text">文件上传程流程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E7%BB%95%E8%BF%87%E6%96%B9%E6%B3%95"><span class="nav-number">5.</span> <span class="nav-text">文件上传绕过方法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E7%AB%AF%E9%AA%8C%E8%AF%81%E7%BB%95%E8%BF%87"><span class="nav-number">5.1.</span> <span class="nav-text">前端验证绕过</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Content-Type%E6%96%B9%E5%BC%8F%E7%BB%95%E8%BF%87"><span class="nav-number">5.2.</span> <span class="nav-text">Content-Type方式绕过</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%BB%91%E5%90%8D%E5%8D%95%E7%BB%95%E8%BF%87"><span class="nav-number">5.3.</span> <span class="nav-text">黑名单绕过</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%99%BD%E5%90%8D%E5%8D%95%E7%BB%95%E8%BF%87"><span class="nav-number">5.4.</span> <span class="nav-text">白名单绕过</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%A7%A3%E6%9E%90%E6%BC%8F%E6%B4%9E"><span class="nav-number">6.</span> <span class="nav-text">解析漏洞</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#IIS6-0%E8%A7%A3%E6%9E%90%E6%BC%8F%E6%B4%9E"><span class="nav-number">6.1.</span> <span class="nav-text">IIS6.0解析漏洞</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PHP-CGI%E8%A7%A3%E6%9E%90%E6%BC%8F%E6%B4%9E"><span class="nav-number">6.2.</span> <span class="nav-text">PHP CGI解析漏洞</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%98%B2%E8%8C%83%E6%8E%AA%E6%96%BD"><span class="nav-number">7.</span> <span class="nav-text">防范措施</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF"><span class="nav-number">7.1.</span> <span class="nav-text">客户端</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%9A%E8%BF%87%E6%9C%8D%E5%8A%A1%E7%AB%AF%E5%AF%B9%E4%B8%8A%E4%BC%A0%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8C%E9%99%90%E5%88%B6"><span class="nav-number">7.2.</span> <span class="nav-text">通过服务端对上传文件进行限制</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="kiligwh"
+      src="/images/kilig.gif">
+  <p class="site-author-name" itemprop="name">kiligwh</p>
+  <div class="site-description" itemprop="description">欢迎</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/11/29/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/kilig.gif">
+      <meta itemprop="name" content="kiligwh">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kilig's Blog">
+      <meta itemprop="description" content="欢迎">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="文件上传漏洞 | kilig's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          文件上传漏洞
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-11-29 11:34:17" itemprop="dateCreated datePublished" datetime="2022-11-29T11:34:17+08:00">2022-11-29</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-03-07 21:30:14" itemprop="dateModified" datetime="2023-03-07T21:30:14+08:00">2023-03-07</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Web%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">Web安全</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="文件上传漏洞"><a href="#文件上传漏洞" class="headerlink" title="文件上传漏洞"></a>文件上传漏洞</h1><hr>
+<h1 id="文件上传漏洞原理"><a href="#文件上传漏洞原理" class="headerlink" title="文件上传漏洞原理"></a>文件上传漏洞原理</h1><p>大部分的网站和应用系统都有上传功能，而程序员在开发文件上传功能时，没有对上传的文件做合理严谨的过滤，导致用户可以利用此功能。上传一个与网站脚本语言相对应的恶意代码动态脚本，例如(jsp、asp、php、aspx文件后缀)到服务器上，通过访问这些恶意脚本中代码，进一步影响服务器安全。</p>
+<h1 id="文件上传检测方法"><a href="#文件上传检测方法" class="headerlink" title="文件上传检测方法"></a>文件上传检测方法</h1><h2 id="客户端校验"><a href="#客户端校验" class="headerlink" title="客户端校验"></a>客户端校验</h2><p>一般是在网页中写一段JS脚本，用JS去检测，校验上传文件名的后缀名，有白名单和黑名单</p>
+<p><strong>判断方法：</strong></p>
+<p>在浏览加载文件，但还未点击上传按钮时便弹出对话框，内容如：只允许上传.jpg&#x2F;.jpeg&#x2F;.png后缀名的文件，而此时并没有发送数据包，所以可以通过抓包来 判断，如果弹出不准上传，但是没有抓到数据包，那么就是前端验证</p>
+<p><strong>注意：</strong>前端验证非常不可靠，传正常文件改数据包就可以绕过，甚至关闭JS都可以尝试绕过</p>
+<h2 id="服务端检测"><a href="#服务端检测" class="headerlink" title="服务端检测"></a>服务端检测</h2><p>常见手段：</p>
+<p>检查Content-Type（内容类型）</p>
+<p>检查后缀（检查后缀是主流）</p>
+<p>检查文件名头</p>
+<h1 id="文件上传程流程"><a href="#文件上传程流程" class="headerlink" title="文件上传程流程"></a>文件上传程流程</h1><p><strong>文件上传流程：</strong></p>
+<p>网页上传 -&gt; 目标服务器的缓存 -&gt; 移动到开发写好的地址 -&gt; 重命名（开发决定命名方式）</p>
+<p>1、先上传后检测</p>
+<p>2、先检测后上传</p>
+<h1 id="文件上传绕过方法"><a href="#文件上传绕过方法" class="headerlink" title="文件上传绕过方法"></a>文件上传绕过方法</h1><h2 id="前端验证绕过"><a href="#前端验证绕过" class="headerlink" title="前端验证绕过"></a>前端验证绕过</h2><h2 id="Content-Type方式绕过"><a href="#Content-Type方式绕过" class="headerlink" title="Content-Type方式绕过"></a>Content-Type方式绕过</h2><h2 id="黑名单绕过"><a href="#黑名单绕过" class="headerlink" title="黑名单绕过"></a>黑名单绕过</h2><p>利用php、asp等脚本的别名绕过</p>
+<p>.htaccess文件绕过</p>
+<p>大小写绕过</p>
+<p>文件后缀（空）绕过</p>
+<p>文件后缀（点）饶过【windows有一个特性，会自动去掉后缀名最后的】</p>
+<p>::$DATA（Windows文件流绕过）【利用windows特性，可在后缀名中加” ::$DATA”绕过】</p>
+<p>构造文件后缀绕过</p>
+<p>双写饶过</p>
+<h2 id="白名单绕过"><a href="#白名单绕过" class="headerlink" title="白名单绕过"></a>白名单绕过</h2><p>%00截断（GET型和POST型）</p>
+<p>图片马（配合解析漏洞）</p>
+<p>二次渲染饶过</p>
+<p>条件竞争</p>
+<h1 id="解析漏洞"><a href="#解析漏洞" class="headerlink" title="解析漏洞"></a>解析漏洞</h1><p>Windows自带的中间件：</p>
+<ul>
+<li>Windows server 2003 &#x3D;&#x3D;&gt;IIS6.0</li>
+<li>Windows server 2008 &#x3D;&#x3D;&gt;IIS7.0-7.5</li>
+<li>注意：有些网站是混合的，既可以上传PHP又可以上传ASP</li>
+</ul>
+<h2 id="IIS6-0解析漏洞"><a href="#IIS6-0解析漏洞" class="headerlink" title="IIS6.0解析漏洞"></a>IIS6.0解析漏洞</h2><p>1、</p>
+<p>IIS6.0&gt;1.asp;.jpg&gt;00截断的变形</p>
+<p>检测时会以最后一个.去判断，为jpg</p>
+<p>中间件解析时会以.asp解析</p>
+<p>将aspshell.jpg重命名为shell.asp;1.jpg进行上传</p>
+<p>2、</p>
+<p>a.asp&#x2F;123.jpg&#x3D;&#x3D;&gt;会不会是个目录？</p>
+<p>当中间件IIS6.0遇到a.asp&#x2F; 时 会把a.asp&#x2F; 下的所有内容当作asp文件执行</p>
+<p>asp站点 IIS6.0</p>
+<p>一般来说aspx的站点会兼容asp</p>
+<h2 id="PHP-CGI解析漏洞"><a href="#PHP-CGI解析漏洞" class="headerlink" title="PHP CGI解析漏洞"></a>PHP CGI解析漏洞</h2><p>PHP和中间件Nginx交互时，会在本地开一个9000端口，PHP和Nginx通信全走9000端口</p>
+<p>例如：<br><a target="_blank" rel="noopener" href="http://www.xx.com/phpinfo.jpg/1.php">www.xx.com/phpinfo.jpg/1.php</a></p>
+<p>当中间件访问1.php 会认为它是一个PHP文件，当1.php不存在时，会自动跳转至上一级phpinfo.jpg，会把phpinfo.jpg误当作php文件去执行</p>
+<h1 id="防范措施"><a href="#防范措施" class="headerlink" title="防范措施"></a>防范措施</h1><h2 id="客户端"><a href="#客户端" class="headerlink" title="客户端"></a>客户端</h2><p><strong>不在前端使用JS限制策略</strong></p>
+<h2 id="通过服务端对上传文件进行限制"><a href="#通过服务端对上传文件进行限制" class="headerlink" title="通过服务端对上传文件进行限制"></a>通过服务端对上传文件进行限制</h2><p>进行多条件组合检查：如文件的大小、路径、扩展名、文件类型、文件完整性</p>
+<p>对上传的文件在服务器上存储时进行重命名</p>
+<p>对服务端上传文件的目录进行权限控制，限制执行权限带来的危害</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/11/28/SSRF-%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AB%AF%E8%AF%B7%E6%B1%82%E4%BC%AA%E9%80%A0/" rel="prev" title="SSRF-服务器端请求伪造">
+                  <i class="fa fa-chevron-left"></i> SSRF-服务器端请求伪造
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2022/11/30/XXE-%E5%A4%96%E9%83%A8%E5%AE%9E%E4%BD%93%E6%B3%A8%E5%85%A5%E6%94%BB%E5%87%BB/" rel="next" title="XXE-外部实体注入攻击">
+                  XXE-外部实体注入攻击 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">kiligwh</span>
+</div>
+
+<!-- 删除 “由 Hexo & NexT.Gemini 强力驱动” -->
+<!--
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div> -->
+
+<!-- <br /> -->
+<!-- 网站运行时间的设置 -->
+<span id="timeDate">载入天数...</span>
+<!-- <span id="times">载入时分秒...</span> -->
+<script>
+    var now = new Date();
+    function createtime() {
+        var grt= new Date("11/17/2022 8:00:00");//此处修改你的建站时间或者网站上线时间
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;}
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds); 
+        if(String(snum).length ==1 ){snum = "0" + snum;}
+        // var times = document.getElementById("times").innerHTML = hnum + " 小时 " + mnum + " 分 " + snum + " 秒";
+        document.getElementById("timeDate").innerHTML = "本站已安全运行 "+dnum+" 天 "+hnum + " 小时 " + mnum + " 分 " + snum + " 秒";
+    }
+setInterval("createtime()",250);
+</script>
+
+    </div>
+  </footer>
+
+  
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+
+  
+  
+  <script type="text/javascript"
+	count="150"
+	opacity: 1
+	src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js">
+  </script>
+  
+
+</body>
+</html>

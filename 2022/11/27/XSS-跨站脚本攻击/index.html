@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" integrity="sha256-/4UQcSmErDzPCMAiuOiWPVVsNN2s3ZY/NsmXNcj0IFc=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-bounce.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.15.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="XSS-跨站脚本攻击 20XSS概述Cross Site Scripting – 跨站脚本攻击，为了和CSS层叠样式表区分，故称跨站脚本攻击为XSS 跨站脚本攻击是指攻击者往Web页面里插入恶意Script代码，当用户浏览该页面之时，嵌入Web页面中的Script代码就会被执行，从而达到恶意攻击用户的目的 本质 用户输入的数据被当作代码代码执行 形成原因 主要原因是页面对输入和输出的控制不够严格，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="XSS-跨站脚本攻击">
+<meta property="og:url" content="http://example.com/2022/11/27/XSS-%E8%B7%A8%E7%AB%99%E8%84%9A%E6%9C%AC%E6%94%BB%E5%87%BB/index.html">
+<meta property="og:site_name" content="kilig&#39;s Blog">
+<meta property="og:description" content="XSS-跨站脚本攻击 20XSS概述Cross Site Scripting – 跨站脚本攻击，为了和CSS层叠样式表区分，故称跨站脚本攻击为XSS 跨站脚本攻击是指攻击者往Web页面里插入恶意Script代码，当用户浏览该页面之时，嵌入Web页面中的Script代码就会被执行，从而达到恶意攻击用户的目的 本质 用户输入的数据被当作代码代码执行 形成原因 主要原因是页面对输入和输出的控制不够严格，">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-11-27T03:32:09.000Z">
+<meta property="article:modified_time" content="2023-03-07T15:32:53.576Z">
+<meta property="article:author" content="kiligwh">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2022/11/27/XSS-%E8%B7%A8%E7%AB%99%E8%84%9A%E6%9C%AC%E6%94%BB%E5%87%BB/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2022/11/27/XSS-%E8%B7%A8%E7%AB%99%E8%84%9A%E6%9C%AC%E6%94%BB%E5%87%BB/","path":"2022/11/27/XSS-跨站脚本攻击/","title":"XSS-跨站脚本攻击"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>XSS-跨站脚本攻击 | kilig's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">kilig's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">If it is a rose,it will blossom</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#XSS-%E8%B7%A8%E7%AB%99%E8%84%9A%E6%9C%AC%E6%94%BB%E5%87%BB"><span class="nav-number">1.</span> <span class="nav-text">XSS-跨站脚本攻击</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#20XSS%E6%A6%82%E8%BF%B0"><span class="nav-number">1.1.</span> <span class="nav-text">20XSS概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%94%BB%E5%87%BB%E6%B5%81%E7%A8%8B"><span class="nav-number">1.2.</span> <span class="nav-text">攻击流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E7%B1%BB%E5%9E%8B"><span class="nav-number">1.3.</span> <span class="nav-text">常见类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E6%B5%81%E7%A8%8B"><span class="nav-number">1.4.</span> <span class="nav-text">测试流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JavaScript%E5%9F%BA%E7%A1%80"><span class="nav-number">1.5.</span> <span class="nav-text">JavaScript基础</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%8D%E5%B0%84%E5%9E%8BXSS"><span class="nav-number">1.6.</span> <span class="nav-text">反射型XSS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%98%E5%82%A8%E5%9E%8BXSS"><span class="nav-number">1.7.</span> <span class="nav-text">存储型XSS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DOM%E5%9E%8BXSS"><span class="nav-number">1.8.</span> <span class="nav-text">DOM型XSS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81DOM%E6%96%B9%E6%B3%95%E4%B8%8E%E5%B1%9E%E6%80%A7"><span class="nav-number">1.9.</span> <span class="nav-text">常见DOM方法与属性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#XSS%E7%9B%B2%E6%89%93"><span class="nav-number">1.10.</span> <span class="nav-text">XSS盲打</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#XSS%E7%BB%95%E8%BF%87"><span class="nav-number">1.11.</span> <span class="nav-text">XSS绕过</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%96%E7%A0%81"><span class="nav-number">1.12.</span> <span class="nav-text">编码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#htmlspecialchars-%E5%87%BD%E6%95%B0"><span class="nav-number">1.13.</span> <span class="nav-text">htmlspecialchars()函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#XSS%E5%B8%B8%E8%A7%81%E9%98%B2%E8%8C%83%E6%8E%AA%E6%96%BD"><span class="nav-number">1.14.</span> <span class="nav-text">XSS常见防范措施</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="kiligwh"
+      src="/images/kilig.gif">
+  <p class="site-author-name" itemprop="name">kiligwh</p>
+  <div class="site-description" itemprop="description">欢迎</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/11/27/XSS-%E8%B7%A8%E7%AB%99%E8%84%9A%E6%9C%AC%E6%94%BB%E5%87%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/kilig.gif">
+      <meta itemprop="name" content="kiligwh">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kilig's Blog">
+      <meta itemprop="description" content="欢迎">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="XSS-跨站脚本攻击 | kilig's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          XSS-跨站脚本攻击
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-11-27 11:32:09" itemprop="dateCreated datePublished" datetime="2022-11-27T11:32:09+08:00">2022-11-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-03-07 23:32:53" itemprop="dateModified" datetime="2023-03-07T23:32:53+08:00">2023-03-07</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Web%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">Web安全</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="XSS-跨站脚本攻击"><a href="#XSS-跨站脚本攻击" class="headerlink" title="XSS-跨站脚本攻击"></a>XSS-跨站脚本攻击</h1><hr>
+<h2 id="20XSS概述"><a href="#20XSS概述" class="headerlink" title="20XSS概述"></a>20XSS概述</h2><p>Cross Site Scripting – 跨站脚本攻击，为了和CSS层叠样式表区分，故称跨站脚本攻击为XSS</p>
+<p>跨站脚本攻击是指攻击者往Web页面里插入恶意Script代码，当用户浏览该页面之时，嵌入Web页面中的Script代码就会被执行，从而达到恶意攻击用户的目的</p>
+<p><strong>本质</strong></p>
+<p>用户输入的数据被当作代码代码执行</p>
+<p><strong>形成原因</strong></p>
+<p>主要原因是页面对输入和输出的控制不够严格，导致“精心构造的脚本代码”输入后，被浏览器当作有效代码解析执行从而产生危害</p>
+<p><strong>危害</strong></p>
+<p>盗取用户Cookie</p>
+<p>钓鱼攻击</p>
+<p>键盘记录</p>
+<p>截取网页屏幕</p>
+<p>获取内网ip</p>
+<p>获取浏览器保存的明文密码</p>
+<p>……</p>
+<p>注意：静态站点则完全不受其影响</p>
+<h2 id="攻击流程"><a href="#攻击流程" class="headerlink" title="攻击流程"></a>攻击流程</h2><p>攻击者在 存在XSS漏洞的站点中，插入脚本代码</p>
+<p>用户访问该站点后，会触发攻击者插入的脚本代码，返回带有“恶意JS”的页面</p>
+<p>脚本代码执行，将用户的cookie数据，发送给攻击者</p>
+<p>攻击者利用cookie，伪造用户登录，造成破坏</p>
+<h2 id="常见类型"><a href="#常见类型" class="headerlink" title="常见类型"></a>常见类型</h2><p>反射型</p>
+<p>交互的数据一般不会被存放在数据库里面，一次性。一般出现在查询类页面等</p>
+<p>存储型</p>
+<p>交互的数据会被存在数据库中，一般出现在留言板、注册等页面</p>
+<p>DOM型</p>
+<p>不与后台服务器产生数据交互，是一种通过DOM操作前端代码输出的时候产生的问题</p>
+<p>危害程度：存储型 &gt; 反射型 &gt; DOM型</p>
+<h2 id="测试流程"><a href="#测试流程" class="headerlink" title="测试流程"></a>测试流程</h2><p>在目标站点上找到输入点，如查询接口，留言板等</p>
+<p>输入一组 “特殊字符+唯一识别字符”，点击提交后，查看返回的源码，是否有做对应的处理</p>
+<p>通过搜索定位到唯一识别字符，结合唯一识别字符前后语法，确认是否可以构造执行JS的条件（闭合）</p>
+<p>提交构造的脚本代码(各种姿势)，看是否可以执行成功</p>
+<p>注意：</p>
+<p>一般查询接口容易出现反射型XSS，留言板容易出现存储型XSS</p>
+<p>由于后台可能存在过滤措施，构造的script可能会被过滤掉，而无法生效，或者环境限制了执行（浏览器）</p>
+<p>通过变化不同的script，尝试绕过后台过滤机制</p>
+<h2 id="JavaScript基础"><a href="#JavaScript基础" class="headerlink" title="JavaScript基础"></a>JavaScript基础</h2><p><strong>注释符</strong></p>
+<p>单行注释 &#x2F;&#x2F;</p>
+<p>多行注释 &#x2F;**&#x2F;</p>
+<p><strong>前端代码触发JavaScript脚本</strong></p>
+<p>1、直接使用script标签 </p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span>alert(1)<span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>2、伪协议: </p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">javascript:alert(1)</span> /&gt;</span>1<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>3、事件型</p>
+<p>HTML事件：HTML 事件可以是浏览器或用户做的某些事情，当在 HTML 页面中使用 JavaScript 时， JavaScript 可以触发这些事件</p>
+<p>常见的HTML事件:</p>
+<table>
+<thead>
+<tr>
+<th>事件</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>onchange</td>
+<td>HTML元素改变</td>
+</tr>
+<tr>
+<td>onclick</td>
+<td>用户点击HTML元素</td>
+</tr>
+<tr>
+<td>onmouseover</td>
+<td>用户从一个html元素上移动鼠标</td>
+</tr>
+<tr>
+<td>onmouseout</td>
+<td>用户从一个HTML元素上移开鼠标</td>
+</tr>
+<tr>
+<td>onkeydown</td>
+<td>用户按下键盘按键</td>
+</tr>
+<tr>
+<td>onload</td>
+<td>浏览器已完成页面的加载</td>
+</tr>
+<tr>
+<td>onfocus</td>
+<td>元素获得焦点</td>
+</tr>
+<tr>
+<td>onerror</td>
+<td>当加载文档或图像时发送某个错误</td>
+</tr>
+<tr>
+<td>oninput</td>
+<td>当用户输入时</td>
+</tr>
+</tbody></table>
+<p>等等事件</p>
+<p><a target="_blank" rel="noopener" href="https://www.w3school.com.cn/js/jsref_events.asp">https://www.w3school.com.cn/js/jsref_events.asp</a></p>
+<h2 id="反射型XSS"><a href="#反射型XSS" class="headerlink" title="反射型XSS"></a>反射型XSS</h2><p>一次性，插入的脚本代码不会存储在数据库</p>
+<p>当用户 点击攻击者构造好的URL时，就会中招</p>
+<p><strong>出现场合</strong></p>
+<p>一般出现在查询框</p>
+<h2 id="存储型XSS"><a href="#存储型XSS" class="headerlink" title="存储型XSS"></a>存储型XSS</h2><p>与反射型XSS最大的不同就是攻击者输入的恶意脚本代码会存储到数据库中</p>
+<p>只要脚本代码在数据库中，用户浏览页面就会中招</p>
+<p><strong>出现场合</strong></p>
+<p>一般出现在留言板、注册等与数据库交互的地方</p>
+<p>“看见框就X”</p>
+<h2 id="DOM型XSS"><a href="#DOM型XSS" class="headerlink" title="DOM型XSS"></a>DOM型XSS</h2><p>通过JavaScript，可以重构整个HTML文档，可以添加、移除、改变或重排页面上的项目</p>
+<p>要改变页面的某个东西，JavaScript就需要获得对HTML文档中的所有元素进行访问的入口。这个入口，连同对HTML元素进行添加、移动、改变或移除的方法和属性，都是通过文档对象模型来获得的（DOM）</p>
+<p>故DOM可以理解为一个一个访问HTML的编制编程接口</p>
+<p>注意：DOM型XSS 不与数据库进行交互</p>
+<p><em>HTML DOM 是关于如何获取、修改、添加或删除 HTML 元素的标准。</em></p>
+<h2 id="常见DOM方法与属性"><a href="#常见DOM方法与属性" class="headerlink" title="常见DOM方法与属性"></a>常见DOM方法与属性</h2><blockquote>
+<p>方法</p>
+</blockquote>
+<p>getElementById(id) — 获取带有指定id的节点元素</p>
+<p>document.lastModified—获取当前页面最后的修改时间（判断是否是伪静态页面）</p>
+<p>document.cookie—获取当前页面的cookie</p>
+<p>Document.write—向页面写入文本</p>
+<p>注意：document.write接受native编码</p>
+<p>native编码地址：<br><a target="_blank" rel="noopener" href="http://tool.oschina.net/encode?type=3">http://tool.oschina.net/encode?type=3</a></p>
+<blockquote>
+<p>属性</p>
+</blockquote>
+<p>innerHTML—节点的文本值</p>
+<p>parent—节点的父节点</p>
+<p>childNodes—节点的子节点</p>
+<p>attribute—节点的属性节点</p>
+<h2 id="XSS盲打"><a href="#XSS盲打" class="headerlink" title="XSS盲打"></a>XSS盲打</h2><p>有与前端数据交互的地方，比如：建议框</p>
+<p>相当于只有后台才能看到前端输入的内容，从前端无法判断是否存在XSS时，就可以采用盲打的形式</p>
+<p>盲打：不管3721，往里面插JS代码，然后等待，可能会有惊喜</p>
+<p>由于是后端，可能安全考虑不太严格，当管理员登录时，就会被被X</p>
+<h2 id="XSS绕过"><a href="#XSS绕过" class="headerlink" title="XSS绕过"></a>XSS绕过</h2><p>前端限制绕过：直接抓包重放，或者修改HTML前端代码</p>
+<p>大小写绕过：如 </p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">ScRipT</span>&gt;</span>AlERt(1)<span class="tag">&lt;/<span class="name">ScrIPt</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>拼凑绕过： 如 </p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;scri<span class="tag">&lt;<span class="name">script</span>&gt;</span>pt&gt;alert(11)&lt;/scr<span class="tag">&lt;/<span class="name">script</span>&gt;</span>ipt&gt;</span><br></pre></td></tr></table></figure>
+
+<p>使用注释进行干扰绕过：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span>alert(1)<span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="编码"><a href="#编码" class="headerlink" title="编码"></a>编码</h2><p>核心思路：后台过滤了特殊字符，比如：script 标签，但该标签可以被各种编码，后台不一定会过滤</p>
+<p>当浏览器对该编码进行识别时，会翻译成正常的标签，从而执行</p>
+<p>常见的编码：URL编码 HTML编码</p>
+<p><strong>注意</strong>：使用编码时，需要注意编码在输出点是否会被正常识别和翻译</p>
+<h2 id="htmlspecialchars-函数"><a href="#htmlspecialchars-函数" class="headerlink" title="htmlspecialchars()函数"></a>htmlspecialchars()函数</h2><p>htmlspecialchars()函数把预定义的字符转换为HTML实体</p>
+<p>预定义的字符是：</p>
+<figure class="highlight brainfuck"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&amp;(和号)</span>   <span class="literal">----</span>&gt;<span class="comment">&amp;amp</span></span><br><span class="line"><span class="comment">&quot;</span>    <span class="literal">----</span>&gt;<span class="comment">&amp;quot</span></span><br><span class="line"><span class="comment">&#x27;</span>   <span class="literal">----</span>&gt;<span class="comment">&amp;#039</span></span><br><span class="line">&lt;   <span class="literal">----</span>&gt;<span class="comment">&amp;lt</span></span><br><span class="line">&gt;   <span class="literal">----</span>&gt;<span class="comment">&amp;gt</span></span><br></pre></td></tr></table></figure>
+
+<p>用法：</p>
+<p>$ok &#x3D; htmlspecialchars($_GET[‘message’])</p>
+<p>可用的引号类型</p>
+<p>ENT-COMPAT–默认，仅编码双引号<br>ENT-QUOTES–编码双引号和单引号<br>ENT-NOQUOTES–不编码任何引号</p>
+<h2 id="XSS常见防范措施"><a href="#XSS常见防范措施" class="headerlink" title="XSS常见防范措施"></a>XSS常见防范措施</h2><p><strong>总的原则：输入做过滤，输出做转义</strong></p>
+<p>过滤：根据业务需求进行过滤</p>
+<p>转义：所有输出到前端的数据都要根据输出点做转义</p>
+<p><strong>a标签href做防范措施</strong></p>
+<p>a标签一般都是用来写一个超链接</p>
+<p>防范：只允许用户输入http或hppts开头的协议，其次在进行htmlspecialchars()处理</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/11/26/SQL%E6%B3%A8%E5%85%A5-Bypass/" rel="prev" title="SQL注入-Bypass">
+                  <i class="fa fa-chevron-left"></i> SQL注入-Bypass
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2022/11/28/CSRF-%E8%B7%A8%E7%AB%99%E8%AF%B7%E6%B1%82%E4%BC%AA%E9%80%A0/" rel="next" title="CSRF-跨站请求伪造">
+                  CSRF-跨站请求伪造 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">kiligwh</span>
+</div>
+
+<!-- 删除 “由 Hexo & NexT.Gemini 强力驱动” -->
+<!--
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div> -->
+
+<!-- <br /> -->
+<!-- 网站运行时间的设置 -->
+<span id="timeDate">载入天数...</span>
+<!-- <span id="times">载入时分秒...</span> -->
+<script>
+    var now = new Date();
+    function createtime() {
+        var grt= new Date("11/17/2022 8:00:00");//此处修改你的建站时间或者网站上线时间
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;}
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds); 
+        if(String(snum).length ==1 ){snum = "0" + snum;}
+        // var times = document.getElementById("times").innerHTML = hnum + " 小时 " + mnum + " 分 " + snum + " 秒";
+        document.getElementById("timeDate").innerHTML = "本站已安全运行 "+dnum+" 天 "+hnum + " 小时 " + mnum + " 分 " + snum + " 秒";
+    }
+setInterval("createtime()",250);
+</script>
+
+    </div>
+  </footer>
+
+  
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+
+  
+  
+  <script type="text/javascript"
+	count="150"
+	opacity: 1
+	src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js">
+  </script>
+  
+
+</body>
+</html>

