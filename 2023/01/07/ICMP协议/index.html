@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" integrity="sha256-/4UQcSmErDzPCMAiuOiWPVVsNN2s3ZY/NsmXNcj0IFc=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-bounce.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.15.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":"mac"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="ICMP协议 需求背景在IP通信中，经常有数据包到达不了对方的情况，由于数据包被丢弃等原因，为了控制将必要的信息传递给发信方。 ICMP协议是为了辅助IP协议，交换各种各样的控制信息而被制造出来的 概述ICMP（Internet Control Message Protocol）是Internet控制报文协议 ICMP协议是一种面向无连接的协议，它是TCP&#x2F;IP协议簇的一个子协议，用于在">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ICMP协议">
+<meta property="og:url" content="http://example.com/2023/01/07/ICMP%E5%8D%8F%E8%AE%AE/index.html">
+<meta property="og:site_name" content="kilig&#39;s Blog">
+<meta property="og:description" content="ICMP协议 需求背景在IP通信中，经常有数据包到达不了对方的情况，由于数据包被丢弃等原因，为了控制将必要的信息传递给发信方。 ICMP协议是为了辅助IP协议，交换各种各样的控制信息而被制造出来的 概述ICMP（Internet Control Message Protocol）是Internet控制报文协议 ICMP协议是一种面向无连接的协议，它是TCP&#x2F;IP协议簇的一个子协议，用于在">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220106113610967.png">
+<meta property="og:image" content="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220106114436534.png">
+<meta property="og:image" content="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220106125257238.png">
+<meta property="article:published_time" content="2023-01-07T12:35:36.000Z">
+<meta property="article:modified_time" content="2023-03-08T04:52:19.021Z">
+<meta property="article:author" content="kiligwh">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220106113610967.png">
+
+
+<link rel="canonical" href="http://example.com/2023/01/07/ICMP%E5%8D%8F%E8%AE%AE/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2023/01/07/ICMP%E5%8D%8F%E8%AE%AE/","path":"2023/01/07/ICMP协议/","title":"ICMP协议"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>ICMP协议 | kilig's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">kilig's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">If it is a rose,it will blossom</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#ICMP%E5%8D%8F%E8%AE%AE"><span class="nav-number">1.</span> <span class="nav-text">ICMP协议</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9C%80%E6%B1%82%E8%83%8C%E6%99%AF"><span class="nav-number">1.1.</span> <span class="nav-text">需求背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.2.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8A%A5%E6%96%87%E5%B0%81%E8%A3%85"><span class="nav-number">1.3.</span> <span class="nav-text">报文封装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8A%A5%E6%96%87%E7%B1%BB%E5%9E%8B"><span class="nav-number">1.4.</span> <span class="nav-text">报文类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B7%AE%E9%94%99%E6%8A%A5%E6%96%87"><span class="nav-number">1.5.</span> <span class="nav-text">差错报文</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E8%AF%A2%E6%8A%A5%E6%96%87"><span class="nav-number">1.6.</span> <span class="nav-text">查询报文</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BA%94%E7%94%A8"><span class="nav-number">1.7.</span> <span class="nav-text">应用</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="kiligwh"
+      src="/images/kilig.gif">
+  <p class="site-author-name" itemprop="name">kiligwh</p>
+  <div class="site-description" itemprop="description">欢迎</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">41</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/01/07/ICMP%E5%8D%8F%E8%AE%AE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/kilig.gif">
+      <meta itemprop="name" content="kiligwh">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kilig's Blog">
+      <meta itemprop="description" content="欢迎">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="ICMP协议 | kilig's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          ICMP协议
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2023-01-07 20:35:36" itemprop="dateCreated datePublished" datetime="2023-01-07T20:35:36+08:00">2023-01-07</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-03-08 12:52:19" itemprop="dateModified" datetime="2023-03-08T12:52:19+08:00">2023-03-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">网络</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="ICMP协议"><a href="#ICMP协议" class="headerlink" title="ICMP协议"></a>ICMP协议</h1><hr>
+<h2 id="需求背景"><a href="#需求背景" class="headerlink" title="需求背景"></a>需求背景</h2><p>在IP通信中，经常有数据包到达不了对方的情况，由于数据包被丢弃等原因，为了控制将必要的信息传递给发信方。</p>
+<p>ICMP协议是为了辅助IP协议，交换各种各样的控制信息而被制造出来的</p>
+<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>ICMP（Internet Control Message Protocol）是Internet控制报文协议</p>
+<p>ICMP协议是一种面向无连接的协议，它是TCP&#x2F;IP协议簇的一个子协议，用于在IP主机、路由器之间传递控制信息</p>
+<p>控制信息是指网络通不通、主机是否可达、路由是否可用等网络本身的消息，这些控制消息虽然并不传输用户数据，但是对于用户数据的传递和网络安全具有极其重要的意义</p>
+<h2 id="报文封装"><a href="#报文封装" class="headerlink" title="报文封装"></a>报文封装</h2><p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220106113610967.png" alt="image-20220106113610967"></p>
+<p>ICMP报文是使用IP数据包来封装和发送的，携带ICMP报文的IP数据报完全像其他类型数据的数据报那样在网络中被转发，没有额外的可靠性和优先级，由于IP数据报本身被放在底层物理数据帧中进行发送， 故ICMP报文本身也可能丢失或者出现传输错误</p>
+<h2 id="报文类型"><a href="#报文类型" class="headerlink" title="报文类型"></a>报文类型</h2><p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220106114436534.png" alt="image-20220106114436534"></p>
+<h2 id="差错报文"><a href="#差错报文" class="headerlink" title="差错报文"></a>差错报文</h2><p>报告IP数据报在传输中的差错是ICMP报文最基础的功能</p>
+<p>ICMP的差错报文有如下特点：</p>
+<p>1、ICMP差错报文都是由路由器发送给源主机</p>
+<p>2、ICMP差错报文只提供IP数据报在传输过程中的差错报告，但并不规定对各类差错应采取什么样的处理措施（具体的处理，由收到ICMP差错报文的源主机将相应的差错与应用程序联系起来才能进行相应的差错处理）</p>
+<p>3、ICMP差错报文不享受任何优先权，也没有特别的可靠性保证措施，与普通的IP数据报一样进行传输，传输过程中可能被丢弃、损坏甚至被抛弃</p>
+<p>4、ICMP差错报文是伴随着抛弃出错的IP数据报而产生的</p>
+<p>5、当路由器发送一份参数错误等的ICMP差错报文时，ICMP报文数据区始终包含产生ICMP差错报文的IP数据报的头部和其数据区的前8个字节（64位）</p>
+<p>6、一些情况下，为了防止在网络中产生大量的ICMP差错报文（广播风暴），影响网络的正常工作，即使发送差错，也不会产生ICMP差错报文</p>
+<p>一些情况如下：</p>
+<ul>
+<li>ICMP报文发送差错</li>
+<li>目的地址是广播地址或多播地址（D类地址）的IP数据</li>
+<li>作为链路层广播的数据报</li>
+<li>不是IP分片的第一片</li>
+<li>源地址不是单个主机的数据报（源地址不能为零地址、回送地址、广播地址或多播地址）</li>
+</ul>
+<blockquote>
+<p>目的站不可达</p>
+</blockquote>
+<p>当路由器不能给数据报找到合适的路由路径，或者主机不能将数据报递交给上层协议时，相应的IP数据报就会被丢弃，然后一个目的站不可达差错控制报文将会被返回给源主机</p>
+<blockquote>
+<p>数据报超时</p>
+</blockquote>
+<p>数据报超时可以用来防止数据报在网络中被循环的路由，在IP首部中都有一个生存时间（TTL）字段，数据报每被转发一次，TTL的值便会减1，当TTL的值被减为0时，数据报会被网络丢弃，同时一个ICMP数据报超时报文会被返回给源主机</p>
+<blockquote>
+<p>源站抑制</p>
+</blockquote>
+<p>ICMP源站抑制报文就是为了给IP协议增加一种流量控制而设计的，当路由器或主机因拥塞而丢弃数据报时，它可以向源站发送ICMP源站抑制报文</p>
+<p>这个报文将告诉源站两个信息：</p>
+<ul>
+<li>第一，你的数据报发得太快，我已经丢弃了；</li>
+<li>第二，路径中出现了拥塞，请放慢你的数据报发送频率；</li>
+</ul>
+<blockquote>
+<p>重定向（路由）</p>
+</blockquote>
+<p>当路由器要将数据报转发到另一个网络时，它必须知道下一个路由器的IP地址，源主机也是这样，当一台主机刚开始运行时，它会将所有数据报发送给网络中的一个默认路由器，因为它只知道默认路由器这一个IP地址</p>
+<blockquote>
+<p>数据报参数错误</p>
+</blockquote>
+<p>数据报在网络中传输时，其首部中出现的任何二义性都可能会产生严重的问题，如果路由器或主机发现了这种二义性，或者数据报中的某个字段丢失，路由器会直接丢弃数据报，并向源主机返回一个数据报参数错误报文</p>
+<h2 id="查询报文"><a href="#查询报文" class="headerlink" title="查询报文"></a>查询报文</h2><blockquote>
+<p>概述</p>
+</blockquote>
+<p>常见的ICMP查询报文有以下几种：回送请求或回答、时间戳请求或回答、路由器询问和通告、信息请求或回答、地址掩码请求或回答</p>
+<blockquote>
+<p>回送请求或回答</p>
+</blockquote>
+<p>回送请求和回送回答报文是为诊断网络而设计的，我们使用这对报文来发现网络的问题，回送请求和回送回答报文组合起来就可以确定两个网络设备之间彼此是否能够通信</p>
+<p>回收请求和回送回答报文可以直接确定两台主机的IP协议是否能够正常通信，这是因为ICMP报文是被封装在IP数据报中发送的，发送请求的主机能收到回答报文，证明两台主机之间能够使用IP协议进行通信，同时也能证明源主机与目的主机之间的所有路由器的接收、处理、转发功能正常</p>
+<p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220106125257238.png" alt="image-20220106125257238"></p>
+<h2 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h2><blockquote>
+<p>Ping</p>
+</blockquote>
+<p>Ping主要原来检测网络的连通性，同时也要收集其他相关信息</p>
+<p><strong>原理</strong></p>
+<p>ping通过调用echo来发送请求，通过是否收到echo-reply来查询网络层的连通性</p>
+<p>ping的结果会给出传送的时间和TTL的数据，还可以查看主机到目的主机的路由</p>
+<p>这是因为ICMP的Ping请求数据报在每经过一个路由器的时候，路由器就会把自己的IP地址放到该数据包中，而目的主机则会把这个IP列表复制到ICMP数据包中发回给主机</p>
+<blockquote>
+<p>tracert</p>
+</blockquote>
+<p>tracert主要用来侦测主机到目的主机所经路由情况的工具，可以获取到所经路由器的IP地址</p>
+<p><strong>原理</strong></p>
+<p>它收到目的主机的IP后，首先给目的主机发送一个TTL&#x3D;1的UDP数据包，而经过的第一个路由器收到这个数据包以后，就自动将TTL减1.而TTL变为0以后，路由器就把这个包给抛弃了，并同时产生一个主机不可达的ICMP数据包给主机。</p>
+<p>主机收到这个数据包以后就发送一个TTL&#x3D;2的数据包给主机，然后刺激第二个路由器给主机发送ICMP数据包，如此反复直到到达目的主机</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2023/01/06/HTTP%E4%B8%8EHTTPS%20%E5%8D%8F%E8%AE%AE/" rel="prev" title="HTTP与HTTPS 协议">
+                  <i class="fa fa-chevron-left"></i> HTTP与HTTPS 协议
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2023/01/08/IP%E5%8D%8F%E8%AE%AE/" rel="next" title="IP协议">
+                  IP协议 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">kiligwh</span>
+</div>
+
+<!-- 删除 “由 Hexo & NexT.Gemini 强力驱动” -->
+<!--
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div> -->
+
+<!-- <br /> -->
+<!-- 网站运行时间的设置 -->
+<span id="timeDate">载入天数...</span>
+<!-- <span id="times">载入时分秒...</span> -->
+<script>
+    var now = new Date();
+    function createtime() {
+        var grt= new Date("11/17/2022 8:00:00");//此处修改你的建站时间或者网站上线时间
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;}
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds); 
+        if(String(snum).length ==1 ){snum = "0" + snum;}
+        // var times = document.getElementById("times").innerHTML = hnum + " 小时 " + mnum + " 分 " + snum + " 秒";
+        document.getElementById("timeDate").innerHTML = "本站已安全运行 "+dnum+" 天 "+hnum + " 小时 " + mnum + " 分 " + snum + " 秒";
+    }
+setInterval("createtime()",250);
+</script>
+
+    </div>
+  </footer>
+
+  
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+  <script src="/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+
+  
+  
+  <script type="text/javascript"
+	count="150"
+	opacity: 1
+	src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js">
+  </script>
+  
+
+</body>
+</html>

