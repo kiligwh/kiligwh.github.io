@@ -28,21 +28,21 @@
 <meta property="og:site_name" content="kilig&#39;s Blog">
 <meta property="og:description" content="SQL注入-二次注入 原理二次注入是通过与数据库服务器进行交互的过程再次进行注入 利用条件用户输入恶意语句 数据库把用户输入的数据没有做任何更改，直接进行了存储 再用户取出数据的过程中，数据库将用户输入的数据完整且没有做任何修饰的展示给用户 利用场景常常发生在注册页面，插入恶意语句，在仅知道管理员的账号，但是不知道密码的情况下，改掉管理员的密码 靶场1、一个登录界面，可进行更改密码、注册用户 2、">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410145002978.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410145042112.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410150507893.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410150623996.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410150646738.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410151149324.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410150850863.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410150911755.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410150937662.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20210410151109648.png">
+<meta property="og:image" content="http://example.com/Image%5CSQL-7-Chinese%5C2024101713004432.png">
+<meta property="og:image" content="http://example.com/Image%5CSQL-7-Chinese%5C2024101713004434.png">
+<meta property="og:image" content="http://example.com/Image%5CSQL-7-Chinese%5C2024101713004445.png">
+<meta property="og:image" content="http://example.com/Image%5CSQL-7-Chinese%5C2024101713004447.png">
+<meta property="og:image" content="http://example.com/Image%5CSQL-7-Chinese%5C2024101713004549.png">
+<meta property="og:image" content="http://example.com/Image%5CSQL-7-Chinese%5C2024101713004552.png">
+<meta property="og:image" content="http://example.com/Image%5CSQL-7-Chinese%5C2024101713004555.png">
+<meta property="og:image" content="http://example.com/Image%5CSQL-7-Chinese%5C2024101713004556.png">
+<meta property="og:image" content="http://example.com/Image%5CSQL-7-Chinese%5C2024101713004659.png">
+<meta property="og:image" content="http://example.com/Image%5CSQL-7-Chinese%5C2024101713004663.png">
 <meta property="article:published_time" content="2022-11-12T10:21:27.000Z">
-<meta property="article:modified_time" content="2023-03-07T15:26:45.900Z">
+<meta property="article:modified_time" content="2024-10-17T05:00:46.437Z">
 <meta property="article:author" content="kiligwh">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20210410145002978.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70">
+<meta name="twitter:image" content="http://example.com/Image%5CSQL-7-Chinese%5C2024101713004432.png">
 
 
 <link rel="canonical" href="http://example.com/2022/11/12/SQL%E6%B3%A8%E5%85%A5-%E4%BA%8C%E6%AC%A1%E6%B3%A8%E5%85%A5/">
@@ -235,15 +235,15 @@
 <p>再用户取出数据的过程中，数据库将用户输入的数据完整且没有做任何修饰的展示给用户</p>
 <h2 id="利用场景"><a href="#利用场景" class="headerlink" title="利用场景"></a>利用场景</h2><p>常常发生在注册页面，插入恶意语句，在仅知道管理员的账号，但是不知道密码的情况下，改掉管理员的密码</p>
 <h2 id="靶场"><a href="#靶场" class="headerlink" title="靶场"></a>靶场</h2><p>1、一个登录界面，可进行更改密码、注册用户</p>
-<p><img src="https://img-blog.csdnimg.cn/20210410145002978.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>2、查看数据库中原有的数据<br><img src="https://img-blog.csdnimg.cn/20210410145042112.png" alt="在这里插入图片描述"></p>
+<p><img src="/Image%5CSQL-7-Chinese%5C2024101713004432.png" alt="在这里插入图片描述"><br>2、查看数据库中原有的数据<br><img src="/Image%5CSQL-7-Chinese%5C2024101713004434.png" alt="在这里插入图片描述"></p>
 <p>3、目的：改掉admin用户的密码</p>
 <p>4、注册用户</p>
 <figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">注册用户名为admin&#x27; -- q</span><br><span class="line">密码为<span class="number">123456</span></span><br></pre></td></tr></table></figure>
 
-<p><img src="https://img-blog.csdnimg.cn/20210410150507893.png" alt="在这里插入图片描述"><br>5、注册成功<br><img src="https://img-blog.csdnimg.cn/20210410150623996.png" alt="在这里插入图片描述"><br>6、查看数据库有无增加用户<br><img src="https://img-blog.csdnimg.cn/20210410150646738.png" alt="在这里插入图片描述"><br>7、使用用户名admin’ – q 登录<br>8、观察admin用户的密码为admin<br><img src="https://img-blog.csdnimg.cn/20210410151149324.png" alt="在这里插入图片描述"></p>
-<p>9、更改admin’ – q用户的密码为654321<br><img src="https://img-blog.csdnimg.cn/20210410150850863.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20210410150911755.png" alt="在这里插入图片描述"></p>
-<p>10、再次查看数据库<br><img src="https://img-blog.csdnimg.cn/20210410150937662.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjI0ODg3MQ==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>观察到新注册的用户admin’ – q 密码没改变，admin用户的密码却更改为654321</p>
-<p>11、使用admin用户登录<br><img src="https://img-blog.csdnimg.cn/20210410151109648.png" alt="在这里插入图片描述"><br>登录成功</p>
+<p><img src="/Image%5CSQL-7-Chinese%5C2024101713004445.png" alt="在这里插入图片描述"><br>5、注册成功<br><img src="/Image%5CSQL-7-Chinese%5C2024101713004447.png" alt="在这里插入图片描述"><br>6、查看数据库有无增加用户<br><img src="/Image%5CSQL-7-Chinese%5C2024101713004549.png" alt="在这里插入图片描述"><br>7、使用用户名admin’ – q 登录<br>8、观察admin用户的密码为admin<br><img src="/Image%5CSQL-7-Chinese%5C2024101713004552.png" alt="在这里插入图片描述"></p>
+<p>9、更改admin’ – q用户的密码为654321<br><img src="/Image%5CSQL-7-Chinese%5C2024101713004555.png" alt="在这里插入图片描述"><br><img src="/Image%5CSQL-7-Chinese%5C2024101713004556.png" alt="在这里插入图片描述"></p>
+<p>10、再次查看数据库<br><img src="/Image%5CSQL-7-Chinese%5C2024101713004659.png" alt="在这里插入图片描述"><br>观察到新注册的用户admin’ – q 密码没改变，admin用户的密码却更改为654321</p>
+<p>11、使用admin用户登录<br><img src="/Image%5CSQL-7-Chinese%5C2024101713004663.png" alt="在这里插入图片描述"><br>登录成功</p>
 <h2 id="能够更改admin密码原理"><a href="#能够更改admin密码原理" class="headerlink" title="能够更改admin密码原理"></a>能够更改admin密码原理</h2><p>1、更改密码处的后端代码</p>
 <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$sql</span> = <span class="string">&quot;UPDATE users SET PASSWORD=&#x27;<span class="subst">$pass</span>&#x27; where username=&#x27;<span class="subst">$username</span>&#x27; and password=&#x27;<span class="subst">$curr_pass</span>&#x27; &quot;</span></span><br></pre></td></tr></table></figure>
 
@@ -292,7 +292,7 @@
 
 <div class="copyright">
   &copy; 
-  <span itemprop="copyrightYear">2023</span>
+  <span itemprop="copyrightYear">2024</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

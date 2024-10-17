@@ -28,14 +28,14 @@
 <meta property="og:site_name" content="kilig&#39;s Blog">
 <meta property="og:description" content="ICMP协议 需求背景在IP通信中，经常有数据包到达不了对方的情况，由于数据包被丢弃等原因，为了控制将必要的信息传递给发信方。 ICMP协议是为了辅助IP协议，交换各种各样的控制信息而被制造出来的 概述ICMP（Internet Control Message Protocol）是Internet控制报文协议 ICMP协议是一种面向无连接的协议，它是TCP&#x2F;IP协议簇的一个子协议，用于在">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220106113610967.png">
-<meta property="og:image" content="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220106114436534.png">
-<meta property="og:image" content="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220106125257238.png">
+<meta property="og:image" content="http://example.com/Image%5CICMP6-Chinese%5C2024101713175028.png">
+<meta property="og:image" content="http://example.com/Image%5CICMP6-Chinese%5C2024101713175034.png">
+<meta property="og:image" content="http://example.com/Image%5CICMP6-Chinese%5C2024101713175099.png">
 <meta property="article:published_time" content="2023-01-07T12:35:36.000Z">
-<meta property="article:modified_time" content="2023-03-08T04:52:19.021Z">
+<meta property="article:modified_time" content="2024-10-17T05:17:51.029Z">
 <meta property="article:author" content="kiligwh">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220106113610967.png">
+<meta name="twitter:image" content="http://example.com/Image%5CICMP6-Chinese%5C2024101713175028.png">
 
 
 <link rel="canonical" href="http://example.com/2023/01/07/ICMP%E5%8D%8F%E8%AE%AE/">
@@ -227,9 +227,9 @@
 <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>ICMP（Internet Control Message Protocol）是Internet控制报文协议</p>
 <p>ICMP协议是一种面向无连接的协议，它是TCP&#x2F;IP协议簇的一个子协议，用于在IP主机、路由器之间传递控制信息</p>
 <p>控制信息是指网络通不通、主机是否可达、路由是否可用等网络本身的消息，这些控制消息虽然并不传输用户数据，但是对于用户数据的传递和网络安全具有极其重要的意义</p>
-<h2 id="报文封装"><a href="#报文封装" class="headerlink" title="报文封装"></a>报文封装</h2><p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220106113610967.png" alt="image-20220106113610967"></p>
+<h2 id="报文封装"><a href="#报文封装" class="headerlink" title="报文封装"></a>报文封装</h2><p><img src="/Image%5CICMP6-Chinese%5C2024101713175028.png" alt="image-20220106113610967"></p>
 <p>ICMP报文是使用IP数据包来封装和发送的，携带ICMP报文的IP数据报完全像其他类型数据的数据报那样在网络中被转发，没有额外的可靠性和优先级，由于IP数据报本身被放在底层物理数据帧中进行发送， 故ICMP报文本身也可能丢失或者出现传输错误</p>
-<h2 id="报文类型"><a href="#报文类型" class="headerlink" title="报文类型"></a>报文类型</h2><p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220106114436534.png" alt="image-20220106114436534"></p>
+<h2 id="报文类型"><a href="#报文类型" class="headerlink" title="报文类型"></a>报文类型</h2><p><img src="/Image%5CICMP6-Chinese%5C2024101713175034.png" alt="image-20220106114436534"></p>
 <h2 id="差错报文"><a href="#差错报文" class="headerlink" title="差错报文"></a>差错报文</h2><p>报告IP数据报在传输中的差错是ICMP报文最基础的功能</p>
 <p>ICMP的差错报文有如下特点：</p>
 <p>1、ICMP差错报文都是由路由器发送给源主机</p>
@@ -280,7 +280,7 @@
 </blockquote>
 <p>回送请求和回送回答报文是为诊断网络而设计的，我们使用这对报文来发现网络的问题，回送请求和回送回答报文组合起来就可以确定两个网络设备之间彼此是否能够通信</p>
 <p>回收请求和回送回答报文可以直接确定两台主机的IP协议是否能够正常通信，这是因为ICMP报文是被封装在IP数据报中发送的，发送请求的主机能收到回答报文，证明两台主机之间能够使用IP协议进行通信，同时也能证明源主机与目的主机之间的所有路由器的接收、处理、转发功能正常</p>
-<p><img src="https://xbxaq.oss-cn-chengdu.aliyuncs.com/typora/image-20220106125257238.png" alt="image-20220106125257238"></p>
+<p><img src="/Image%5CICMP6-Chinese%5C2024101713175099.png" alt="image-20220106125257238"></p>
 <h2 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h2><blockquote>
 <p>Ping</p>
 </blockquote>
@@ -337,7 +337,7 @@
 
 <div class="copyright">
   &copy; 
-  <span itemprop="copyrightYear">2023</span>
+  <span itemprop="copyrightYear">2024</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

